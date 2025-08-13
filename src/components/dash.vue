@@ -7,19 +7,15 @@
     >
       <!-- Navigation Bar -->
       <div class="deznav-scroll pt-2">
-        <ul
-          class="metismenu "
-          id="menu"
-        >
+        <ul class="metismenu" id="menu">
           <!-- Dashboard -->
           <li>
             <a
-            v-if="seen"
+              v-if="seen"
               class="has-arrow ai-icon"
               :class="{
                 'bg-inf text-info': seen,
                 grey: !seen,
-
               }"
               @click="seen = !seen"
               aria-expanded="false"
@@ -27,57 +23,29 @@
               <i v-if="!isTablet" class="flaticon-381-networking"></i>
               <span class="nav-text">Dashboard</span>
             </a>
-            <ul
-              aria-expanded="false"
-              v-if="seen"
-            >
+            <ul aria-expanded="false" v-if="seen">
               <li>
                 <a @click="onClickHomeTab">
-                  <div :class="{
-                    'text-blue': isAccountHomeVisible,
-                    grey: !isAccountHomeVisible,
-                  }">
+                  <div
+                    :class="{
+                      'text-blue': isAccountHomeVisible,
+                      grey: !isAccountHomeVisible,
+                    }"
+                  >
                     Dashboard
                   </div>
                 </a>
               </li>
-              <li>
-                <a @click="onClickHomTab" class="d-none">
-                  <div :class="{
-                    'text-blue': isAccountHomVisible,
-                    grey: !isAccountHomVisible,
-                  }">
-                    Reviews
-                  </div>
-                </a>
-              </li>
-              <li>
-                <a @click="onClickWalletTab()" class="d-none">
-                  <div :class="{
-                    'text-blue': isAnalyticsVisible,
-                    grey: !isAnalyticsVisible,
-                  }">
-                    Analytics
-                  </div>
-                </a>
-              </li>
+
               <li @click="onClickOrderTab">
                 <a>
-                  <div :class="{
-                    'text-blue': isOrdersVisible,
-                    grey: !isOrdersVisible,
-                  }">
+                  <div
+                    :class="{
+                      'text-blue': isOrdersVisible,
+                      grey: !isOrdersVisible,
+                    }"
+                  >
                     Order List
-                  </div>
-                </a>
-              </li>
-              <li>
-                <a @click="onClickCustomerTab()" class="d-none">
-                  <div :class="{
-                    'text-blue white': isCustomerVisible,
-                    grey: !isCustomerVisible,
-                  }">
-                    General Customers
                   </div>
                 </a>
               </li>
@@ -97,27 +65,30 @@
               <i class="flaticon-381-television"></i>
               <span class="nav-text">Apps</span>
             </a>
-            <ul
-              v-if="see"
-              aria-expanded="false"
-            >
-              <li :class="{
-                'text-blue': isCalenderVisible,
-                grey: !isCalenderVisible,
-              }">
+            <ul v-if="see" aria-expanded="false">
+              <li
+                :class="{
+                  'text-blue': isBankVisible,
+                  grey: !isBankVisible,
+                }"
+              >
                 <a @click="onClickBankTab">Bank Info</a>
               </li>
-              <li :class="{
-                'text-blue': isProductVisible,
-                grey: !isProductVisible,
-              }">
-                <a @click="onClickProductTab">My Event</a>
+              <li
+                :class="{
+                  'text-blue': isEventVisible,
+                  grey: !isEventVisible,
+                }"
+              >
+                <a @click="onClickEventTab">My Event</a>
               </li>
-              <li :class="{
-                'text-blue': isAddProductVisible,
-                grey: !isAddProductVisible,
-              }">
-                <a @click="onClickAddProductTab">Add Event</a>
+              <li
+                :class="{
+                  'text-blue': isAddEventVisible,
+                  grey: !isAddEventVisible,
+                }"
+              >
+                <a @click="onClickAddEventTab">Add Event</a>
               </li>
             </ul>
           </li>
@@ -125,94 +96,71 @@
       </div>
     </div>
     <!-- Content Section -->
-    <div
-      id="main"
-      :style="{ marginLeft: sidenavWidth + 'px' }"
-    >
-     <div class="d-block d-sm-none padding-left-10 padding-bottom-0">
-  <div class="dropdown form-control p-2" @click="toggleDropdown" style="width:fit-content;">
-    <a class="dropdown-toggle" :class="{ 'active': isDropdownOpen }">
-      {{ mobileTab }}
-    </a>
-    <div class="dropdown-menu" :class="{ 'show': isDropdownOpen }">
-      <a class="dropdown-item" @click="onClickHomeTab">Dashboard</a>
-      <a class="dropdown-item d-none" @click="onClickHomTab">Reviews</a>
-      <a class="dropdown-item d-none" @click="onClickWalletTab">Analytics</a>
-      <a class="dropdown-item" @click="onClickOrderTab">Order List</a>
-      <a class="dropdown-item d-none" @click="onClickCustomerTab">General Customers</a>
-      <a class="dropdown-item" @click="onClickBankTab">Bank Info</a>
-      <a class="dropdown-item" @click="onClickProductTab">My Event</a>
-      <a class="dropdown-item" @click="onClickAddProductTab">Add Event</a>
-    </div>
-  </div>
-</div>
-
+    <div id="main" :style="{ marginLeft: sidenavWidth + 'px' }">
+      <div class="d-block d-sm-none padding-left-10 padding-bottom-0">
+        <div
+          class="dropdown form-control p-2"
+          @click="toggleDropdown"
+          style="width: fit-content"
+        >
+          <a class="dropdown-toggle" :class="{ active: isDropdownOpen }">
+            {{ mobileTab }}
+          </a>
+          <div class="dropdown-menu" :class="{ show: isDropdownOpen }">
+            <a class="dropdown-item" @click="onClickHomeTab">Dashboard</a>
+            <a class="dropdown-item" @click="onClickOrderTab">Order List</a>
+            <a class="dropdown-item" @click="onClickBankTab">Bank Info</a>
+            <a class="dropdown-item" @click="onClickEventTab">My Event</a>
+            <a class="dropdown-item" @click="onClickAddEventTab">Add Event</a>
+          </div>
+        </div>
+      </div>
 
       <span
         style="font-size: 30px; cursor: pointer"
         @click="toggleNav"
         class="d-none d-md-block"
       >
-        {{ isNavOpen ? '×' : '☰' }} {{ isNavOpen ? '' : '' }}
+        {{ isNavOpen ? "×" : "☰" }} {{ isNavOpen ? "" : "" }}
       </span>
       <div>
         <Dashboard v-if="isAccountHomeVisible"></Dashboard>
       </div>
-      <div>
-        <Dashboar v-if="isAccountHomVisible"></Dashboar>
-      </div>
-      <div>
-        <Analytics v-if="isAnalyticsVisible"></Analytics>
-      </div>
-      <div>
-        <Customer v-if="isCustomerVisible"></Customer>
-      </div>
+
       <div>
         <Orders v-if="isOrdersVisible"></Orders>
       </div>
+
       <div>
-        <Profile v-if="isProfileVisible"></Profile>
+        <Bank v-if="isBankVisible"></Bank>
       </div>
       <div>
-        <Compose v-if="isEmailComposeVisible"></Compose>
+        <event v-if="isEventVisible"></event>
       </div>
       <div>
-        <Calender v-if="isCalenderVisible"></Calender>
-      </div>
-      <div>
-        <Product v-if="isProductVisible"></Product>
-      </div>
-      <div>
-        <addProduct v-if="isAddProductVisible"></addProduct>
+        <addEvent v-if="isAddEventVisible"></addEvent>
       </div>
     </div>
   </div>
 </template>
 <script>
 import { mapActions, mapGetters } from "vuex";
-import Analytics from "./dashboard/analytics.vue";
 import Dashboard from "./dashboard/dashboard.vue";
-import Dashboar from "./dashboard/dashboar.vue";
-import Customer from "./dashboard/customers.vue";
 import Orders from "./dashboard/orderlist.vue";
-import Profile from "./app/profile.vue";
-import Compose from "./app/email.vue";
-import Calender from "./app/bank.vue";
-import Product from "./app/product.vue";
-import addProduct from "./app/addProduct.vue";
+import Bank from "./app/bank.vue";
+import event from "./app/events.vue";
+import addEvent from "./app/addEvent.vue";
 
 export default {
   components: {
-    Analytics,
+    Bank,
     Dashboard,
-    Dashboar,
-    Product,
-    Profile,
-    Compose,
-    Calender,
-    addProduct,
-    Customer,
-    Orders
+
+    event,
+
+    addEvent,
+
+    Orders,
   },
   data() {
     return {
@@ -222,20 +170,15 @@ export default {
       see: true,
       se: true,
       sidenavWidth: 0,
-       isDropdownOpen: false,
+      isDropdownOpen: false,
       isNavOpen: false,
 
       isAccountHomeVisible: true,
-      isAccountHomVisible: true,
-      isAnalyticsVisible: true,
-      isCustomerVisible: true,
-      isCalenderVisible: false,
+      isBankVisible: false,
       isOrdersVisible: false,
-      isProfileVisible: false,
-      isProductVisible: false,
-      isAddProductVisible: false,
 
-      isEmailComposeVisible: false
+      isEventVisible: false,
+      isAddEventVisible: false,
     };
   },
   watch: {
@@ -244,16 +187,16 @@ export default {
       this.$router
         .push({
           query: {
-            activeTab: to
-          }
+            activeTab: to,
+          },
         })
-        .catch(err => {});
+        .catch((err) => {});
       this.initialize();
-    }
+    },
   },
   computed: {
     ...mapGetters(["isAdmin"]),
-     isTablet() {
+    isTablet() {
       // Adjust this condition based on your desired tablet screen size
       return window.innerWidth >= 768 && window.innerWidth < 1024;
     },
@@ -266,8 +209,8 @@ export default {
       this.isNavOpen = false; // Add this line to close the nav when resizing
     },
     toggleDropdown() {
-    this.isDropdownOpen = !this.isDropdownOpen;
-  },
+      this.isDropdownOpen = !this.isDropdownOpen;
+    },
     toggleNav() {
       this.isNavOpen = !this.isNavOpen;
       this.sidenavWidth = this.isNavOpen ? 250 : 0;
@@ -283,16 +226,12 @@ export default {
 
     hideAll() {
       this.isAccountHomeVisible = false;
-      this.isAnalyticsVisible = false;
-      this.isCustomerVisible = false;
-      this.isCalenderVisible = false;
-      this.isOrdersVisible = false;
-      this.isProfileVisible = false;
-      this.isEmailComposeVisible = false;
-      this.isProductVisible = false;
-      this.isAddProductVisible = false;
 
-      this.isAccountHomVisible = false;
+      this.isBankVisible = false;
+      this.isOrdersVisible = false;
+
+      this.isEventVisible = false;
+      this.isAddEventVisible = false;
     },
     onClickHomeTab() {
       this.hideAll();
@@ -301,108 +240,49 @@ export default {
       this.$router
         .push({
           query: {
-            activeTab: "dashboard"
-          }
+            activeTab: "dashboard",
+          },
         })
-        .catch(err => {});
-    },
-    onClickProfileTab() {
-      this.hideAll();
-      this.isProfileVisible = true;
-      this.mobileTab = "profile";
-      this.$router
-        .push({
-          query: {
-            activeTab: "profile"
-          }
-        })
-        .catch(err => {});
-    },
-    onClickProductTab() {
-      this.hideAll();
-      this.isProductVisible = true;
-      this.mobileTab = "product";
-      this.$router
-        .push({
-          query: {
-            activeTab: "product"
-          }
-        })
-        .catch(err => {});
-    },
-    onClickAddProductTab() {
-      this.hideAll();
-      this.isAddProductVisible = true;
-      this.mobileTab = "add-product";
-      this.$router
-        .push({
-          query: {
-            activeTab: "add-product"
-          }
-        })
-        .catch(err => {});
-    },
-    onClickHomTab() {
-      this.hideAll();
-      this.isAccountHomVisible = true;
-      this.mobileTab = "reviews";
-      this.$router
-        .push({
-          query: {
-            activeTab: "reviews"
-          }
-        })
-        .catch(err => {});
-    },
-    onClickWalletTab() {
-      this.hideAll();
-      this.isAnalyticsVisible = true;
-      this.mobileTab = "analytics";
-      this.$router
-        .push({
-          query: {
-            activeTab: "analytics"
-          }
-        })
-        .catch(err => {});
-    },
-    onClickCustomerTab() {
-      this.hideAll();
-      this.isCustomerVisible = true;
-      this.mobileTab = "customer";
-      this.$router
-        .push({
-          query: {
-            activeTab: "customer"
-          }
-        })
-        .catch(err => {});
-    },
-    onClickBankTab() {
-      this.hideAll();
-      this.isCalenderVisible = true;
-      this.mobileTab = "Calendar";
-      this.$router
-        .push({
-          query: {
-            activeTab: "bank"
-          }
-        })
-        .catch(err => {});
-    },
-    onClickEmailComposeTab() {
-      this.hideAll();
-      this.isEmailComposeVisible = true;
-      this.mobileTab = "email";
-      this.$router
-        .push({
-          query: {
-            activeTab: "email"
-          }
-        })
-        .catch(err => {});
+        .catch((err) => {});
     },
 
+    onClickEventTab() {
+      this.hideAll();
+      this.isEventVisible = true;
+      this.mobileTab = "event";
+      this.$router
+        .push({
+          query: {
+            activeTab: "event",
+          },
+        })
+        .catch((err) => {});
+    },
+    onClickAddEventTab() {
+      this.hideAll();
+      this.isAddEventVisible = true;
+      this.mobileTab = "add-event";
+      this.$router
+        .push({
+          query: {
+            activeTab: "add-event",
+          },
+        })
+        .catch((err) => {});
+    },
+
+    onClickBankTab() {
+      this.hideAll();
+      this.isBankVisible = true;
+      this.mobileTab = "bank";
+      this.$router
+        .push({
+          query: {
+            activeTab: "bank",
+          },
+        })
+        .catch((err) => {});
+    },
     onClickOrderTab() {
       this.hideAll();
       this.isOrdersVisible = true;
@@ -410,70 +290,49 @@ export default {
       this.$router
         .push({
           query: {
-            activeTab: "orders"
-          }
+            activeTab: "orders",
+          },
         })
-        .catch(err => {});
+        .catch((err) => {});
     },
     onClickTab() {
       if (this.mobileTab == "dashboard") {
         this.onClickHomeTab();
-      } else if (this.mobileTab == "reviews") {
-        this.onClickHomTab();
-      } else if (this.mobileTab == "analytics") {
-        this.onClickWalletTab();
-      } else if (this.mobileTab == "customer") {
-        this.onClickCustomerTab();
       } else if (this.mobileTab == "orders") {
         this.onClickOrderTab();
-      } else if (this.mobileTab == "profile") {
-        this.onClickProfileTab();
-      } else if (this.mobileTab == "email") {
-        this.onClickEmailComposeTab();
       } else if (this.mobileTab == "bank") {
         this.onClickBankTab();
-      } else if (this.mobileTab === "Product") {
-        this.onClickProductTab();
-      } else if (this.mobileTab === "Add Product") {
-        this.onClickAddProductTab();
+      } else if (this.mobileTab === "event") {
+        this.onClickEventTab();
+      } else if (this.mobileTab === "Add event") {
+        this.onClickAddEventTab();
       }
     },
     initialize() {
       if (this.$route.query) {
         if (this.$route.query.activeTab == "dashboard") {
           this.onClickHomeTab();
-        } else if (this.$route.query.activeTab == "reviews") {
-          this.onClickHomTab();
-        } else if (this.$route.query.activeTab == "analytics") {
-          this.onClickWalletTab();
-        } else if (this.$route.query.activeTab == "customer") {
-          this.onClickCustomerTab();
         } else if (this.$route.query.activeTab == "orders") {
           this.onClickOrderTab();
-        } else if (this.$route.query.activeTab == "profile") {
-          this.onClickProfileTab();
-        } else if (this.$route.query.activeTab == "email") {
-          this.onClickEmailComposeTab();
         } else if (this.$route.query.activeTab == "bank") {
           this.onClickBankTab();
-        } else if (this.$route.query.activeTab == "product") {
-          this.onClickProductTab();
-        } else if (this.$route.query.activeTab == "add-product") {
-          this.onClickAddProductTab();
+        } else if (this.$route.query.activeTab == "event") {
+          this.onClickEventTab();
+        } else if (this.$route.query.activeTab == "add-event") {
+          this.onClickAddEventTab();
         } else {
           this.onClickHomeTab();
         }
       }
-    }
+    },
   },
   mounted() {
-
     this.initialize();
-      window.addEventListener("resize", this.Resize);
+    window.addEventListener("resize", this.Resize);
   },
   beforeUnmount() {
     window.removeEventListener("resize", this.Resize);
-  }
+  },
 };
 </script>
 <style>

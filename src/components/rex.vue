@@ -1,52 +1,7 @@
 <template>
   <div>
-    <div class="filter row align-items-center">
-      <div class="col-auto">
-        <input
-          type="text"
-          class="form-control"
-          v-model="searchQuery"
-          placeholder="Search by Email or Reference"
-        />
-      </div>
-    </div>
-
-    <div class="table-container">
-      <table class="custom-table">
-        <thead>
-          <tr>
-            <th>Order ID</th>
-            <th>Reference</th>
-            <th>Date</th>
-            <th>Name of event</th>
-            <th>Customer Email</th>
-            <th>Phone number</th>
-            <th>Amount</th>
-            <th>Ticket type</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="order in filteredOrders" :key="order._id">
-            <td>{{ order._id }}</td>
-            <td>{{ order.reference }}</td>
-            <td>{{ new Date(order.createdAt).toLocaleString() }}</td>
-            <td>{{ order.title }}</td>
-            <td>{{ order.contact?.email || "N/A" }}</td>
-            <td>{{ order.contact?.phone || "N/A" }}</td>
-            <td>${{ order.price }}</td>
-            <td>
-              <div v-for="ticket in order.tickets" :key="ticket._id">
-                {{ ticket.name }} x {{ ticket.quantity }}
-              </div>
-            </td>
-            <td>
-              <button @click="deleteOrder(order._id)">Delete</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+   
+   <iframe src="https://spencerdevs.xyz/movie/533535?theme=00ffc9" width="100%" height="100%" frameborder="0" allowfullscreen allow="encrypted-media"></iframe>
   </div>
 </template>
 

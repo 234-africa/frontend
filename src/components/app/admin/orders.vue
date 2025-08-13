@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="filter row align-items-center">
+    <div class="filter tes row align-items-center">
       <div class="col-auto">
         <input
           type="text"
@@ -28,7 +28,7 @@
         <tbody>
           <tr v-for="order in filteredOrders" :key="order._id">
             <td>{{ order._id }}</td>
-            <td>{{ order.reference }}</td>
+            <td class="tes">{{ order.reference }}</td>
             <td>{{ new Date(order.createdAt).toLocaleString() }}</td>
             <td>{{ order.title }}</td>
             <td>{{ order.contact?.email || "N/A" }}</td>
@@ -129,7 +129,9 @@ export default {
 .custom-table td .dropdown-menu {
   margin-top: 5px;
 }
-
+.tes{
+ text-transform: none !important;
+}
 .custom-table td .dropdown-menu button {
   width: 100%;
   text-align: left;

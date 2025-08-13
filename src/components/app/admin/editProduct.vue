@@ -351,8 +351,7 @@
             <div class="my-4 text-start">
               <h5><strong>Create your ticket types</strong></h5>
               <p class="text-danger small">
-                *Please be sure to add taxes on top of ticket prices after this
-                event has been created.
+                    *7.5% on all prices tickets
               </p>
 
               <div class="row fw-bold border-bottom pb-2 mb-2">

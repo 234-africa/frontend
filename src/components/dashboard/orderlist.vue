@@ -27,6 +27,7 @@
               <tr>
                 <th>Order ID</th>
                 <th>Date</th>
+                <th>reference</th>
                 <th>name of event</th>
                 <th>Customer Name</th>
                 <th>Phone number</th>
@@ -39,6 +40,8 @@
               <tr v-for="(order, index) in orders" :key="order._id">
                 <td>{{ order._id }}</td>
                 <td>{{ new Date(order.createdAt).toLocaleString() }}</td>
+                
+            <td class="tes">{{ order.reference }}</td>
                 <td>{{ order.title }}</td>
                 <td>{{ order.contact?.email || "N/A" }}</td>
                 <td>{{ order.contact?.phone || "N/A" }}</td>
@@ -140,6 +143,9 @@ export default {
 </script>
 
 <style>
+.tes{
+  text-transform: none !important;
+}
 .custom-table {
   width: 100%;
   border-collapse: collapse;

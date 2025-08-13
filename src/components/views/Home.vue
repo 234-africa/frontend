@@ -307,7 +307,7 @@
 
       <div class="bg-light rounded-3 p-4 my-4 mx-auto" style="max-width: 400px">
         <div class="fs-4 fw-semibold">
-          7.5% + <span class="fw-bold">₦100</span>
+          7.5% <span class="fw-bold"></span>
         </div>
         <div class="text-muted">per paid ticket</div>
       </div>
