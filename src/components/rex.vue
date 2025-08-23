@@ -1,142 +1,90 @@
 <template>
   <div>
-   
-   <iframe src="https://spencerdevs.xyz/movie/533535?theme=00ffc9" width="100%" height="100%" frameborder="0" allowfullscreen allow="encrypted-media"></iframe>
+    <!-- Open Sidebar Button -->
+    <button class="btn btn-primary m-2" @click="openSidebar">Open Sidebar</button>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" v-if="isOpen" @click.self="closeSidebar"></div>
+
+    <!-- Sidebar -->
+    <div :class="['sidebar', { 'sidebar-open': isOpen }]">
+      <div class="sidebar-header d-flex justify-content-between align-items-center p-3">
+        <h5 class="mb-0 text-white">Menu</h5>
+        <button class="btn btn-sm btn-light" @click="closeSidebar">×</button>
+      </div>
+      <div class="sidebar-content p-3 text-white">
+        <ul class="list-unstyled">
+          <li><a href="#" class="text-white">Home</a></li>
+          <li><a href="#" class="text-white">Profile</a></li>
+          <li><a href="#" class="text-white">Settings</a></li>
+        </ul>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import axios from "axios";
-
 export default {
-  name: "Orders",
+  name: "SideNav",
   data() {
     return {
-      orders: [],
-      selectedStatus: "",
-      searchQuery: "",
-      loading: true,
-      error: null,
+      isOpen: false,
     };
   },
-  mounted() {
-    this.fetchOrders();
-  },
-  computed: {
-    filteredOrders() {
-      return this.orders.filter((order) => {
-        // Filter by status if selected
-        const statusMatch =
-          !this.selectedStatus || order.status === this.selectedStatus;
-
-        // Filter by search query in reference or email (case insensitive)
-        const query = this.searchQuery.trim().toLowerCase();
-        const referenceMatch = order.reference?.toLowerCase().includes(query);
-        const emailMatch = order.contact?.email?.toLowerCase().includes(query);
-
-        const searchMatch = !query || referenceMatch || emailMatch;
-
-        return statusMatch && searchMatch;
-      });
-    },
-  },
   methods: {
-    
-    async fetchOrders() {
-      try {
-        const response = await axios.get(
-          "https://event-ticket-qa70.onrender.com/api/all-orders"
-        );
-        this.orders = response.data.orders;
-      } catch (err) {
-        this.error = "Failed to fetch orders";
-        console.error(err);
-      } finally {
-        this.loading = false;
-      }
+    openSidebar() {
+      this.isOpen = true;
     },
-    async deleteOrder(orderId) {
-      if (!confirm("Are you sure you want to delete this order?")) return;
-      console.log(orderId)
-
-      try {
-        await axios.delete(`https://event-ticket-qa70.onrender.com/api/order/${orderId}`);
-        alert("Order deleted successfully");
-        this.fetchOrders(); // Refresh the list
-      } catch (error) {
-        console.error("Delete failed:", error);
-        alert("Failed to delete order");
-      }
+    closeSidebar() {
+      this.isOpen = false;
     },
   },
 };
 </script>
 
-<style>
-.custom-table {
+<style scoped>
+/* Sidebar base styles */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -260px;
+  width: 260px;
+  height: 100%;
+  background-color: #198754; /* Bootstrap success green */
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  z-index: 1050;
+  transition: left 0.3s ease;
+}
+
+/* When sidebar is open */
+.sidebar.sidebar-open {
+  left: 0;
+}
+
+/* Overlay behind sidebar */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 20px;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1049;
 }
 
-.custom-table th,
-.custom-table td {
-  padding: 10px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
-
-.custom-table th {
-  background-color: #f5f5f5;
-}
-
-.custom-table td button {
-  padding: 5px 10px;
-  font-size: 14px;
-  border-radius: 4px;
-}
-
-.custom-table td .dropdown-menu {
-  margin-top: 5px;
-}
-
-.custom-table td .dropdown-menu button {
-  width: 100%;
-  text-align: left;
-}
-.pagination {
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
-}
-
-.pagination button {
-  border: 1px solid #ccc;
-  background-color: #fff;
-  color: #000;
-  padding: 5px 10px;
-  margin: 0 5px;
-  cursor: pointer;
-}
-
-.pagination button.active {
-  background-color: #f4a213;
-  color: #fff;
-}
-
-.filter {
-  margin-bottom: 10px;
-}
-
-.filter label {
-  margin-right: 5px;
-}
-.table-container {
-  overflow-x: auto;
-}
-
-.scrollable-tbody {
+/* Sidebar content styling */
+.sidebar-content a {
   display: block;
-  white-space: nowrap;
+  padding: 10px 0;
+  color: white;
+  text-decoration: none;
+}
+.sidebar-content a:hover {
+  text-decoration: underline;
+}
+
+.sidebar-header {
+  background-color: #157347;
 }
 </style>

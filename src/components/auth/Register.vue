@@ -33,8 +33,6 @@
             />
           </div>
 
-        
-
           <div class="form-submit">
             <button type="submit" class="btn-primary">Sign me up</button>
           </div>
@@ -49,6 +47,45 @@
   </div>
 </template>
 
+<script>
+import { mapActions } from "vuex";
+import Swal from "sweetalert2";
+
+export default {
+  data() {
+    return {
+      name: "",
+      email: "",
+      password: "",
+    };
+  },
+  methods: {
+    ...mapActions(["REGISTER_USER"]),
+    registerUser() {
+      const payload = {
+        name: this.name,
+        email: this.email,
+        password: this.password,
+      };
+
+      this.REGISTER_USER(payload)
+        .then((response) => {
+          //const message =response.data.message
+          Swal.fire("Registration successful:");
+
+          // Handle success scenario
+          this.$router.push({ name: "login" });
+        })
+        .catch((err) => {
+          const message = err.message;
+
+          Swal.fire("Oh oo!", `${message}`, "error");
+          // Handle error scenario
+        });
+    },
+  },
+};
+</script>
 <style scoped>
 .signup-wrapper {
   display: flex;
@@ -133,46 +170,42 @@
   text-decoration: none;
   margin-left: 5px;
 }
+.auth-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.btn-dark,
+.btn-google {
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-dark {
+  background-color: #f4a213;
+  color: white;
+}
+
+.btn-google {
+  background-color: #fff;
+  color: #444;
+  border: 1px solid #ccc;
+}
+
+.google-icon {
+  background: #fbbc05;
+  color: white;
+  border-radius: 50%;
+  padding: 0.3rem 0.6rem;
+  font-weight: bold;
+}
 </style>
-
-<script>
-import { mapActions } from "vuex";
-import Swal from "sweetalert2";
-
-export default {
-  data() {
-    return {
-      name: "",
-      email: "",
-      password: "",
-      isAdmin: false,
-    };
-  },
-  methods: {
-    ...mapActions(["REGISTER_USER"]),
-    registerUser() {
-      const payload = {
-        name: this.name,
-        email: this.email,
-        password: this.password,
-        isAdmin: this.isAdmin,
-      };
-
-      this.REGISTER_USER(payload)
-        .then((response) => {
-          //const message =response.data.message
-          Swal.fire("Registration successful:");
-
-          // Handle success scenario
-          this.$router.push({ name: "login" });
-        })
-        .catch((err) => {
-          const message = err.message;
-
-          Swal.fire("Oh oo!", `${message}`, "error");
-          // Handle error scenario
-        });
-    },
-  },
-};
-</script>

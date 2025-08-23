@@ -1,193 +1,141 @@
 <template>
-  <div class="" style="background-color: #fff">
-    <div
-      class="deznav sidenav"
-      id="mySidenav"
-      :style="{ width: sidenavWidth + 'px' }"
-    >
-      <!-- Navigation Bar -->
-      <div class="deznav-scroll pt-2">
-        <ul class="metismenu" id="menu">
-          <!-- events -->
-          <li>
-            <a
-              v-if="seen"
-              class="has-arrow ai-icon"
-              :class="{
-                'bg-inf text-info': seen,
-                grey: !seen,
-              }"
-              @click="seen = !seen"
-              aria-expanded="false"
-            >
-              <i v-if="!isTablet" class="flaticon-381-networking"></i>
-              <span class="nav-text">All</span>
-            </a>
-            <ul aria-expanded="false" v-if="seen">
-              <li>
-                <a @click="onClickHomeTab">
-                  <div
-                    :class="{
-                      'text-blue': isAccountHomeVisible,
-                      grey: !isAccountHomeVisible,
-                    }"
-                  >
-                    Events
-                  </div>
-                </a>
-              </li>
-              <li>
-                <a @click="onClickCategoryTab" class="">
-                  <div
-                    :class="{
-                      'text-blue': isAccountHomVisible,
-                      grey: !isAccountHomVisible,
-                    }"
-                  >
-                    category
-                  </div>
-                </a>
-              </li>
-              <li>
-                <a @click="onClickUserTab()" class="">
-                  <div
-                    :class="{
-                      'text-blue': isUsersVisible,
-                      grey: !isUsersVisible,
-                    }"
-                  >
-                    Users
-                  </div>
-                </a>
-              </li>
+  <div>
+    <!-- Sidebar -->
+    <div :class="['sidebar d-none d-md-block', { 'sidebar-open': isOpen }]">
+      <!-- Sidebar Header -->
+      <div
+        class="sidebar-header d-flex justify-content-between align-items-center p-3 border-bottom"
+      >
+        <h5 class="mb-0 text-white">Menu</h5>
+        <button class="btn btn-sm btn-light" @click="closeSidebar">×</button>
+      </div>
 
-              <li>
-                <a @click="onClickScannerTab()" class="">
-                  <div
-                    :class="{
-                      'text-blue white': isScannerVisible,
-                      grey: !isScannerVisible,
-                    }"
-                  >
-                    Scanner
-                  </div>
-                </a>
-              </li>
+      <!-- Sidebar Content -->
+      <div class="sidebar-content p-3">
+        <ul class="list-unstyled">
+          <!-- All -->
+          <li>
+            <a class="d-flex align-items-center cursor-pointer" @click="seen = !seen">
+              <i v-if="!isTablet" class="flaticon-381-networking me-2"></i>
+              <span>All</span>
+            </a>
+            <ul v-if="seen" class="list-unstyled ms-3">
+              <li><a @click="onClickHomeTab">Events</a></li>
+              <li><a @click="onClickCategoryTab">Category</a></li>
+              <li><a @click="onClickUserTab">Users</a></li>
+              <li><a @click="onClickScannerTab">Scanner</a></li>
             </ul>
           </li>
+
           <!-- Apps -->
           <li>
-            <a
-              class="has-arrow ai-icon"
-              :class="{
-                'bg-inf text-info': see,
-                grey: !see,
-              }"
-              @click="see = !see"
-              aria-expanded="false"
-            >
-              <i class="flaticon-381-television"></i>
-              <span class="nav-text">Apps</span>
+            <a class="d-flex align-items-center cursor-pointer" @click="see = !see">
+              <i class="flaticon-381-television me-2"></i>
+              <span>Apps</span>
             </a>
-            <ul v-if="see" aria-expanded="false">
-              <li
-                :class="{
-                  'text-blue': isCalenderVisible,
-                  grey: !isCalenderVisible,
-                }"
-              >
-                <a @click="onClickBankTab">Bank Info</a>
-              </li>
-              <li
-                :class="{
-                  'text-blue': isOrderVisible,
-                  grey: !isOrderVisible,
-                }"
-              >
-                <a @click="onClickOrderTab">orders</a>
-              </li>
-              <li
-                :class="{
-                  'text-blue': isAddEventVisible,
-                  grey: !isAddEventVisible,
-                }"
-              >
-                <a @click="onClickAddEventTab">Add Event</a>
-              </li>
+            <ul v-if="see" class="list-unstyled ms-3">
+              <li><a @click="onClickBankTab">Bank Info</a></li>
+              <li><a @click="onClickOrderTab">Orders</a></li>
+              <li><a @click="onClickAddEventTab">Add Event</a></li>
             </ul>
           </li>
         </ul>
       </div>
     </div>
-    <!-- Content Section -->
-    <div id="main" :style="{ marginLeft: sidenavWidth + 'px' }">
-      <div class="d-block d-sm-none padding-left-10 padding-bottom-0">
-        <div
-          class="dropdown form-control p-2"
-          @click="toggleDropdown"
-          style="width: fit-content"
-        >
-          <a class="dropdown-toggle" :class="{ active: isDropdownOpen }">
-            {{ mobileTab }}
-          </a>
-          <div class="dropdown-menu" :class="{ show: isDropdownOpen }">
-            <a class="dropdown-item" @click="onClickHomeTab">events</a>
-            <a class="dropdown-item" @click="onClickCategoryTab"
-              >categories</a
-            >
-            <a class="dropdown-item" @click="onClickUserTab">users</a>
-           
-            <a class="dropdown-item " @click="onClickScannerTab"
-              >scanner</a
-            >
-            <a class="dropdown-item" @click="onClickBankTab">Bank Info</a>
-            <a class="dropdown-item" @click="onClickOrderTab">orders</a>
-            <a class="dropdown-item" @click="onClickAddEventTab">Add Event</a>
-          </div>
+
+    <!-- Mobile Dropdown -->
+    <div class="d-block d-md-none px-2 pb-2">
+      <div class="dropdown form-control p-2 w-auto" @click="toggleDropdown">
+        <a class="dropdown-toggle" :class="{ active: isDropdownOpen }">
+          {{ mobileTab }}
+        </a>
+        <div class="dropdown-menu" :class="{ show: isDropdownOpen }">
+          <a class="dropdown-item" @click="onClickHomeTab">Events</a>
+          <a class="dropdown-item" @click="onClickCategoryTab">Categories</a>
+          <a class="dropdown-item" @click="onClickUserTab">Users</a>
+          <a class="dropdown-item" @click="onClickScannerTab">Scanner</a>
+          <a class="dropdown-item" @click="onClickBankTab">Bank Info</a>
+          <a class="dropdown-item" @click="onClickOrderTab">Orders</a>
+          <a class="dropdown-item" @click="onClickAddEventTab">Add Event</a>
         </div>
       </div>
+    </div>
 
-      <span
-        style="font-size: 30px; cursor: pointer"
-        @click="toggleNav"
-        class="d-none d-md-block"
+    <!-- Page Content -->
+    <div class="page-content" :class="{ 'page-shift': isOpen }">
+      <!-- Menu Button (only shows when sidebar is closed) -->
+      <button
+        class="btn btn-primary m-2 d-none d-md-block"
+        v-if="!isOpen"
+        @click="openSidebar"
       >
-        {{ isNavOpen ? "×" : "☰" }} {{ isNavOpen ? "" : "" }}
-      </span>
-      <div>
-        <events v-if="isAccountHomeVisible"></events>
-      </div>
-      <div>
-        <category v-if="isCategoryVisible"></category>
-      </div>
-      <div>
-        <users v-if="isUsersVisible"></users>
-      </div>
-      <div>
-        <Scanner v-if="isScannerVisible"></Scanner>
-      </div>
-      <div>
-        <Orders v-if="isOrdersVisible"></Orders>
-      </div>
-      <div>
-        <banks v-if="isBanksVisible"></banks>
-      </div>
-      <div>
-        <addEvent v-if="isAddEventVisible"></addEvent>
-      </div>
+        ☰
+      </button>
+
+      <!-- Components -->
+      <events v-if="isAccountHomeVisible"></events>
+      <category v-if="isCategoryVisible"></category>
+      <users v-if="isUsersVisible"></users>
+      <Scanner v-if="isScannerVisible"></Scanner>
+      <Orders v-if="isOrdersVisible"></Orders>
+      <banks v-if="isBanksVisible"></banks>
+      <addEvent v-if="isAddEventVisible"></addEvent>
     </div>
   </div>
 </template>
+
+<style scoped>
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -260px; /* hidden by default */
+  width: 260px;
+  height: 100%;
+  background-color: #198754;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  transition: left 0.3s ease;
+  z-index: 1050;
+  color: white;
+}
+.sidebar.sidebar-open {
+  left: 0; /* slide in */
+}
+
+/* Page Content */
+.page-content {
+  transition: margin-left 0.3s ease;
+  margin-left: 0;
+}
+.page-shift {
+  margin-left: 260px; /* same width as sidebar */
+}
+
+/* Sidebar Header */
+.sidebar-header {
+  background-color: #157347;
+}
+
+/* Sidebar links */
+.sidebar-content a {
+  display: block;
+  padding: 10px 0;
+  color: white;
+  text-decoration: none;
+}
+.sidebar-content a:hover {
+  text-decoration: underline;
+}
+</style>
 <script>
 import { mapActions, mapGetters } from "vuex";
 
 import Events from "./app/admin/events.vue";
 import Orders from "./app/admin/orders.vue";
 import Scanner from "./app/admin/scanner.vue";
-import Banks from "./app/admin/bank.vue"
+import Banks from "./app/admin/bank.vue";
 import Users from "./app/admin/users.vue";
-import addEvent from "./app/admin/addEvent.vue"
-
+import addEvent from "./app/admin/addEvent.vue";
 
 import Category from "./app/admin/category.vue";
 
@@ -207,10 +155,11 @@ export default {
       mobileTab: "events",
       seen: true,
       see: true,
+      isOpen: false,
       se: true,
-      sidenavWidth: 0,
+      sidenavWidth: 250,
       isDropdownOpen: false,
-      isNavOpen: false,
+      isOpen: false,
 
       isAccountHomeVisible: true,
       isAccountHomVisible: true,
@@ -218,7 +167,7 @@ export default {
       isScannerVisible: true,
       isCalenderVisible: false,
       isOrdersVisible: false,
-    
+
       isOrderVisible: false,
       isAddEventVisible: false,
 
@@ -246,6 +195,12 @@ export default {
     },
   },
   methods: {
+    openSidebar() {
+      this.isOpen = true;
+    },
+    closeSidebar() {
+      this.isOpen = false;
+    },
     Resize() {
       // Close the tab when the page is resized
       // You can modify this logic based on your specific requirements
@@ -275,8 +230,8 @@ export default {
       this.isOrdersVisible = false;
       this.isAddEventVisible = false;
       this.isAccountHomVisible = false;
-      this.isBanksVisible=false;
-      this.isCategoryVisible=false
+      this.isBanksVisible = false;
+      this.isCategoryVisible = false;
     },
     onClickHomeTab() {
       this.hideAll();
@@ -290,7 +245,7 @@ export default {
         })
         .catch((err) => {});
     },
-  
+
     onClickOrderTab() {
       this.hideAll();
       this.isOrdersVisible = true;
@@ -351,7 +306,6 @@ export default {
         })
         .catch((err) => {});
     },
-  
 
     onClickCategoryTab() {
       this.hideAll();
@@ -398,18 +352,17 @@ export default {
           this.onClickScannerTab();
         } else if (this.$route.query.activeTab == "categories") {
           this.onClickCategoryTab();
-        } 
-        } else if (this.$route.query.activeTab == "bank") {
-          this.onClickBankTab();
-        } else if (this.$route.query.activeTab == "orders") {
-          this.onClickOrderTab();
-        } else if (this.$route.query.activeTab == "add-event") {
-          this.onClickAddEventTab();
-        } else {
-          this.onClickHomeTab();
         }
+      } else if (this.$route.query.activeTab == "bank") {
+        this.onClickBankTab();
+      } else if (this.$route.query.activeTab == "orders") {
+        this.onClickOrderTab();
+      } else if (this.$route.query.activeTab == "add-event") {
+        this.onClickAddEventTab();
+      } else {
+        this.onClickHomeTab();
       }
-    
+    },
   },
   mounted() {
     this.initialize();
@@ -420,82 +373,3 @@ export default {
   },
 };
 </script>
-<style>
-.bg-inf {
-  background-color: #f4f6fd;
-}
-.text {
-  color: #2f4cde;
-}
-.toggle-button {
-  padding: 10px 20px;
-  background-color: #f2f2f2;
-  border: 1px solid #ccc;
-  cursor: pointer;
-}
-
-.sidenav {
-  height: 100%;
-  width: 0;
-  position: fixed;
-  z-index: 1;
-  top: 0;
-  left: 0;
-
-  overflow-x: hidden;
-  transition: 0.5s;
-  padding-top: 60px;
-}
-
-.sidenav a {
-  padding: 8px 8px 8px 32px;
-  text-decoration: none;
-  font-size: 25px;
-  color: #818181;
-  display: block;
-  transition: 0.3s;
-}
-
-.sidenav a:hover {
-  color: #f1f1f1;
-}
-
-.sidenav .closebtn {
-  position: absolute;
-  top: 0;
-  right: 25px;
-  font-size: 36px;
-  margin-left: 50px;
-}
-
-#main {
-  transition: margin-left 0.5s;
-  padding: 16px;
-}
-
-@media screen and (max-height: 450px) {
-  .sidenav {
-    padding-top: 15px;
-  }
-  .sidenav a {
-    font-size: 18px;
-  }
-}
-.section {
-  margin-top: 20px;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  width: 100%;
-  box-sizing: border-box;
-}
-.push-right {
-  margin-left: 250px; /* Adjust this value according to your needs */
-}
-.page-content {
-  width: auto;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-}
-</style>

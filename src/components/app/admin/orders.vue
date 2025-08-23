@@ -1,19 +1,24 @@
 <template>
-  <div>
-    <div class="filter tes row align-items-center">
-      <div class="col-auto">
-        <input
-          type="text"
-          class="form-control"
-          v-model="searchQuery"
-          placeholder="Search by Email or Reference"
-        />
-      </div>
+  <div class="card shadow-sm p-0">
+    <!-- 💚 Header -->
+    <div class="text-center bg-success text-white py-2">
+      <h5 class="mb-0">Orders</h5>
     </div>
 
-    <div class="table-container">
-      <table class="custom-table">
-        <thead>
+    <!-- 🔍 Search Input -->
+    <div class="p-3">
+      <input
+        v-model="searchQuery"
+        type="text"
+        class="form-control w-50"
+        placeholder="Search by Email or Reference"
+      />
+    </div>
+
+    <!-- 📋 Orders Table -->
+    <div class="table-responsive">
+      <table class="table table-striped custom-table mb-0" v-if="filteredOrders.length">
+        <thead class="text-uppercase small text-muted">
           <tr>
             <th>Order ID</th>
             <th>Reference</th>
@@ -39,10 +44,12 @@
                 {{ ticket.name }} x {{ ticket.quantity }}
               </div>
             </td>
-            
           </tr>
         </tbody>
       </table>
+
+      <!-- ❌ No Results -->
+      <div v-else class="text-center text-muted p-3">No matching orders found.</div>
     </div>
   </div>
 </template>
@@ -61,17 +68,11 @@ export default {
       error: null,
     };
   },
-  mounted() {
-    this.fetchOrders();
-  },
   computed: {
     filteredOrders() {
       return this.orders.filter((order) => {
-        // Filter by status if selected
-        const statusMatch =
-          !this.selectedStatus || order.status === this.selectedStatus;
+        const statusMatch = !this.selectedStatus || order.status === this.selectedStatus;
 
-        // Filter by search query in reference or email (case insensitive)
         const query = this.searchQuery.trim().toLowerCase();
         const referenceMatch = order.reference?.toLowerCase().includes(query);
         const emailMatch = order.contact?.email?.toLowerCase().includes(query);
@@ -82,13 +83,13 @@ export default {
       });
     },
   },
+  mounted() {
+    this.fetchOrders();
+  },
   methods: {
-    
     async fetchOrders() {
       try {
-        const response = await axios.get(
-          "https://event-ticket-qa70.onrender.com/api/all-orders"
-        );
+        const response = await axios.get("https://event-ticket-qa70.onrender.com/api/all-orders");
         this.orders = response.data.orders;
       } catch (err) {
         this.error = "Failed to fetch orders";
@@ -97,78 +98,45 @@ export default {
         this.loading = false;
       }
     },
-   
   },
 };
 </script>
 
-<style>
+<style scoped>
+.card {
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
 .custom-table {
   width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 20px;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.custom-table thead {
+  background-color: #f8f9fa;
 }
 
 .custom-table th,
 .custom-table td {
-  padding: 10px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
+  padding: 12px;
+  vertical-align: middle;
 }
 
-.custom-table th {
-  background-color: #f5f5f5;
+.custom-table tr:nth-child(even) {
+  background-color: #f9f9f9;
 }
 
-.custom-table td button {
-  padding: 5px 10px;
-  font-size: 14px;
-  border-radius: 4px;
+.custom-table tr:hover {
+  background-color: #f1f1f1;
 }
 
-.custom-table td .dropdown-menu {
-  margin-top: 5px;
-}
-.tes{
- text-transform: none !important;
-}
-.custom-table td .dropdown-menu button {
-  width: 100%;
-  text-align: left;
-}
-.pagination {
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
-}
-
-.pagination button {
-  border: 1px solid #ccc;
-  background-color: #fff;
-  color: #000;
-  padding: 5px 10px;
-  margin: 0 5px;
-  cursor: pointer;
-}
-
-.pagination button.active {
-  background-color: #f4a213;
-  color: #fff;
-}
-
-.filter {
-  margin-bottom: 10px;
-}
-
-.filter label {
-  margin-right: 5px;
-}
-.table-container {
-  overflow-x: auto;
-}
-
-.scrollable-tbody {
-  display: block;
-  white-space: nowrap;
+.tes {
+  text-transform: none !important;
 }
 </style>

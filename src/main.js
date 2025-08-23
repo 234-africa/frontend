@@ -12,6 +12,9 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'; // includes popper.js
 import { QuillEditor } from 'vue3-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
 import "leaflet/dist/leaflet.css";
+import 'owl.carousel/dist/assets/owl.carousel.css';
+import 'owl.carousel';
+import $ from 'jquery';
 
 
 import vue3GoogleLogin from 'vue3-google-login'

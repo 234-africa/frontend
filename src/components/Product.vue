@@ -3,10 +3,7 @@
     <div class="background-wrapper container">
       <img
         class="img-fluid"
-        :src="
-          product.photos[0] ||
-          'https://via.placeholder.com/400x300?text=No+Image'
-        "
+        :src="product.photos[0] || 'https://via.placeholder.com/400x300?text=No+Image'"
       />
 
       <!-- Main content -->
@@ -23,64 +20,60 @@
             <h2 class="fw-bold">{{ product.title }}</h2>
 
             <!-- Date, Time, Location -->
-            <div class="mt-3">
-              <p class="mb-1">
-                    <i class="bi bi-calendar-event me-2"></i>
-                    {{ formatDate(product.event.start)  }} <span v-if="product.event.end" >- {{ formatDate(product.event.end)  }} </span>
-                  </p>
+            <div class="mt-3" v-if="product && product.event">
+              <p class="mb-2">
+                <i class="bi bi-calendar-event me-2"></i>
+                {{ formatDate(product.event.start) }}
+                <span v-if="product.event.end">
+                  - {{ formatDate(product.event.end) }}
+                </span>
+              </p>
 
               <p class="mb-2">
                 <i class="bi bi-clock me-2"></i>
-                {{ product.event.startTime }} -
-                {{ product.event.endTime }}
+                {{ product.event.startTime }}
               </p>
+
               <p class="mb-2">
                 <i class="bi bi-geo-alt me-2"></i>
-                {{ product.event.location.name || "No location" }}
+                {{ product.event.location.name }}
               </p>
-               {{ product.description }}
+              {{ product.description }}
 
-              <div v-if="coordinates" class="mt-4">
-                <iframe
-                  :src="mapUrl"
-                  width="100%"
-                  height="300"
-                  style="border: 0"
-                  allowfullscreen=""
-                  loading="lazy"
-                  referrerpolicy="no-referrer-when-downgrade"
-                ></iframe>
+              <!-- Address Tag -->
+
+              <div class="card shadow-sm custom-card-mobile mt-3 d-block d-md-none">
+                <!-- Price -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <span class="text-muted fw-medium">Price</span>
+                  <p>
+                    {{
+                      product.event.tickets[0].price === 0 &&
+                      product.event.tickets[product.event.tickets.length - 1].price === 0
+                        ? "Free"
+                        : product.event.tickets[0].price ===
+                          product.event.tickets[product.event.tickets.length - 1].price
+                        ? formatPrice(product.event.tickets[0].price)
+                        : `${formatPrice(product.event.tickets[0].price)} - ${formatPrice(
+                            product.event.tickets[product.event.tickets.length - 1].price
+                          )}`
+                    }}
+                  </p>
+                </div>
+
+                <!-- Get Tickets Button -->
+                <div class="d-grid mb-2">
+                  <router-link
+                    to="/checkout"
+                    @click.native="addProductToCart(product)"
+                    class="btn btn-primary text-dark w-100 text-decoration-none"
+                  >
+                    Get Tickets
+                  </router-link>
+                </div>
               </div>
             </div>
 
-            <!-- Address Tag -->
-
-            <div
-              class="card shadow-sm custom-card-mobile mt-3 d-block d-md-none"
-            >
-              <!-- Price -->
-              <div
-                class="d-flex justify-content-between align-items-center mb-3"
-              >
-                <span class="text-muted fw-medium">Price</span>
-                <span class="fw-bold fs-5"
-                  >${{ formatPrice(product.price) }}</span
-                >
-              </div>
-
-              <!-- Get Tickets Button -->
-              <div class="d-grid mb-2">
-                <router-link
-                  to="/checkout"
-                  @click.native="addProductToCart(product)"
-                  class="btn btn-primary text-dark w-100 text-decoration-none"
-                >
-                  Get Tickets
-                </router-link>
-              </div>
-            </div>
-
-           
             <hr />
 
             <!-- TAGS SECTION -->
@@ -101,41 +94,49 @@
           </div>
 
           <!-- Thumbnails -->
-         
         </div>
         <div class="col-md-6">
           <div class="card shadow-sm custom-card d-none d-md-block">
             <!-- Price -->
-            <div class="d-flex justify-content-between align-items-center mb-3">
+            <div
+              v-if="product && product.event"
+              class="d-flex justify-content-between align-items-center mb-3"
+            >
               <span class="text-muted fw-medium">Price</span>
-              <span class="fw-bold fs-5">{{ formatPrice(product.price) }}</span>
+              <span class="fw-bold fs-5">
+                {{
+                  product.event.tickets[0].price === 0 &&
+                  product.event.tickets[product.event.tickets.length - 1].price === 0
+                    ? "Free"
+                    : product.event.tickets[0].price ===
+                      product.event.tickets[product.event.tickets.length - 1].price
+                    ? formatPrice(product.event.tickets[0].price)
+                    : `${formatPrice(product.event.tickets[0].price)} - ${formatPrice(
+                        product.event.tickets[product.event.tickets.length - 1].price
+                      )}`
+                }}
+              </span>
             </div>
 
             <!-- Get Tickets Button -->
             <div class="d-grid mb-2">
               <router-link
-                  to="/checkout"
-                  @click.native="addProductToCart(product)"
-                  class="btn btn-primary text-dark w-100 text-decoration-none"
-                >
-                  Get Tickets
-                </router-link>
+                to="/checkout"
+                @click.native="addProductToCart(product)"
+                class="btn btn-primary text-dark w-100 text-decoration-none"
+              >
+                Get Tickets
+              </router-link>
             </div>
           </div>
         </div>
 
-      
         <h1 class="text-start fw-bold">You may also like</h1>
-        <div
-          class="col-md-4 pt-3 pt-md-0"
-          v-for="product in products"
-          :key="product._id"
-        >
+        <div class="col-md-4 pt-3 pt-md-0" v-for="product in products" :key="product._id">
           <div>
             <img
               :src="
-                product.photos[0] ||
-                'https://via.placeholder.com/400x300?text=No+Image'
+                product.photos[0] || 'https://via.placeholder.com/400x300?text=No+Image'
               "
               class="img-fluid rounded w-100"
               style="height: 200px; object-fit: cover"
@@ -143,19 +144,31 @@
             />
             <div class="pt-2">
               <h5>{{ product.title }}</h5>
-                  <p class="mb-1">
-                    <i class="bi bi-calendar-event me-2"></i>
-                    {{ formatDate(product.event.start)  }} <span v-if="product.event.end" >- {{ formatDate(product.event.end)  }} </span>
-                  </p>
+              <p class="mb-1">
+                <i class="bi bi-calendar-event me-2"></i>
+                {{ formatDate(product.event.start) }}
+                <span v-if="product.event.end"
+                  >- {{ formatDate(product.event.end) }}
+                </span>
+              </p>
               <p class="mb-1">
                 <i class="bi bi-geo-alt me-2"></i>
                 {{ product.event.location.name || "No location" }}
               </p>
-              <p>{{ formatPrice(product.price) }}</p>
-              <button
-                class="btn btn-outline-primary"
-                @click="goToProduct(product.title)"
-              >
+              <p>
+                {{
+                  product.event.tickets[0].price === 0 &&
+                  product.event.tickets[product.event.tickets.length - 1].price === 0
+                    ? "Free"
+                    : product.event.tickets[0].price ===
+                      product.event.tickets[product.event.tickets.length - 1].price
+                    ? formatPrice(product.event.tickets[0].price)
+                    : `${formatPrice(product.event.tickets[0].price)} - ${formatPrice(
+                        product.event.tickets[product.event.tickets.length - 1].price
+                      )}`
+                }}
+              </p>
+              <button class="btn btn-outline-primary" @click="goToProduct(product.title)">
                 View Event
               </button>
             </div>
@@ -172,6 +185,7 @@ import { mapActions } from "vuex";
 
 export default {
   props: {
+    props: ["title"],
     product: {
       type: Object,
       required: true,
@@ -179,6 +193,7 @@ export default {
   },
   data() {
     return {
+      affiliateCode: null,
       products: [],
       product: {
         photos: [],
@@ -193,20 +208,15 @@ export default {
 
   async created() {
     try {
-      // Retrieve the raw product title from Vuex
-      let productTitle = this.$store.getters.getProductUrl;
-      console.log("Raw Product Title from Vuex:", productTitle);
+      const productSlug = this.$route.params.title;
+      console.log(productSlug);
 
-      // Send the raw title to the backend (encode for HTTP request)
       const response = await axios.get(
-        `https://event-ticket-qa70.onrender.com/api/products/${encodeURIComponent(
-          productTitle
-        )}`
+        `https://event-ticket-qa70.onrender.com/api/product/${productSlug}`
       );
 
       this.product = response.data.product || {};
-
-      this.coordinates = this.product.event.location.coordinates || null;
+      console.log(this.product);
     } catch (error) {
       console.error("Error fetching product details:", error);
     }
@@ -217,10 +227,7 @@ export default {
       );
       console.log("API Response:", response.data);
 
-      this.products = this.shuffleArray(response.data.products || []).slice(
-        0,
-        3
-      );
+      this.products = this.shuffleArray(response.data.products || []).slice(0, 3);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
@@ -252,7 +259,7 @@ export default {
     },
     formatPrice(price) {
       if (!price || price === 0) return "Free";
-      return `$${price}`;
+      return `₦${price}`;
     },
     slugify(text) {
       return text
@@ -262,20 +269,10 @@ export default {
         .replace(/[^\w\s'-]/g, ""); // Remove special characters, keep apostrophes
     },
     goToProduct(productTitle) {
-      // Normalize the product title for the URL: Replace spaces with hyphens
-      let normalizedProductTitle = productTitle.replace(/\s+/g, "-");
+      const normalizedProductTitle = productTitle.replace(/\s+/g, "-").toLowerCase();
 
-      console.log("Normalized Product Title for URL:", normalizedProductTitle);
-
-      // Store the raw title in Vuex (for the backend)
-      this.$store.dispatch("setProductUrl", productTitle);
-
-      // Use the normalized title in the URL (for better SEO)
-      this.$router.push({
-        name: "ProductDetails",
-        params: { title: normalizedProductTitle }, // For URL with hyphens
-      });
-      window.location.reload();
+      // Open in new tab
+      window.open(`/product/${normalizedProductTitle}`, "_blank");
     },
 
     buyNow(product) {
@@ -297,16 +294,19 @@ export default {
       }
     },
   },
-  watch: {
-    product: {
-      handler(newProduct) {
-        if (newProduct && newProduct.photos && newProduct.photos.length > 0) {
-          this.selectedPhoto = newProduct.photos[0];
-        }
-      },
-      deep: true,
-      immediate: true,
-    },
+  mounted() {
+    const query = this.$route.query;
+    const aff = query.aff || query.Aff || query.AFF; // handle different cases
+
+    console.log(aff);
+
+    if (aff) {
+      this.affiliateCode = aff;
+      localStorage.setItem("affiliateCode", aff); // Save for later use
+    } else {
+      this.affiliateCode = null;
+      localStorage.removeItem("affiliateCode"); // Clear if no aff in URL
+    }
   },
 };
 </script>

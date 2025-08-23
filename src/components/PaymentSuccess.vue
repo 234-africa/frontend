@@ -32,16 +32,20 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["getContactInfo", "getCart","getSelectedTickets","getCartTotal"]),
+    ...mapGetters(["getContactInfo", "getCart", "getSelectedTickets", "getCartTotal"]),
   },
   methods: {
     async sendOrderInfo() {
       try {
         const reference = localStorage.getItem("paystack_reference");
+        const affiliate = localStorage.getItem("affiliateCode");
+        const promoCode = localStorage.getItem("promoCode");
 
         const payload = {
+          promoCode,
+          affiliate,
           reference, // Paystack reference
-          title:this.getCart[0]?.title, // Get name from first cart item
+          title: this.getCart[0]?.title, // Get name from first cart item
           contact: {
             email: this.getContactInfo.email,
             phone: this.getContactInfo.phone,
@@ -51,10 +55,7 @@ export default {
           price: this.getCartTotal, // Total price from cart
         };
         console.log("Sending order info:", payload);
-        const res = await axios.post(
-          "https://event-ticket-qa70.onrender.com/api/order",
-          payload
-        );
+        const res = await axios.post("https://event-ticket-qa70.onrender.com/api/order", payload);
         console.log("Order info sent:", res.data);
       } catch (err) {
         console.error("Failed to send order info:", err);
@@ -70,9 +71,7 @@ export default {
     }
 
     try {
-      const res = await axios.get(
-        `https://event-ticket-qa70.onrender.com/api/verify/${this.reference}`
-      );
+      const res = await axios.get(`https://event-ticket-qa70.onrender.com/api/verify/${this.reference}`);
       if (res.data.data.status === "success") {
         this.verified = true;
         await this.sendOrderInfo(); // Send order info after successful verification

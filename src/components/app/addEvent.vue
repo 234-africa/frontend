@@ -7,7 +7,7 @@
         :key="index"
         class="step"
         :class="{
-          active: currentStep === index,
+          'step-active': currentStep === index,
           completed: index < currentStep,
         }"
       >
@@ -27,7 +27,7 @@
 
     <!-- Form -->
     <div class="row justify-content-center">
-      <div class="col-12 ">
+      <div class="col-12">
         <form
           @submit.prevent="submitProduct"
           enctype="multipart/form-data"
@@ -37,9 +37,7 @@
           <div class="" v-if="currentStep === 0">
             <div class="row">
               <div class="mb-3 col-md-7">
-                <label for="title" class="form-label"
-                  >What is your event name:</label
-                >
+                <label for="title" class="form-label">What is your event name:</label>
                 <input
                   v-model="product.title"
                   placeholder="Tech Summit, Afro summit"
@@ -48,10 +46,7 @@
                   :class="{ 'is-invalid': product.title && !isValidTitle() }"
                   class="form-control"
                 />
-                <div
-                  v-if="product.title && !isValidTitle()"
-                  class="invalid-feedback"
-                >
+                <div v-if="product.title && !isValidTitle()" class="invalid-feedback">
                   Title must be at least two words.
                 </div>
               </div>
@@ -74,7 +69,11 @@
               <div class="col-md-7">
                 <label class="form-label">Event Category</label>
                 <div>
-                  <select class="form-select" v-model="categoryID">
+                  <select
+                    class="form-select"
+                    v-if="categories.length > 0"
+                    v-model="categoryID"
+                  >
                     <option value="" disabled>Select a category</option>
                     <option
                       v-for="category in categories"
@@ -87,8 +86,24 @@
                   </select>
                 </div>
               </div>
-              <div class="col-md-5">
-                <label for="Price" class="form-label mb-3">Price:</label>
+              <div class="col-md-5 d-none">
+                <div class="">
+                  <label for="currency" class="form-label">Currency:</label>
+                  <select
+                    v-model="product.currency"
+                    id="currency"
+                    class="form-control"
+                    required
+                  >
+                    <option value="">-- Select Currency --</option>
+                    <option value="USD">Dollar ($)</option>
+                    <option value="NGN">Naira (₦)</option>
+                    <option value="GBP">Pound (£)</option>
+                    <option value="EUR">Euro (€)</option>
+                    <option value="GHS">Ghanaian Cedi (₵)</option>
+                  </select>
+                </div>
+                <label for="Price" class="form-label mb-3 d-none">Price:</label>
                 <input
                   v-model="product.price"
                   type="text"
@@ -116,53 +131,24 @@
               <!-- Time Zone -->
               <div class="row mb-3">
                 <div class="col-md-6">
-                  <form
-                    @submit.prevent="handleGeocode"
-                    class="card p-4 shadow-sm mb-4"
-                  >
-                    <div class="mb-3">
-                      <label for="address" class="form-label"
-                        >Enter Address:</label
-                      >
-                      <input
-                        v-model="address"
-                        type="text"
-                        class="form-control"
-                        id="address"
-                        placeholder="e.g. 1600 Amphitheatre Parkway, CA"
-                        required
-                      />
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">
-                      Get Coordinates
-                    </button>
-                    <div v-if="coordinates" class="alert alert-success">
-                      <strong>Latitude:</strong> {{ coordinates.lat }} <br />
-                      <strong>Longitude:</strong> {{ coordinates.lng }}
-                    </div>
-
-                    <div v-if="coordinates" class="mt-4">
-                      <iframe
-                        :src="mapUrl"
-                        width="100%"
-                        height="300"
-                        style="border: 0"
-                        allowfullscreen=""
-                        loading="lazy"
-                        referrerpolicy="no-referrer-when-downgrade"
-                      ></iframe>
-                    </div>
-                  </form>
+                  <div class="mb-3">
+                    <label for="address" class="form-label">Enter Address:</label>
+                    <input
+                      v-model="address"
+                      type="text"
+                      class="form-control"
+                      id="address"
+                      placeholder="e.g. 1600 Amphitheatre Parkway, CA"
+                      required
+                    />
+                  </div>
                 </div>
 
                 <div class="col-md-6">
                   <label class="form-label">* Select time zone</label>
                   <select class="form-select" v-model="product.event.timezone">
                     <option value="">Select Time Zone</option>
-                    <option value="UTC+01:00">
-                      (UTC+01:00) West Central Africa
-                    </option>
+                    <option value="UTC+01:00">(UTC+01:00) West Central Africa</option>
                     <option value="UTC+00:00">(UTC+00:00) GMT</option>
                     <option value="UTC-05:00">
                       (UTC-05:00) Eastern Time (US & Canada)
@@ -229,29 +215,6 @@
                         v-model="product.event.startTime"
                       />
                     </div>
-
-                    <select class="form-select w-md-50" v-model="startAmPm">
-                      <option>AM</option>
-                      <option>PM</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">End time</label>
-                  <div class="d-flex justify-content-between">
-                    <div class="mt-2">
-                      <input
-                        type="time"
-                        class="form-control"
-                        v-model="product.event.endTime"
-                      />
-                    </div>
-
-                    <select class="form-select w-md-50" v-model="endAmPm">
-                      <option>AM</option>
-                      <option>PM</option>
-                    </select>
                   </div>
                 </div>
 
@@ -282,8 +245,7 @@
                     class="alert alert-light border text-muted py-2 small d-flex align-items-start"
                   >
                     <i class="bi bi-info-circle-fill me-2 text-danger"></i>
-                    Images with a 1:1 ratio (a square) work best on all event
-                    themes
+                    Images with a 1:1 ratio (a square) work best on all event themes
                   </div>
 
                   <div>
@@ -306,9 +268,7 @@
                         id="imageUpload"
                         class="d-none"
                       />
-                      <p v-if="photos.length">
-                        Selected: {{ photos.length }} image(s)
-                      </p>
+                      <p v-if="photos.length">Selected: {{ photos.length }} image(s)</p>
                     </label>
 
                     <!-- Preview -->
@@ -327,9 +287,7 @@
                 </div>
 
                 <!-- Right Column: Event Theme -->
-                <div class="col-md-6">
-               
-                </div>
+                <div class="col-md-6"></div>
               </div>
             </div>
           </div>
@@ -338,24 +296,16 @@
           <div v-if="currentStep === 3">
             <div class="my-4 text-start">
               <h5><strong>Create your ticket types</strong></h5>
-              <p class="text-danger small">
-          *7.5% on all prices tickets
-              </p>
-
-              <div class="row fw-bold border-bottom pb-2 mb-2">
-                <div class="col-md-4">Ticket name</div>
-                <div class="col-md-3">Quantity</div>
-                <div class="col-md-3">Price</div>
-                <div class="col-md-2">Actions</div>
-              </div>
+              <p class="text-danger small">* prices tickets</p>
 
               <!-- Ticket Rows -->
               <div
                 v-for="(ticket, index) in tickets"
                 :key="index"
-                class="row align-items-center mb-2"
+                class="row g-3 align-items-end mb-2"
               >
-                <div class="col-md-4">
+                <div class="col-md-3">
+                  <label class="form-label">Ticket name</label>
                   <input
                     v-model="ticket.name"
                     type="text"
@@ -363,25 +313,29 @@
                     placeholder="e.g. General Admission"
                   />
                 </div>
-                <div class="col-md-3">
+
+                <div class="col-md-2">
+                  <label class="form-label">Quantity</label>
                   <input
                     v-model.number="ticket.quantity"
                     type="number"
                     class="form-control"
-                    placeholder=""
                   />
                 </div>
+
                 <div class="col-md-3">
+                  <label class="form-label">Price</label>
                   <input
                     v-model.number="ticket.price"
                     type="number"
                     class="form-control"
-                    placeholder="Blank for a free event"
+                    placeholder="Blank for free event"
                   />
                 </div>
-                <div class="col-md-2 d-flex pt-2 gap-3">
+
+                <div class="col-md-2 d-flex align-items-end">
                   <button
-                    class="btn btn-outline-danger"
+                    class="btn btn-outline-danger w-25"
                     title="Delete"
                     @click="removeTicket(index)"
                   >
@@ -423,11 +377,7 @@
             >
               Next
             </button>
-            <button
-              v-else
-              type="submit"
-              class="btn btn-primary btn-primary:hover"
-            >
+            <button v-else type="submit" class="btn btn-primary btn-primary:hover">
               Create Event
             </button>
           </div>
@@ -458,23 +408,21 @@ export default {
       product: {
         title: "",
         description: "",
+        currency: "",
         tag: "",
         price: "",
         event: {
           startDate: "",
           endDate: "",
           startTime: "",
-          endTime: "",
+
           timezone: "UTC",
           location: "",
         },
       },
       address: "",
-      coordinates: null,
-      API_KEY: "AIzaSyCkbHZXmqyIxjFpN8bMvDeURTmlpEhDHv4", // ⚠️ Replace with your actual key
-
-      startAmPm: "AM",
-      endAmPm: "PM",
+     
+    
       eventType: "single", // or "recurring"
       eventFrequency: "",
       photos: [],
@@ -484,17 +432,10 @@ export default {
   },
   computed: {
     ...mapGetters(["getToken"]),
-    mapUrl() {
-      if (!this.coordinates) return "";
-      const { lat, lng } = this.coordinates;
-      return `https://www.google.com/maps/embed/v1/view?key=${this.API_KEY}&center=${lat},${lng}&zoom=15`;
-    },
   },
   async created() {
     try {
-      const res = await axios.get(
-        "https://event-ticket-qa70.onrender.com/api/categories"
-      );
+      const res = await axios.get("https://event-ticket-qa70.onrender.com/api/categories");
       this.categories = res.data.categories || res.data;
       console.log("Categories fetched:", this.categories);
     } catch (error) {
@@ -505,30 +446,7 @@ export default {
     isValidTitle() {
       return this.product.title.trim().split(/\s+/).length >= 2;
     },
-    async handleGeocode() {
-      try {
-        const response = await axios.get(
-          "https://maps.googleapis.com/maps/api/geocode/json",
-          {
-            params: {
-              address: this.address,
-              key: this.API_KEY,
-            },
-          }
-        );
-        const result = response.data.results[0];
-        if (result) {
-          const { lat, lng } = result.geometry.location;
-          this.coordinates = { lat, lng };
-        } else {
-          alert("❌ No results found for this address.");
-          this.coordinates = null;
-        }
-      } catch (error) {
-        console.error("Geocoding error:", error);
-        alert("❌ Failed to fetch location.");
-      }
-    },
+
     nextStep() {
       if (this.currentStep < this.steps.length - 1) {
         this.currentStep++;
@@ -575,30 +493,16 @@ export default {
       formData.append("description", this.product.description);
       formData.append("tag", this.product.tag);
       formData.append("price", this.product.price);
-
-      formData.append(
-        "eventDate",
-        new Date(this.product.event.startDate).toISOString()
-      );
+      formData.append("currency", this.product.currency);
+      formData.append("eventDate", new Date(this.product.event.startDate).toISOString());
       if (this.product.event.endDate) {
-        formData.append(
-          "endDate",
-          new Date(this.product.event.endDate).toISOString()
-        );
+        formData.append("endDate", new Date(this.product.event.endDate).toISOString());
       }
 
-      formData.append(
-        "startTime",
-        this.product.event.startTime + " " + this.startAmPm
-      );
-      formData.append(
-        "endTime",
-        this.product.event.endTime + " " + this.endAmPm
-      );
+      formData.append("startTime", this.product.event.startTime + " ");
+
       formData.append("timezone", this.product.event.timezone);
       formData.append("locationName", this.address); // Send address as name
-      formData.append("lat", this.coordinates.lat);
-      formData.append("lng", this.coordinates.lng);
 
       if (this.eventType === "recurring") {
         formData.append("eventFrequency", this.eventFrequency);
@@ -628,8 +532,12 @@ export default {
         console.log("Product created:", response.data);
         alert("Event created successfully!");
       } catch (error) {
-        console.error("Error creating event:", error);
-        alert("Failed to create event");
+        if (error.response && error.response.status === 401) {
+          localStorage.removeItem("token");
+          router.push("/login");
+        } else {
+          throw error; // Other errors get thrown normally
+        }
       }
       this.spinner = false;
     },
@@ -638,6 +546,13 @@ export default {
 </script>
 
 <style scoped>
+.step.step-active .circle {
+  background: black;
+}
+.step.step-active {
+  color: black;
+}
+
 .form-container {
   width: 95%;
   margin: auto;

@@ -4,13 +4,11 @@
 
     <!-- Metrics Row -->
     <div class="row g-3">
-    
       <div class="col-md-4">
         <div class="p-3 border rounded text-center bg-light">
           {{ getProductsByUser.length }}
 
           <p class="mb-1 fw-bold">Total Events</p>
-          <small>{{ totalPercentage }}% (30 days)</small>
         </div>
       </div>
 
@@ -18,7 +16,6 @@
         <div class="p-3 border rounded text-center bg-light">
           {{ totalPrice }}
           <p class="mb-1 fw-bold">Total Revenue</p>
-          <small>{{ totalOrdersPercentage }}% (30 days)</small>
         </div>
       </div>
 
@@ -26,30 +23,104 @@
         <div class="p-3 border rounded text-center bg-light">
           {{ orders.length }}
           <p class="mb-1 fw-bold">Total Orders</p>
-          <small>{{ totalPercent }}% (30 days)</small>
         </div>
       </div>
-
-     
     </div>
+    <div class="container-flui">
+      <div>
+        <div class="filter pt-2 row align-items-center">
+          <div class="col-auto">
+            <input
+              type="text"
+              class="form-control"
+              v-model="searchQuery"
+              placeholder="Search by Order ID"
+            />
+          </div>
+        </div>
+        <div class="text-center bg-success text-white p-2">
+          <h5 class="mb-0">My orders</h5>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-container">
+            <table class="table table-striped mb-0">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Date</th>
+                  <th>reference</th>
+                  <th>name of event</th>
+                  <th>Customer Name</th>
+                  <th>Phone number</th>
+                  <th>Amount</th>
 
-    
+                  <th>Ticket type</th>
+                </tr>
+              </thead>
+              <tbody class="">
+                <tr v-for="order in filteredOrders" :key="order._id">
+                  <td>{{ order._id }}</td>
+                  <td>{{ new Date(order.createdAt).toLocaleString() }}</td>
+
+                  <td class="tes">{{ order.reference }}</td>
+                  <td>{{ order.title }}</td>
+                  <td>{{ order.contact?.email || "N/A" }}</td>
+                  <td>{{ order.contact?.phone || "N/A" }}</td>
+                  <td>₦{{ order.price }}</td>
+                  <td>
+                    <div v-for="ticket in order.tickets" :key="ticket._id">
+                      {{ ticket.name }} x {{ ticket.quantity }}
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination">
+            <button
+              class="pagination-btn"
+              :disabled="currentPage === 1"
+              @click="prevPage"
+            >
+              Previous
+            </button>
+            <button
+              v-for="page in totalPages"
+              :key="page"
+              class="pagination-btn"
+              :class="{ active: currentPage === page }"
+              @click="changePage(page)"
+            >
+              {{ page }}
+            </button>
+            <button
+              class="pagination-btn"
+              :disabled="currentPage === totalPages"
+              @click="nextPage"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-
 import { mapGetters } from "vuex";
 
 import axios from "axios";
 
 export default {
-  components: {
-   
-  },
+  components: {},
   data() {
     return {
-     
+      selectedStatus: "", // Selected filter status
+      searchQuery: "", // Search query
+      currentPage: 1, // Current page number
+      rowsPerPage: 10, // Number of rows per page
+      totalPrice: 0,
       orders: [],
     };
   },
@@ -60,8 +131,31 @@ export default {
     productsByUser() {
       return this.getProductsByUser;
     },
+    filteredOrders() {
+      if (!this.searchQuery) return this.orders;
+      return this.orders.filter((order) =>
+        order._id.toLowerCase().includes(this.searchQuery.toLowerCase())
+      );
+    },
   },
-  methods: {},
+  methods: {
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+      }
+    },
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+      }
+    },
+    changePage(page) {
+      this.currentPage = page;
+    },
+    applyFilters() {
+      this.currentPage = 1; // Reset to the first page when applying filters
+    },
+  },
 
   mounted() {
     axios
@@ -72,10 +166,11 @@ export default {
       })
       .then((response) => {
         this.orders = response.data.orders;
+
+        console.log("Orders fetched:", this.orders);
         const total = this.orders.reduce((sum, order) => sum + order.price, 0);
         this.totalPrice = total;
 
-        console.log("Orders fetched:", this.orders);
         console.log("Total price:", this.totalPrice);
       })
       .catch((error) => {
@@ -88,28 +183,73 @@ export default {
 </script>
 
 <style>
-.typewriter {
-  display: inline-block;
-  overflow: hidden;
-  animation: typing 2s steps(40, end), blink-caret 0.75s step-end infinite;
+.tes {
+  text-transform: none !important;
+}
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
 }
 
-@keyframes typing {
-  from {
-    width: 0;
-  }
-  to {
-    width: 100%;
-  }
+.custom-table th,
+.custom-table td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
 }
 
-@keyframes blink-caret {
-  from,
-  to {
-    border-color: transparent;
-  }
-  50% {
-    border-color: #000;
-  }
+.custom-table th {
+  background-color: #f5f5f5;
+}
+
+.custom-table td button {
+  padding: 5px 10px;
+  font-size: 14px;
+  border-radius: 4px;
+}
+
+.custom-table td .dropdown-menu {
+  margin-top: 5px;
+}
+
+.custom-table td .dropdown-menu button {
+  width: 100%;
+  text-align: left;
+}
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.pagination button {
+  border: 1px solid #ccc;
+  background-color: #fff;
+  color: #000;
+  padding: 5px 10px;
+  margin: 0 5px;
+  cursor: pointer;
+}
+
+.pagination button.active {
+  background-color: #f4a213;
+  color: #fff;
+}
+
+.filter {
+  margin-bottom: 10px;
+}
+
+.filter label {
+  margin-right: 5px;
+}
+.table-container {
+  overflow-x: auto;
+}
+
+.scrollable-tbody {
+  display: block;
+  white-space: nowrap;
 }
 </style>

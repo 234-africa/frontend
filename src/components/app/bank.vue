@@ -11,12 +11,7 @@
 
           <div class="mb-3">
             <label>Account Name</label>
-            <input
-              v-model="form.accountName"
-              type="text"
-              class="form-control"
-              required
-            />
+            <input v-model="form.accountName" type="text" class="form-control" required />
           </div>
 
           <div class="mb-3">
@@ -31,12 +26,7 @@
 
           <div class="mb-3">
             <label>Bank Name</label>
-            <input
-              v-model="form.bankName"
-              type="text"
-              class="form-control"
-              required
-            />
+            <input v-model="form.bankName" type="text" class="form-control" required />
           </div>
 
           <button type="submit" class="btn btn-success">
@@ -52,27 +42,19 @@
           </button>
         </form>
       </div>
-      <div class="col-md-4 text-start" v-if="banks && banks.length">
+      <div class="text-start col-md-4" v-if="banks && banks.length">
         <ul class="list-group shadow-sm">
           <li v-for="bank in banks" :key="bank._id" class="list-group-item">
             <div class="mb-2">
-              <div><strong>Bank Account Number:</strong> {{ bank.accountName }}</div>
-              <div>
-                <strong>Account Number:</strong> {{ bank.accountNumber }}
-              </div>
+              <div><strong>Bank Account Name:</strong> {{ bank.accountName }}</div>
+              <div><strong>Account Number:</strong> {{ bank.accountNumber }}</div>
               <div><strong>Bank Name:</strong> {{ bank.bankName }}</div>
             </div>
             <div class="d-flex gap-2">
-              <button
-                class="btn btn-sm btn-outline-warning"
-                @click="editBank(bank)"
-              >
+              <button class="btn btn-sm btn-outline-warning" @click="editBank(bank)">
                 ✏️ Edit
               </button>
-              <button
-                class="btn btn-sm btn-outline-danger"
-                @click="deleteBank(bank._id)"
-              >
+              <button class="btn btn-sm btn-outline-danger" @click="deleteBank(bank._id)">
                 🗑️ Delete
               </button>
             </div>
@@ -95,9 +77,9 @@ export default {
         accountName: "",
         accountNumber: "",
         bankName: "",
-        // Replace or set dynamically if needed
       },
       banks: [],
+
       isEditing: false,
       editId: null,
     };
@@ -109,14 +91,12 @@ export default {
     ...mapGetters(["getToken"]),
   },
   methods: {
+    /** ✅ BANK METHODS **/
     async fetchBanks() {
       try {
         const res = await axios.get("https://event-ticket-qa70.onrender.com/api/bank", {
-          headers: {
-            Authorization: `Bearer ${this.getToken}`,
-          },
+          headers: { Authorization: `Bearer ${this.getToken}` },
         });
-        console.log("Fetched banks:", res.data);
         this.banks = res.data.banks;
       } catch (err) {
         console.error("Error fetching banks:", err);
@@ -124,25 +104,15 @@ export default {
     },
     async createBank() {
       try {
-        const res = await axios.post(
-          "https://event-ticket-qa70.onrender.com/api/bank",
-          this.form,
-          {
-            headers: {
-              Authorization: `Bearer ${this.getToken}`,
-            },
-          }
-        );
-
-        console.log("Bank created:", res.data);
-        alert("✅ Bank created successfully!");
+        const res = await axios.post("https://event-ticket-qa70.onrender.com/api/bank", this.form, {
+          headers: { Authorization: `Bearer ${this.getToken}` },
+        });
 
         if (res.data.banks && res.data.banks.length > 0) {
-          this.banks.push(res.data.banks[0]); // ✅ Push only the new bank
+          this.banks.push(res.data.banks[0]);
         } else {
-          await this.fetchBanks(); // fallback if no bank was returned
+          await this.fetchBanks();
         }
-
         this.resetForm();
       } catch (err) {
         console.error("Error creating bank:", err);
@@ -163,54 +133,39 @@ export default {
           `https://event-ticket-qa70.onrender.com/api/bank/${this.editId}`,
           this.form,
           {
-            headers: {
-              Authorization: `Bearer ${this.getToken}`,
-            },
+            headers: { Authorization: `Bearer ${this.getToken}` },
           }
         );
-
         const index = this.banks.findIndex((b) => b._id === this.editId);
-
         if (res.data.banks && res.data.banks.length > 0) {
-          const updatedBank = res.data.banks[0];
-
-          if (index !== -1) {
-            this.banks.splice(index, 1, updatedBank); // ✅ Reactive array update
-          }
+          this.banks.splice(index, 1, res.data.banks[0]);
         } else {
-          await this.fetchBanks(); // fallback if API returns nothing
+          await this.fetchBanks();
         }
-
         this.resetForm();
-        //alert("✅ Bank updated!");
       } catch (err) {
         console.error("Error updating bank:", err);
-        alert("❌ Update failed.");
       }
     },
     async deleteBank(id) {
       if (!confirm("Delete this bank info?")) return;
       try {
         await axios.delete(`https://event-ticket-qa70.onrender.com/api/bank/${id}`, {
-          headers: {
-            Authorization: `Bearer ${this.getToken}`,
-          },
+          headers: { Authorization: `Bearer ${this.getToken}` },
         });
         this.banks = this.banks.filter((b) => b._id !== id);
       } catch (err) {
         console.error("Error deleting bank:", err);
-        alert("❌ Delete failed.");
       }
     },
+
     resetForm() {
-      this.form = {
-        accountName: "",
-        accountNumber: "",
-        bankName: "",
-      };
+      this.form = { accountName: "", accountNumber: "", bankName: "" };
       this.isEditing = false;
       this.editId = null;
     },
+
+    /** ✅ STAFF METHODS **/
   },
 };
 </script>

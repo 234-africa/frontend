@@ -23,23 +23,21 @@
               required
             />
           </div>
-          <div class="text-end">
-            <router-link to="/forgot-password" class="link-muted">
-              Forgot Password?
-            </router-link>
+          <div class="form-submit">
+            <button type="submit" class="btn-primary">log in</button>
           </div>
-          <button type="submit" class="btn-primary">Log in</button>
+          <p class="text-center mt-3">
+            <router-link to="/forgot-password" class="link-blue"
+              >reset password</router-link
+            >
+          </p>
+          <p class="text-center mt-3">
+            dont have an account?
+            <router-link to="/register" class="link-blue">Sign up</router-link>
+          </p>
         </form>
 
-        <p class="text-center">
-          Don't have an account?
-          <router-link to="/register" class="link-teal"> Sign up </router-link>
-        </p>
-
         <div class="auth-buttons">
-          <button class="btn-dark" @click="loginWithApple">
-            🍎 Log in with Apple
-          </button>
           <button class="btn-google" @click="login">
             <span class="google-icon">G</span> Log in with Google
           </button>
@@ -70,8 +68,7 @@ export default {
       googleSdkLoaded((google) => {
         google.accounts.oauth2
           .initCodeClient({
-            client_id:
-              "914476969936-ipf8ai34icgm2ob2der1u5b6bt4qca4s.apps.googleusercontent.com",
+            client_id: process.env.VUE_APP_CLIENT_ID,
             scope: "email profile openid",
             redirect_uri: "https://event-ticket-qa70.onrender.com/auth/callback",
             callback: (response) => {
@@ -83,8 +80,7 @@ export default {
           .requestCode();
       });
     },
- 
-    
+
     loginUser() {
       const payload = {
         email: this.email,
@@ -93,16 +89,7 @@ export default {
 
       this.LOGIN_USER(payload)
         .then((response) => {
-          const decodedToken = jwt_decode(response.token);
-          // console.log(decodedToken);
-          // Access the decoded token properties
-          const isAdmin = decodedToken.isAdmin;
-
           Swal.fire("login successful");
-
-          // Redirect based on user role
-          //console.log("isAdmin:", isAdmin);
-          this.$router.push("/");
         })
         .catch((err) => {
           const message = err.message;

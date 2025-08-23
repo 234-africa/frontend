@@ -1,12 +1,12 @@
 <template>
   <div>
     <!-- 🔍 Search & Filters -->
-  <div class="container-fluid bg-light">
+    <div class="container-fluid bg-light">
       <div class="section_discover">
         <div class="container-large">
           <div class="row pt-2 pb-2">
             <!-- 🔍 Search Input -->
-            <div class="col-12  pt-2 pb-md-0 pb-1 col-md-6">
+            <div class="col-12 pt-2 pb-md-0 pb-1 col-md-6">
               <input
                 v-model="searchTerm"
                 type="text"
@@ -47,11 +47,7 @@
     </div>
 
     <!-- 💰 Price Modal -->
-    <div
-      v-if="showPriceModal"
-      class="modal w-100"
-      @click.self="showPriceModal = false"
-    >
+    <div v-if="showPriceModal" class="modal w-100" @click.self="showPriceModal = false">
       <div class="modal-content w-100">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h5 class="m-0 fw-bold">Price</h5>
@@ -83,9 +79,7 @@
           <button class="btn btn-outline-secondary" @click="clearPriceFilters">
             Clear
           </button>
-          <button class="btn btn-primary" @click="applyPriceFilters">
-            Apply
-          </button>
+          <button class="btn btn-primary" @click="applyPriceFilters">Apply</button>
         </div>
       </div>
     </div>
@@ -102,9 +96,7 @@
 
         <div class="d-flex justify-content-center gap-3 mb-3">
           <button class="btn btn-outline-dark" @click="setToday">Today</button>
-          <button class="btn btn-outline-dark" @click="setTomorrow">
-            Tomorrow
-          </button>
+          <button class="btn btn-outline-dark" @click="setTomorrow">Tomorrow</button>
           <button class="btn btn-outline-dark" @click="setThisWeekend">
             This weekend
           </button>
@@ -112,18 +104,10 @@
 
         <div class="row">
           <div class="col">
-            <input
-              v-model="tempFilters.startDate"
-              type="date"
-              class="form-control"
-            />
+            <input v-model="tempFilters.startDate" type="date" class="form-control" />
           </div>
           <div class="col">
-            <input
-              v-model="tempFilters.endDate"
-              type="date"
-              class="form-control"
-            />
+            <input v-model="tempFilters.endDate" type="date" class="form-control" />
           </div>
         </div>
 
@@ -131,18 +115,13 @@
           <button class="btn btn-outline-secondary" @click="clearDateFilters">
             Clear
           </button>
-          <button class="btn btn-primary" @click="applyDateFilters">
-            Apply
-          </button>
+          <button class="btn btn-primary" @click="applyDateFilters">Apply</button>
         </div>
       </div>
     </div>
     <div v-if="showEditModal" class="modal" @click.self="showEditModal = false">
       <div class=" ">
-        <div
-          class="modal-content w-100 h-75"
-          style="max-height: 90vh; overflow-y: auto"
-        >
+        <div class="modal-content w-100 h-75" style="max-height: 90vh; overflow-y: auto">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="m-0 fw-bold">Edit</h5>
             <button class="btn-icon" @click="showEditModal = false">
@@ -155,6 +134,42 @@
             @refresh="fetchProducts"
             @close="showEditModal = false"
           ></editProduct>
+        </div>
+      </div>
+    </div>
+    <div v-if="showUserModal" class="modal" @click.self="showUserModal = false">
+      <div class=" ">
+        <div class="modal-content w-100 h-75" style="max-height: 90vh; overflow-y: auto">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="m-0 fw-bold">Assign</h5>
+            <button class="btn-icon" @click="showUserModal = false">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+          <h3>Assign Staff to Event</h3>
+          <p>
+            Event ID: <strong>{{ selectedProductId }}</strong>
+          </p>
+
+          <label class="mt-3">Staff Name:</label>
+          <input
+            type="text"
+            v-model="staffName"
+            placeholder="Enter staff name"
+            class="form-control mb-3"
+          />
+
+          <label>
+            <input type="checkbox" v-model="checkInPermission" />
+            Check in tickets
+          </label>
+
+          <div class="mt-3">
+            <button class="btn btn-success btn-sm" @click="assignStaff">Add staff</button>
+            <button class="btn btn-secondary btn-sm ms-2" @click="closePopup">
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -187,38 +202,62 @@
                 />
                 <div class="pt-2">
                   <h5>{{ product.title }}</h5>
-     <p class="mb-1">
+                  <p class="mb-1">
                     <i class="bi bi-calendar-event me-2"></i>
-                    {{ formatDate(product.event.start)  }} <span v-if="product.event.end" >- {{ formatDate(product.event.end)  }} </span>
+                    {{ formatDate(product.event.start) }}
+                    <span v-if="product.event.end"
+                      >- {{ formatDate(product.event.end) }}
+                    </span>
                   </p>
                   <p class="mb-1">
                     <i class="bi bi-geo-alt me-2"></i>
                     {{ product.event.location.name || "No location" }}
                   </p>
-                  <p>{{ formatPrice(product.price) }}</p>
-                  <button
-                    class="btn btn-outline-primary btn-sm"
-                    @click="goToProduct(product.title)"
-                   >
-                    View Event
-                  </button>
-                  <!-- Edit Button -->
-                  <button
-                    class="btn btn-primary btn-sm ms-2"
-                    @click="goToEditProduct(product._id)"
-                  >
-                    <i class="bi bi-pencil-fill me-1"></i>
-                    Edit Ticket
-                  </button>
+                  <p>
+                    {{
+                      product.event.tickets[0].price === 0 &&
+                      product.event.tickets[product.event.tickets.length - 1].price === 0
+                        ? "Free"
+                        : product.event.tickets[0].price ===
+                          product.event.tickets[product.event.tickets.length - 1].price
+                        ? formatPrice(product.event.tickets[0].price)
+                        : `${formatPrice(product.event.tickets[0].price)} - ${formatPrice(
+                            product.event.tickets[product.event.tickets.length - 1].price
+                          )}`
+                    }}
+                  </p>
 
-                  <!-- Delete Button -->
-                  <button
-                    class="btn btn-danger btn-sm ms-2"
-                    @click="deleteProduct(product._id)"
-                  >
-                    <i class="bi bi-trash-fill me-1"></i>
-                    Delete
-                  </button>
+                  <div class="d-flex">
+                    <button
+                      class="btn btn-outline-primary btn-sm"
+                      @click="goToProduct(product.title)"
+                    >
+                      View Event
+                    </button>
+                    <!-- Edit Button -->
+                    <button
+                      class="btn btn-primary btn-sm ms-2"
+                      @click="goToEditProduct(product._id)"
+                    >
+                      <i class="bi bi-pencil-fill me-1"></i>
+                      Edit
+                    </button>
+                    <button
+                      class="btn btn-primary btn-sm ms-2"
+                      @click="showUserPopup(product._id)"
+                    >
+                      <i class="bi bi-pencil-fill me-1"></i>
+                      Assign User
+                    </button>
+
+                    <!-- Delete Button -->
+                    <button
+                      class="btn btn-danger btn-sm ms-2"
+                      @click="deleteProduct(product._id)"
+                    >
+                      <i class="bi bi-trash-fill me-1"></i>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -246,6 +285,7 @@ export default {
     return {
       showEditProduct: false,
       selectedProductId: null,
+
       products: [],
       reference: "",
       loading: true,
@@ -265,6 +305,7 @@ export default {
       showPriceModal: false,
       showDateModal: false,
       showEditModal: false,
+      showUserModal: false,
     };
   },
   computed: {
@@ -287,15 +328,11 @@ export default {
         const startDate = this.filters.startDate
           ? new Date(this.filters.startDate)
           : null;
-        const endDate = this.filters.endDate
-          ? new Date(this.filters.endDate)
-          : null;
+        const endDate = this.filters.endDate ? new Date(this.filters.endDate) : null;
 
         // Remove time from comparisons to match only by date
         const eventDateOnly = new Date(eventDate.toDateString());
-        const startDateOnly = startDate
-          ? new Date(startDate.toDateString())
-          : null;
+        const startDateOnly = startDate ? new Date(startDate.toDateString()) : null;
         const endDateOnly = endDate ? new Date(endDate.toDateString()) : null;
 
         const dateMatch =
@@ -309,14 +346,11 @@ export default {
   methods: {
     async fetchProducts() {
       try {
-        const res = await axios.get(
-          "https://event-ticket-qa70.onrender.com/api/user/products",
-          {
-            headers: {
-              Authorization: `Bearer ${this.getToken}`,
-            },
-          }
-        );
+        const res = await axios.get("https://event-ticket-qa70.onrender.com/api/user/products", {
+          headers: {
+            Authorization: `Bearer ${this.getToken}`,
+          },
+        });
         console.log(res.data);
         this.products = res.data.products;
       } catch (error) {
@@ -324,19 +358,51 @@ export default {
       }
     },
     goToEditProduct(productId) {
+      console.log(productId);
       this.selectedProductId = productId;
       this.showEditModal = true;
       this.showEditProduct = true;
     },
+    showUserPopup(productId) {
+      this.selectedProductId = productId;
+      this.showUserModal = true;
+    },
+    async assignStaff() {
+      if (!this.staffName) {
+        alert("Please enter a staff name");
+        return;
+      }
 
+      try {
+        const res = await axios.post(
+          "https://event-ticket-qa70.onrender.com/api/staff",
+          {
+            staffName: this.staffName,
+            productId: this.selectedProductId,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${this.getToken}`,
+            },
+          }
+        );
+
+        alert(`Staff assigned successfully! Passcode: ${res.data.passcode}`);
+        this.closePopup();
+      } catch (error) {
+        console.error(error.response?.data || error.message);
+      }
+    },
     async deleteProduct(productId) {
       if (!confirm("Are you sure you want to delete this order?")) return;
       console.log(productId);
 
       try {
-        await axios.delete(
-          `https://event-ticket-qa70.onrender.com/api/product/${productId}`
-        );
+        await axios.delete(`https://event-ticket-qa70.onrender.com/api/product/${productId}`, {
+          headers: {
+            Authorization: `Bearer ${this.getToken}`,
+          },
+        });
         alert("Product deleted successfully");
         this.fetchProducts(); // Refresh the list
       } catch (error) {
@@ -344,18 +410,16 @@ export default {
       }
     },
     goToProduct(productTitle) {
-      const normalizedProductTitle = productTitle.replace(/\s+/g, "-");
-      this.$store.dispatch("setProductUrl", productTitle);
-      this.$router.push({
-        name: "ProductDetails",
-        params: { title: normalizedProductTitle },
-      });
+      const normalizedProductTitle = productTitle.replace(/\s+/g, "-").toLowerCase();
+
+      // Open in new tab
+      window.open(`/product/${normalizedProductTitle}`, "_blank");
     },
     formatDate(date) {
       if (!date) return "No date";
       const options = {
         weekday: "short",
-       // year: "numeric",
+        // year: "numeric",
         month: "short",
         day: "numeric",
       };
@@ -363,7 +427,7 @@ export default {
     },
     formatPrice(price) {
       if (!price || price === 0) return "Free";
-      return `$${price}`;
+      return `₦${price}`;
     },
     resetSearch() {
       this.searchTerm = "";
@@ -400,9 +464,7 @@ export default {
       this.tempFilters.endDate = today;
     },
     setTomorrow() {
-      const tomorrow = new Date(Date.now() + 86400000)
-        .toISOString()
-        .split("T")[0];
+      const tomorrow = new Date(Date.now() + 86400000).toISOString().split("T")[0];
       this.tempFilters.startDate = tomorrow;
       this.tempFilters.endDate = tomorrow;
     },

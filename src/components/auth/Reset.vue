@@ -1,6 +1,5 @@
 <template>
   <div>
-
     <body class="h-100 pt-5">
       <div class="authincation h-100">
         <div class="container h-100">
@@ -11,24 +10,25 @@
                   <div class="col-xl-12">
                     <div class="auth-form">
                       <h4 class="text-center mb-4">Update Password</h4>
-                      <form   @submit.prevent="handleSubmit">
+                      <form @submit.prevent="handleSubmit">
                         <div class="form-group">
                           <label><strong>password</strong></label>
                           <input
-                             class="form-control"
-                    id="inputPasswordOld"
-                    required=""
-                    type="password"
-                    v-model="password"
-                          >
+                            class="form-control"
+                            id="inputPasswordOld"
+                            required=""
+                            type="password"
+                            v-model="password"
+                          />
                         </div>
                         <div class="text-center">
                           <button
                             type="submit"
                             class="btn btn-primary btn-block"
-                          >SUBMIT</button>
+                          >
+                            SUBMIT
+                          </button>
                         </div>
-
                       </form>
                     </div>
                   </div>
@@ -43,10 +43,8 @@
         Scripts
     ***********************************-->
       <!-- Required vendors -->
-
     </body>
   </div>
-
 </template>
 
 <script>
@@ -56,7 +54,7 @@ export default {
   data() {
     return {
       password: "",
-      message: ""
+      message: "",
     };
   },
   mounted() {
@@ -67,19 +65,18 @@ export default {
       const response = await axios
         .post("https://event-ticket-qa70.onrender.com/api/auth/updatePassword", {
           password: this.password,
-          token: this.$route.query.token
+          token: this.$route.query.token,
         })
-        .then(response => {
-
+        .then((response) => {
           this.message = response.data.message;
-            Swal.fire(response.data.message);
+          Swal.fire(response.data.message);
         })
-        .catch(err => console.log(err));
+        .catch((err) => console.log(err));
       console.log(response);
     },
     clear() {
       this.$refs.form.reset();
-    }
-  }
+    },
+  },
 };
 </script>

@@ -6,7 +6,7 @@
         <div class="container-large">
           <div class="row pt-2 pb-2">
             <!-- 🔍 Search Input -->
-            <div class="col-12  pt-2 pb-md-0 pb-1 col-md-6">
+            <div class="col-12 pt-2 pb-md-0 pb-1 col-md-6">
               <input
                 v-model="searchTerm"
                 type="text"
@@ -47,11 +47,7 @@
     </div>
 
     <!-- 💰 Price Modal -->
-    <div
-      v-if="showPriceModal"
-      class="modal"
-      @click.self="showPriceModal = false"
-    >
+    <div v-if="showPriceModal" class="modal" @click.self="showPriceModal = false">
       <div class="modal-content">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h5 class="m-0 fw-bold">Price</h5>
@@ -83,9 +79,7 @@
           <button class="btn btn-outline-secondary" @click="clearPriceFilters">
             Clear
           </button>
-          <button class="btn btn-primary" @click="applyPriceFilters">
-            Apply
-          </button>
+          <button class="btn btn-primary" @click="applyPriceFilters">Apply</button>
         </div>
       </div>
     </div>
@@ -102,9 +96,7 @@
 
         <div class="d-flex justify-content-center gap-3 mb-3">
           <button class="btn btn-outline-dark" @click="setToday">Today</button>
-          <button class="btn btn-outline-dark" @click="setTomorrow">
-            Tomorrow
-          </button>
+          <button class="btn btn-outline-dark" @click="setTomorrow">Tomorrow</button>
           <button class="btn btn-outline-dark" @click="setThisWeekend">
             This weekend
           </button>
@@ -112,18 +104,10 @@
 
         <div class="row">
           <div class="col">
-            <input
-              v-model="tempFilters.startDate"
-              type="date"
-              class="form-control"
-            />
+            <input v-model="tempFilters.startDate" type="date" class="form-control" />
           </div>
           <div class="col">
-            <input
-              v-model="tempFilters.endDate"
-              type="date"
-              class="form-control"
-            />
+            <input v-model="tempFilters.endDate" type="date" class="form-control" />
           </div>
         </div>
 
@@ -131,9 +115,7 @@
           <button class="btn btn-outline-secondary" @click="clearDateFilters">
             Clear
           </button>
-          <button class="btn btn-primary" @click="applyDateFilters">
-            Apply
-          </button>
+          <button class="btn btn-primary" @click="applyDateFilters">Apply</button>
         </div>
       </div>
     </div>
@@ -150,7 +132,7 @@
 
           <div class="row">
             <div
-              class="col-md-4 pt-3 "
+              class="col-md-4 pt-3"
               v-for="product in filteredProducts"
               :key="product._id"
             >
@@ -168,13 +150,29 @@
                   <h5>{{ product.title }}</h5>
                   <p class="mb-1">
                     <i class="bi bi-calendar-event me-2"></i>
-                    {{ formatDate(product.event.start)  }} <span v-if="product.event.end" >- {{ formatDate(product.event.end)  }} </span>
+                    {{ formatDate(product.event.start) }}
+                    <span v-if="product.event.end"
+                      >- {{ formatDate(product.event.end) }}
+                    </span>
                   </p>
                   <p class="mb-1">
                     <i class="bi bi-geo-alt me-2"></i>
                     {{ product.event.location.name || "No location" }}
                   </p>
-                  <p>{{ formatPrice(product.price) }}</p>
+                  <p>
+                    {{
+                      product.event.tickets[0].price === 0 &&
+                      product.event.tickets[product.event.tickets.length - 1].price === 0
+                        ? "Free"
+                        : product.event.tickets[0].price ===
+                          product.event.tickets[product.event.tickets.length - 1].price
+                        ? formatPrice(product.event.tickets[0].price)
+                        : `${formatPrice(product.event.tickets[0].price)} - ${formatPrice(
+                            product.event.tickets[product.event.tickets.length - 1].price
+                          )}`
+                    }}
+                  </p>
+
                   <button
                     class="btn btn-outline-primary btn-sm"
                     @click="goToProduct(product.title)"
@@ -239,15 +237,11 @@ export default {
         const startDate = this.filters.startDate
           ? new Date(this.filters.startDate)
           : null;
-        const endDate = this.filters.endDate
-          ? new Date(this.filters.endDate)
-          : null;
+        const endDate = this.filters.endDate ? new Date(this.filters.endDate) : null;
 
         // Remove time from comparisons to match only by date
         const eventDateOnly = new Date(eventDate.toDateString());
-        const startDateOnly = startDate
-          ? new Date(startDate.toDateString())
-          : null;
+        const startDateOnly = startDate ? new Date(startDate.toDateString()) : null;
         const endDateOnly = endDate ? new Date(endDate.toDateString()) : null;
 
         const dateMatch =
@@ -261,28 +255,24 @@ export default {
   methods: {
     async fetchProducts() {
       try {
-        const res = await axios.get(
-          "https://event-ticket-qa70.onrender.com/api/products"
-        );
+        const res = await axios.get("https://event-ticket-qa70.onrender.com/api/products");
         this.products = res.data.products;
-        console.log(this.products)
+        console.log(this.products);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
     },
     goToProduct(productTitle) {
-      const normalizedProductTitle = productTitle.replace(/\s+/g, "-");
-      this.$store.dispatch("setProductUrl", productTitle);
-      this.$router.push({
-        name: "ProductDetails",
-        params: { title: normalizedProductTitle },
-      });
+      const normalizedProductTitle = productTitle.replace(/\s+/g, "-").toLowerCase();
+
+      // Open in new tab
+      window.open(`/product/${normalizedProductTitle}`, "_blank");
     },
     formatDate(date) {
       if (!date) return "";
       const options = {
         weekday: "short",
-       // year: "numeric",
+        // year: "numeric",
         month: "short",
         day: "numeric",
       };
@@ -290,7 +280,7 @@ export default {
     },
     formatPrice(price) {
       if (!price || price === 0) return "Free";
-      return `$${price}`;
+      return `₦${price}`;
     },
     resetSearch() {
       this.searchTerm = "";
@@ -327,9 +317,7 @@ export default {
       this.tempFilters.endDate = today;
     },
     setTomorrow() {
-      const tomorrow = new Date(Date.now() + 86400000)
-        .toISOString()
-        .split("T")[0];
+      const tomorrow = new Date(Date.now() + 86400000).toISOString().split("T")[0];
       this.tempFilters.startDate = tomorrow;
       this.tempFilters.endDate = tomorrow;
     },

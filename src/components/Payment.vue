@@ -2,18 +2,10 @@
   <div class="container my-5">
     <div class="ticket-footer d-block d-md-none p-2">
       <div
-        class="text-white d-flex justify-content-between align-items-center p-3 rounded-3 mx-3 mb-3"
+        class="text-white d-flex justify-content-center align-items-center p-3 rounded-3"
         style="background-color: #047143"
       >
-        <span class="fw-bold fs-5">
-          Total: ₦{{ cartTotal.toLocaleString() }}</span
-        >
-        <button
-          class="btn btn-primary:hover btn-primary fw-semibold px-4"
-          @click="nextStep"
-        >
-          Continue
-        </button>
+        <span class="fw-bold fs-5"> Total: ₦{{ cartTotal.toLocaleString() }}</span>
       </div>
     </div>
 
@@ -55,32 +47,18 @@
         <!-- Place this inside your Vue template -->
         <div v-if="currentStep === 0" class="ticket-section text-start">
           <h3>🎟️ Choose Tickets</h3>
-          <p class="alert alert-warning">
-            We've reserved your ticket. Please complete checkout within
-            {{ timer }} to secure your tickets.
-          </p>
-          <div
-            class="ticket-card"
-            v-for="product in getCart"
-            :key="product._id"
-          >
+
+          <div class="ticket-card" v-for="product in getCart" :key="product._id">
             <!-- Loop through tickets inside each product -->
-            <div
-              v-for="ticket in product.event.tickets"
-              :key="ticket._id"
-              class=""
-            >
+            <div v-for="ticket in product.event.tickets" :key="ticket._id" class="">
               <div class="ticket-content d-flex justify-content-between">
                 <div>
                   <h5>{{ ticket.name }}</h5>
                   <p class="price">
                     ₦{{
-                      (
-                        ticket.price * (ticket.selectedQuantity || 1)
-                      ).toLocaleString()
+                      (ticket.price * (ticket.selectedQuantity || 1)).toLocaleString()
                     }}
                   </p>
-                  <p class="access">Quantity: {{ ticket.quantity }}</p>
                 </div>
 
                 <!-- Optional: Add a quantity selector if needed -->
@@ -88,26 +66,20 @@
                   class="ticket-select mt-2"
                   v-model.number="ticket.selectedQuantity"
                 >
-                  <option
-                    v-for="n in ticket.quantity + 1"
-                    :key="n"
-                    :value="n - 1"
-                  >
+                  <option v-for="n in ticket.quantity + 1" :key="n" :value="n - 1">
                     {{ n - 1 }}
                   </option>
                 </select>
               </div>
             </div>
           </div>
+          <small> Total includes a service fee</small>
         </div>
 
         <!-- Step 2: Contact Info -->
         <div v-else-if="currentStep === 1" class="text-start">
           <h3>📇 Contact Information</h3>
-          <p class="alert alert-warning">
-            We've reserved your ticket. Please complete checkout within
-            {{ timer }} to secure your tickets.
-          </p>
+
           <form ref="myForm" @submit.prevent="">
             <div class="row mb-3">
               <div class="col">
@@ -131,12 +103,7 @@
             </div>
             <div class="mb-3">
               <label class="form-label">Email Address *</label>
-              <input
-                v-model="contact.email"
-                type="email"
-                class="form-control"
-                required
-              />
+              <input v-model="contact.email" type="email" class="form-control" required />
             </div>
             <div class="mb-3">
               <label class="form-label">Confirm Email Address *</label>
@@ -151,12 +118,7 @@
               <label class="form-label">Phone Number *</label>
               <div class="input-group">
                 <span class="input-group-text">+234</span>
-                <input
-                  v-model="contact.phone"
-                  type="tel"
-                  class="form-control"
-                  required
-                />
+                <input v-model="contact.phone" type="tel" class="form-control" required />
               </div>
             </div>
           </form>
@@ -179,10 +141,8 @@
               value="card"
               id="payCard"
             />
-            <label class="form-check-label" for="payCard"
-              >Pay with Paystack</label
-            >
-            <form @submit.prevent="initializePayment">
+            <label class="form-check-label" for="payCard">Pay with Paystack</label>
+            <form>
               <div class="mb-3">
                 <label>Email</label>
                 <input
@@ -192,10 +152,6 @@
                   readonly
                 />
               </div>
-
-              <button type="submit" class="btn btn-success">
-                Pay Now ₦{{ getCartTotal.toLocaleString() }}
-              </button>
             </form>
           </div>
 
@@ -222,21 +178,31 @@
             Back
           </button>
           <button
+            v-if="currentStep === 2"
+            type="submit"
+            @click="initializePayment()"
+            :disabled="!termsAccepted"
+            class="btn btn-success"
+          >
+            Pay Now ₦{{ cartTotal.toLocaleString() }}
+          </button>
+          <button
             v-if="currentStep < steps.length - 1"
             type="button"
-            class="btn btn-primary btn-primary:hover"
+            class="btn btn-primary"
             @click="nextStep"
           >
             Next
           </button>
+
+          <!-- Only show when cartTotal is 0 -->
           <button
-            v-else
+            v-else-if="cartTotal === 0"
             type="submit"
+            class="btn btn-primary"
             @click="getTicket()"
-            class="btn btn-primary btn-primary:hover"
-            v-if="getCart[0]?.price === null"
           >
-            Create Event
+            Get tickets
           </button>
         </div>
         <spinner v-if="spinner" />
@@ -254,10 +220,26 @@
               </li>
             </ul>
           </div>
-          <div class="text-muted small"  v-if="getCart[0]?.price !== null">
+          <div class="text-muted small" v-if="getCart[0]?.price !== null">
             Service Charge (7.5%): ₦{{ serviceCharge }}
           </div>
-          <span class="fw-bold fs-5"> Total: ₦{{ getCartTotal }}</span>
+          <span class="fw-bold fs-5"> Total: ₦{{ cartTotal }}</span>
+        </div>
+        <div class="">
+          <h2>Apply Promo Code</h2>
+          <input
+            v-model="promoCode"
+            placeholder="Enter promo code"
+            class="form-control mb-2"
+          />
+
+          <button @click="applyPromo" class="btn btn-primary">Apply</button>
+
+          <div v-if="discountResult">
+            <p><strong>Discount:</strong> {{ discountResult.discount }}</p>
+            <p><strong>New Total:</strong> {{ discountResult.newTotal }}</p>
+            <p><strong>Message:</strong> {{ discountResult.message }}</p>
+          </div>
         </div>
       </div>
     </div>
@@ -271,6 +253,7 @@ import paystack from "vue-paystack";
 import QrcodeVue from "qrcode.vue";
 import spinner from "./spinner.vue";
 import { ref } from "vue";
+import { getChartByID } from "apexcharts";
 export default {
   components: {
     paystack,
@@ -286,9 +269,11 @@ export default {
       showQRCode: false,
       countdown: null,
       full_name: "",
-      publicKey: "pk_test_39500fe5625254b064b82558ae701fce46e5f2d1", // Replace with your real key
+      publicKey: process.env.VUE_APP_PUBLIC_KEY,
       steps: ["Tickets", "Contact", "Payment"],
       tickets: [],
+      promoCode: "",
+      discountResult: null,
       contact: {
         firstName: "",
         lastName: "",
@@ -303,7 +288,7 @@ export default {
   },
   computed: {
     serviceCharge() {
-      return (this.getCartTotal * 0.075).toFixed(2);
+      return (this.cartTotal * 0.075).toFixed(2);
     },
     email() {
       return this.getContactInfo.email;
@@ -312,27 +297,23 @@ export default {
       return this.cartTotal;
     },
     steps() {
-      const hasPrice = this.getCart[0]?.price !== null;
-
-      return hasPrice
+      // If the cart has a total greater than 0, show payment step
+      return this.cartTotal > 0
         ? ["Tickets", "Contact", "Payment"]
         : ["Tickets", "Contact"];
     },
-    ...mapGetters([
-      "getCart",
-      "getContactInfo",
-      "getSelectedTickets",
-      "getCartTotal",
-    ]),
+    ...mapGetters(["getCart", "getContactInfo", "getSelectedTickets", "cartTotal"]),
     cartTotal() {
-      return this.getCart.reduce((sum, product) => {
+      const rawTotal = this.getCart.reduce((sum, product) => {
         const ticketTotal = product.event.tickets.reduce((innerSum, ticket) => {
-          return (
-            innerSum + (ticket.selectedQuantity || 0) * (ticket.price || 0)
-          );
+          return innerSum + (ticket.selectedQuantity || 0) * (ticket.price || 0);
         }, 0);
         return sum + ticketTotal;
       }, 0);
+
+      const discount = this.discountResult?.discount || 0;
+
+      return Math.max(rawTotal - discount, 0);
     },
     selectedTickets() {
       return this.getCart.flatMap((product) => {
@@ -355,13 +336,19 @@ export default {
     currentStep() {
       this.updateProgressLine();
     },
+    getCart: {
+      handler() {
+        this.discountResult = null;
+        this.promoCode = null;
+      },
+      deep: true, // important! watches nested ticket quantities
+    },
   },
   methods: {
     ...mapMutations(["setSelectedTickets"]),
     generateReference() {
       let text = "";
-      const possible =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
       for (let i = 0; i < 10; i++) {
         text += possible.charAt(Math.floor(Math.random() * possible.length));
       }
@@ -385,13 +372,10 @@ export default {
     async initializePayment() {
       try {
         this.spinner = true; // Show spinner while processing
-        const response = await axios.post(
-          "https://event-ticket-qa70.onrender.com/api/initialize",
-          {
-            email: this.email,
-            amount: this.amount,
-          }
-        );
+        const response = await axios.post("https://event-ticket-qa70.onrender.com/api/initialize", {
+          email: this.email,
+          amount: this.amount,
+        });
         console.log(response.data);
 
         const { authorization_url, reference } = response.data.data;
@@ -411,6 +395,7 @@ export default {
         this.reference = this.generateReference(); // generate and store
         localStorage.setItem("paystack_reference", this.reference);
         this.spinner = true; // Show spinner while processing
+        const affiliate = localStorage.getItem("affiliateCode");
 
         const payload = {
           reference: this.reference,
@@ -421,14 +406,12 @@ export default {
             phone: this.getContactInfo.phone,
           },
           tickets: this.getSelectedTickets,
-          price: this.getCartTotal,
+          price: this.cartTotal,
+          affiliate,
         };
 
         console.log("Sending order info:", payload);
-        const res = await axios.post(
-          "https://event-ticket-qa70.onrender.com/api/order",
-          payload
-        );
+        const res = await axios.post("https://event-ticket-qa70.onrender.com/api/order", payload);
         this.spinner = false; // Hide spinner after processing
         alert("ticket has been sent to your email");
         //this.showQRCode = true;
@@ -437,6 +420,26 @@ export default {
         console.log("Order info sent:", res.data);
       } catch (err) {
         console.error("Failed to send order info:", err);
+      }
+    },
+    async applyPromo() {
+      try {
+        const payload = {
+          code: this.promoCode,
+          orderTotal: this.cartTotal,
+          id: this.getCart[0].id,
+        };
+
+        console.log("Payload being sent:", payload);
+
+        const res = await axios.post("https://event-ticket-qa70.onrender.com/api/apply-promo", payload);
+
+        this.discountResult = res.data;
+        localStorage.setItem("discountedTotal", res.data.newTotal);
+        localStorage.setItem("promoCode", this.promoCode);
+        console.log("Promo response:", res.data);
+      } catch (err) {
+        alert(`❌ ${err.response?.data?.message || err.message}`);
       }
     },
 

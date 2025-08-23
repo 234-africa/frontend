@@ -1,24 +1,43 @@
 <template>
-  <div class="container mt-4">
-    <!-- ✅ Create or Edit Form -->
-    <div class="row">
-      <div class="col-md-12 text-start" v-if="banks && banks.length">
-        <ul class="list-group shadow-sm">
-          <li v-for="bank in banks" :key="bank._id" class="list-group-item">
-            <div class="mb-2">
-              <div>
-                <strong>Bank Account Number:</strong> {{ bank.accountName }}
-              </div>
-              <div>
-                <strong>Account Number:</strong> {{ bank.accountNumber }}
-              </div>
-              <div><strong>Bank Name:</strong> {{ bank.bankName }}</div>
-              <div><strong> Name:</strong> {{ bank.user }}</div>
+  <div class="card shadow-sm p-0 mt-4">
+    <!-- 💚 Header -->
+    <div class="text-center bg-success text-white py-2">
+      <h5 class="mb-0">Banks</h5>
+    </div>
 
-            </div>
-          </li>
-        </ul>
-      </div>
+    <!-- 🔍 Search Input -->
+    <div class="p-3">
+      <input
+        v-model="searchQuery"
+        type="text"
+        class="form-control w-50"
+        placeholder="Search by Account Name, Account Number or Bank Name"
+      />
+    </div>
+
+    <!-- 📋 Banks Table -->
+    <div class="table-responsive">
+      <table class="table table-striped custom-table mb-0" v-if="filteredBanks.length">
+        <thead class="text-uppercase small text-muted">
+          <tr>
+            <th>Bank Account Name</th>
+            <th>Account Number</th>
+            <th>Bank Name</th>
+            <th>User</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="bank in filteredBanks" :key="bank._id">
+            <td>{{ bank.accountName }}</td>
+            <td>{{ bank.accountNumber }}</td>
+            <td>{{ bank.bankName }}</td>
+            <td>{{ bank.user }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- ❌ No Results -->
+      <div v-else class="text-center text-muted p-3">No matching banks found.</div>
     </div>
   </div>
 </template>
@@ -31,30 +50,35 @@ export default {
   name: "BankManager",
   data() {
     return {
-      form: {
-        accountName: "",
-        accountNumber: "",
-        bankName: "",
-        user :""
-       
-      },
       banks: [],
+      searchQuery: "",
     };
-  },
-  mounted() {
-    this.fetchBanks();
   },
   computed: {
     ...mapGetters(["getToken"]),
+    filteredBanks() {
+      const query = this.searchQuery.trim().toLowerCase();
+      if (!query) return this.banks;
+
+      return this.banks.filter((bank) => {
+        return (
+          bank.accountName?.toLowerCase().includes(query) ||
+          bank.accountNumber?.toLowerCase().includes(query) ||
+          bank.bankName?.toLowerCase().includes(query) ||
+          bank.user?.toLowerCase().includes(query)
+        );
+      });
+    },
+  },
+  mounted() {
+    this.fetchBanks();
   },
   methods: {
     async fetchBanks() {
       try {
         const res = await axios.get(
-          "https://event-ticket-qa70.onrender.com/api/all-banks",
-          {}
+          "https://event-ticket-qa70.onrender.com/api/all-banks"
         );
-        console.log("Fetched banks:", res.data);
         this.banks = res.data.banks;
       } catch (err) {
         console.error("Error fetching banks:", err);
@@ -64,4 +88,37 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.card {
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.custom-table thead {
+  background-color: #f8f9fa;
+}
+
+.custom-table th,
+.custom-table td {
+  padding: 12px;
+  vertical-align: middle;
+}
+
+.custom-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.custom-table tr:hover {
+  background-color: #f1f1f1;
+}
+</style>

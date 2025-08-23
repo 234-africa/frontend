@@ -59,7 +59,20 @@
                     {{ product.event.location || "No location" }}
                   </p>
 
-                  <p>{{ formatPrice(product.price) }}</p>
+                  <p>
+  {{
+    product.event.tickets[0].price === 0 &&
+    product.event.tickets[product.event.tickets.length - 1].price === 0
+      ? 'Free'
+      : product.event.tickets[0].price ===
+        product.event.tickets[product.event.tickets.length - 1].price
+      ? formatPrice(product.event.tickets[0].price)
+      : `${formatPrice(product.event.tickets[0].price)} - ${formatPrice(
+          product.event.tickets[product.event.tickets.length - 1].price
+        )}`
+  }}
+</p>
+
                 </div>
 
                 <button
@@ -120,19 +133,13 @@ export default {
 
   methods: {
        goToProduct(productTitle) {
-      // Normalize the product title for the URL: Replace spaces with hyphens
-      let normalizedProductTitle = productTitle.replace(/\s+/g, "-");
+      const normalizedProductTitle = productTitle
+        .replace(/\s+/g, "-")
+        .toLowerCase();
 
-      console.log("Normalized Product Title for URL:", normalizedProductTitle);
-
-      // Store the raw title in Vuex (for the backend)
-      this.$store.dispatch("setProductUrl", productTitle);
-
-      // Use the normalized title in the URL (for better SEO)
-      this.$router.push({
-        name: "ProductDetails",
-        params: { title: normalizedProductTitle }, // For URL with hyphens
-      });
+      // Open in new tab
+      window.open(`/product/${normalizedProductTitle}`, "_blank");
+  
     },
     formatDate(date) {
       if (!date) return "No date";
@@ -146,7 +153,7 @@ export default {
     },
     formatPrice(price) {
       if (!price || price === 0) return "Free";
-      return `$${price}`;
+      return `₦${price}`;
     },
   },
 };

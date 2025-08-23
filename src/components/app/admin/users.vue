@@ -1,31 +1,49 @@
 <template>
-  <div class="table-container">
-    <table class="custom-table">
-      <thead>
-        <tr>
-          <th>id</th>
+  <div class="card shadow-sm">
+    <div class="text-center bg-success p-2 text-white">
+      <h5 class="mb-0">users</h5>
+    </div>
 
-          <th>Name</th>
-          <th>Email</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="user in users" :key="user._id">
-          <td>{{ user._id }}</td>
+    <!-- 🔍 Search Input -->
+    <div class="p-2">
+      <input
+        v-model="searchQuery"
+        type="text"
+        placeholder="Search by name or email"
+        class="form-control w-50"
+      />
+    </div>
 
-          <td>{{ user.name }}</td>
-          <td>{{ user.email }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="card-body p-0">
+      <table class="table table-striped mb-0">
+        <thead>
+          <tr>
+            <th>id</th>
+            <th>Name</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- 💡 Use filteredUsers instead of users -->
+          <tr v-for="user in filteredUsers" :key="user._id">
+            <td>{{ user._id }}</td>
+            <td>{{ user.name }}</td>
+            <td>{{ user.email }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
+
 <script>
 import axios from "axios";
+
 export default {
   data() {
     return {
-      users: "", // or [] if it's an array
+      users: [], // Store all users
+      searchQuery: "", // For the search input
     };
   },
   mounted() {
@@ -34,14 +52,26 @@ export default {
   methods: {
     async fetchUsers() {
       try {
-        const res = await axios.get(
-          "https://event-ticket-qa70.onrender.com/api/users"
-        );
+        const res = await axios.get("https://event-ticket-qa70.onrender.com/api/users");
         this.users = res.data.users;
         console.log(this.users);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
+    },
+  },
+  computed: {
+    filteredUsers() {
+      if (!this.searchQuery) return this.users;
+
+      const query = this.searchQuery.toLowerCase();
+
+      return this.users.filter((user) => {
+        return (
+          user.name.toLowerCase().includes(query) ||
+          user.email.toLowerCase().includes(query)
+        );
+      });
     },
   },
 };

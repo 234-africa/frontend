@@ -1,19 +1,10 @@
 <template>
   <div class="nav-wrapper text-dark">
     <!-- ☰ Toggle for Mobile -->
-    <div
-      class="d-flex justify-content-between align-items-center d-md-none px-4 pe-4"
-    >
+    <div class="d-flex justify-content-between align-items-center d-md-none px-4 pe-4">
       <div>
-        <router-link
-          class="text-white text-decoration-none d-block d-md-none"
-          to="/"
-        >
-          <img
-            src="/IMG_0264.PNG"
-            style="height: 50px; width: 70px"
-            alt="Logo"
-          />
+        <router-link class="text-white text-decoration-none d-block d-md-none" to="/">
+          <img src="/IMG_0264.PNG" style="height: 50px; width: 70px" alt="Logo" />
         </router-link>
       </div>
       <button class="toggle-btn bg-none" @click="show = !show">☰</button>
@@ -21,26 +12,79 @@
 
     <!-- Mobile Slide-in Nav -->
     <transition name="slide-right" mode="out-in">
-      <div v-if="show" class="side-nav">
-        <button class="close-btn" @click="show = false">×</button>
-        <ul class="nav-list">
-          <li class="nav-item"></li>
-          <li class="nav-item">
-            <router-link class="text-white text-decoration-none" to="/events"
-              >Events</router-link
+      <div v-if="show" class="side-nav text-dark bg-white p-3">
+        <!-- Close Button -->
+        <button class="btn-close btn-close-dark float-end" @click="show = false"></button>
+
+        <!-- Login/Register Links -->
+        <div class="mt-5">
+          <div class="mb-3" v-if="!getToken">
+            <router-link
+              to="/login"
+              class="d-block text-decoration-none text-dark px-2 py-1"
             >
-          </li>
-          <li class="nav-item" v-if="!getToken">
-            <router-link class="text-white text-decoration-none" to="/login"
-              >Login</router-link
+              Login
+            </router-link>
+          </div>
+          <div class="mb-3" v-if="!getToken">
+            <router-link
+              to="/register"
+              class="d-block text-decoration-none text-dark px-2 py-1"
             >
-          </li>
-          <li class="nav-item">
-            <router-link class="text-white text-decoration-none" to="/register"
-              >Register</router-link
+              Register
+            </router-link>
+          </div>
+        </div>
+
+        <!-- Greeting + Profile Image -->
+        <div v-if="getToken" class="d-flex mb-3 px-2 py-1">
+          <span>
+            Hello, <strong>{{ currentUser?.name || "Guest" }}</strong>
+          </span>
+          <img
+            v-if="currentUser"
+            :src="currentUser.picture"
+            alt="Profile"
+            width="32"
+            height="32"
+            class="rounded-circle me-2"
+          />
+        </div>
+
+        <!-- Authenticated Links -->
+        <div v-if="getToken">
+          <div class="mb-3">
+            <router-link
+              to="/dashboard"
+              class="d-block text-decoration-none text-dark px-2 py-1"
             >
-          </li>
-        </ul>
+              Dashboard
+            </router-link>
+          </div>
+          <div class="mb-3">
+            <a class="d-block text-decoration-none text-dark px-2 py-1" @click="logout">
+              Logout
+            </a>
+          </div>
+        </div>
+        <div class="mb-3" v-if="$store.getters.isAdmin && getToken">
+          <router-link
+            to="/admin"
+            class="d-block text-decoration-none text-dark px-2 py-1"
+          >
+            Admin
+          </router-link>
+        </div>
+
+        <!-- Common Links -->
+        <div class="mb-3">
+          <router-link
+            to="/events"
+            class="d-block text-decoration-none text-dark px-2 py-1"
+          >
+            Events
+          </router-link>
+        </div>
       </div>
     </transition>
 
@@ -50,22 +94,14 @@
     >
       <div class="text-white fw-bold" style="">
         <router-link class="text-white text-decoration-none" to="/">
-          <img
-            src="/IMG_0264.PNG"
-            alt="Logo"
-            style="width: 100px; height: 65px"
-          />
+          <img src="/IMG_0264.PNG" alt="Logo" style="width: 100px; height: 65px" />
         </router-link>
       </div>
 
       <!-- From Uiverse.io by SelfMadeSystem -->
       <div class="nav"></div>
       <div class="">
-        <div
-          class="d-flex justify-content-between align-items-center nav-inner"
-        >
-         
-
+        <div class="d-flex justify-content-between align-items-center nav-inner">
           <div>
             <router-link
               to="/login"
@@ -74,7 +110,7 @@
               style="
                 color: #047143;
                 text-decoration: none;
-              
+
                 border-radius: 0;
                 transition: all 0.3s;
               "
@@ -99,11 +135,11 @@
             <router-link
               to="/register"
               v-if="!getToken"
-                class="p-2"
+              class="p-2"
               style="
                 color: #047143;
                 text-decoration: none;
-              
+
                 border-radius: 0;
                 transition: all 0.3s;
               "
@@ -123,35 +159,68 @@
               Register
             </router-link>
           </div>
-          
-            <router-link v-if="getToken" class="p-2"  style="
-                color: #047143;
-                text-decoration: none;
-               
-                border-radius: 0;
-                transition: all 0.3s;
-              "
-              @mouseover="
-                (e) => {
-                  e.target.style.backgroundColor = '#d4edda'; // Light green background on hover
-                  e.target.style.borderRadius = '20px'; // Rounded border on hover
-                }
-              "
-              @mouseout="
-                (e) => {
-                  e.target.style.backgroundColor = 'transparent';
-                  e.target.style.borderRadius = '0';
-                }
-              " :to="`/dash`">Dashboard</router-link>
-          
-           <div>
+
+          <router-link
+            to="/admin"
+            v-if="$store.getters.isAdmin && getToken"
+            class="p-2"
+            style="
+              color: #047143;
+              text-decoration: none;
+
+              border-radius: 0;
+              transition: all 0.3s;
+            "
+            @mouseover="
+              (e) => {
+                e.target.style.backgroundColor = '#d4edda'; // Light green background on hover
+                e.target.style.borderRadius = '20px'; // Rounded border on hover
+              }
+            "
+            @mouseout="
+              (e) => {
+                e.target.style.backgroundColor = 'transparent';
+                e.target.style.borderRadius = '0';
+              }
+            "
+          >
+            Admin
+          </router-link>
+
+          <router-link
+            v-if="getToken"
+            class="p-2"
+            style="
+              color: #047143;
+              text-decoration: none;
+
+              border-radius: 0;
+              transition: all 0.3s;
+            "
+            @mouseover="
+              (e) => {
+                e.target.style.backgroundColor = '#d4edda'; // Light green background on hover
+                e.target.style.borderRadius = '20px'; // Rounded border on hover
+              }
+            "
+            @mouseout="
+              (e) => {
+                e.target.style.backgroundColor = 'transparent';
+                e.target.style.borderRadius = '0';
+              }
+            "
+            :to="`/dashboard`"
+            >Dashboard</router-link
+          >
+
+          <div>
             <router-link
               to="/events"
               class="p-2"
               style="
                 color: #047143;
                 text-decoration: none;
-               
+
                 border-radius: 0;
                 transition: all 0.3s;
               "
@@ -171,26 +240,57 @@
               Events
             </router-link>
           </div>
-          <a class=""  v-if="getToken" @click="logout"> Logout </a>
+          <div>
+            <button
+              class="p-2 bg-none"
+              style="
+                color: #047143;
+                text-decoration: none;
+
+                border-radius: 0;
+                transition: all 0.3s;
+              "
+              @mouseover="
+                (e) => {
+                  e.target.style.backgroundColor = '#d4edda'; // Light green background on hover
+                  e.target.style.borderRadius = '20px'; // Rounded border on hover
+                }
+              "
+              @mouseout="
+                (e) => {
+                  e.target.style.backgroundColor = 'transparent';
+                  e.target.style.borderRadius = '0';
+                }
+              "
+              @click="logout"
+              v-if="getToken"
+            >
+              Logout
+            </button>
+          </div>
 
           <div class="dropdown">
             <button
               type="button"
-              class="btn  d-flex align-items-center gap-2"
-           
-             v-if="getToken" 
+              class="btn d-flex align-items-center gap-2"
+              v-if="getToken"
               aria-expanded="false"
             >
               <!-- Name and Image in Flex -->
-              <span class="mr-2 text-primary ">Hello, <strong>{{ currentUser && currentUser.name ? currentUser.name : 'Guest' }}</strong></span>
-                    <img
-                      v-if="currentUser"
-                      :src="currentUser.picture"
-                      alt=""
-                      width="32"
-                      height="32"
-                      class="rounded-circle"
-                    >
+              <span class="mr-2 text-primary"
+                >Hello,
+                <strong>{{
+                  currentUser && currentUser.name ? currentUser.name : "Guest"
+                }}</strong></span
+              >
+              <img
+                v-if="currentUser"
+                :src="currentUser.picture"
+                alt=""
+                width="32"
+                height="32"
+                class="rounded-circle"
+              />
             </button>
           </div>
         </div>

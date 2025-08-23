@@ -9,7 +9,7 @@ import products from './modules/products'
 import auth from './modules/auth'
 import cart from './modules/cart'
 import revenue from './modules/revenue'
-import visit from './modules/visits'
+import events from './modules/events'
 import reviews from './modules/reviews'
 import address from './modules/address'
 
@@ -29,7 +29,7 @@ export default createStore({
     auth,
     cart,
     revenue,
-    visit
+    events
   },
 
 

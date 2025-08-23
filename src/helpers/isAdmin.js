@@ -1,20 +1,10 @@
-import jwt_decode from "jwt-decode";
+// router/guards/isAdmin.js
+import store from "../store";
 
 export default function isAdmin(to, from, next) {
-  const token = localStorage.getItem("token");
-  if (token) {
-    try {
-      const decodedToken = jwt_decode(token);
-      if (decodedToken.isAdmin) {
-        next(); // Allow access to the route
-      } else {
-        next("/"); // Redirect to home if not an admin
-      }
-    } catch (error) {
-      console.error("Error decoding token:", error);
-      next("/"); // Redirect to home on error
-    }
+  if (store.getters.isAdmin) {
+    next(); // ✅ admin allowed
   } else {
-    next("/"); // Redirect to home if no token
+    next("/login"); // 🚫 redirect if not admin
   }
 }

@@ -1,148 +1,78 @@
 <template>
-  <div class="" style="background-color: #fff">
-    <div
-      class="deznav sidenav"
-      id="mySidenav"
-      :style="{ width: sidenavWidth + 'px' }"
-    >
-      <!-- Navigation Bar -->
-      <div class="deznav-scroll pt-2">
-        <ul class="metismenu" id="menu">
+  <div class="">
+    <!-- Sidebar -->
+    <div :class="['sidebar', { 'sidebar-open': isOpen }]" class="d-none d-md-block">
+      <!-- Header -->
+      <div class="sidebar-header d-flex justify-content-between align-items-center p-3">
+        <h5 class="mb-0 text-white">Menu</h5>
+        <button class="btn btn-sm btn-light" @click="closeSidebar">×</button>
+      </div>
+
+      <!-- Sidebar Content -->
+      <div class="sidebar-content p-3 text-white">
+        <ul class="list-unstyled">
           <!-- Dashboard -->
           <li>
-            <a
-              v-if="seen"
-              class="has-arrow ai-icon"
-              :class="{
-                'bg-inf text-info': seen,
-                grey: !seen,
-              }"
-              @click="seen = !seen"
-              aria-expanded="false"
-            >
-              <i v-if="!isTablet" class="flaticon-381-networking"></i>
-              <span class="nav-text">Dashboard</span>
+            <a @click="seen = !seen" class="text-white d-block">
+              <i class="flaticon-381-networking"></i> Dashboard
             </a>
-            <ul aria-expanded="false" v-if="seen">
-              <li>
-                <a @click="onClickHomeTab">
-                  <div
-                    :class="{
-                      'text-blue': isAccountHomeVisible,
-                      grey: !isAccountHomeVisible,
-                    }"
-                  >
-                    Dashboard
-                  </div>
-                </a>
-              </li>
-
-              <li @click="onClickOrderTab">
-                <a>
-                  <div
-                    :class="{
-                      'text-blue': isOrdersVisible,
-                      grey: !isOrdersVisible,
-                    }"
-                  >
-                    Order List
-                  </div>
-                </a>
-              </li>
+            <ul v-if="seen" class="list-unstyled ms-3">
+              <li><a @click="onClickHomeTab" class="text-white">Dashboard</a></li>
+              <li><a @click="onClickOrderTab" class="text-white">User Management</a></li>
             </ul>
           </li>
+
           <!-- Apps -->
           <li>
-            <a
-              class="has-arrow ai-icon"
-              :class="{
-                'bg-inf text-info': see,
-                grey: !see,
-              }"
-              @click="see = !see"
-              aria-expanded="false"
-            >
-              <i class="flaticon-381-television"></i>
-              <span class="nav-text">Apps</span>
+            <a @click="see = !see" class="text-white d-block">
+              <i class="flaticon-381-television"></i> Apps
             </a>
-            <ul v-if="see" aria-expanded="false">
-              <li
-                :class="{
-                  'text-blue': isBankVisible,
-                  grey: !isBankVisible,
-                }"
-              >
-                <a @click="onClickBankTab">Bank Info</a>
-              </li>
-              <li
-                :class="{
-                  'text-blue': isEventVisible,
-                  grey: !isEventVisible,
-                }"
-              >
-                <a @click="onClickEventTab">My Event</a>
-              </li>
-              <li
-                :class="{
-                  'text-blue': isAddEventVisible,
-                  grey: !isAddEventVisible,
-                }"
-              >
-                <a @click="onClickAddEventTab">Add Event</a>
-              </li>
+            <ul v-if="see" class="list-unstyled ms-3">
+              <li><a @click="onClickBankTab" class="text-white">Bank Info</a></li>
+              <li><a @click="onClickEventTab" class="text-white">My Event</a></li>
+              <li><a @click="onClickAddEventTab" class="text-white">Add Event</a></li>
             </ul>
           </li>
         </ul>
       </div>
     </div>
-    <!-- Content Section -->
-    <div id="main" :style="{ marginLeft: sidenavWidth + 'px' }">
-      <div class="d-block d-sm-none padding-left-10 padding-bottom-0">
-        <div
-          class="dropdown form-control p-2"
-          @click="toggleDropdown"
-          style="width: fit-content"
-        >
-          <a class="dropdown-toggle" :class="{ active: isDropdownOpen }">
-            {{ mobileTab }}
-          </a>
-          <div class="dropdown-menu" :class="{ show: isDropdownOpen }">
-            <a class="dropdown-item" @click="onClickHomeTab">Dashboard</a>
-            <a class="dropdown-item" @click="onClickOrderTab">Order List</a>
-            <a class="dropdown-item" @click="onClickBankTab">Bank Info</a>
-            <a class="dropdown-item" @click="onClickEventTab">My Event</a>
-            <a class="dropdown-item" @click="onClickAddEventTab">Add Event</a>
-          </div>
+    <div class="d-block d-md-none p-2">
+      <div
+        class="dropdown form-control p-2"
+        @click="toggleDropdown"
+        style="width: fit-content"
+      >
+        <a class="dropdown-toggle" :class="{ active: isDropdownOpen }">
+          {{ mobileTab }}
+        </a>
+        <div class="dropdown-menu" :class="{ show: isDropdownOpen }">
+          <a class="dropdown-item" @click="onClickHomeTab">Dashboard</a>
+          <a class="dropdown-item" @click="onClickOrderTab">User Management</a>
+          <a class="dropdown-item" @click="onClickBankTab">Bank Info</a>
+          <a class="dropdown-item" @click="onClickEventTab">My Event</a>
+          <a class="dropdown-item" @click="onClickAddEventTab">Add Event</a>
         </div>
       </div>
-
-      <span
-        style="font-size: 30px; cursor: pointer"
-        @click="toggleNav"
-        class="d-none d-md-block"
+    </div>
+    <!-- Page Content -->
+    <div :class="['page-content', { 'page-shift': isOpen }]">
+      <button
+        class="btn btn-primary m-2 d-none d-md-block"
+        v-if="!isOpen"
+        @click="openSidebar"
       >
-        {{ isNavOpen ? "×" : "☰" }} {{ isNavOpen ? "" : "" }}
-      </span>
-      <div>
-        <Dashboard v-if="isAccountHomeVisible"></Dashboard>
-      </div>
+        ☰
+      </button>
 
-      <div>
-        <Orders v-if="isOrdersVisible"></Orders>
-      </div>
-
-      <div>
-        <Bank v-if="isBankVisible"></Bank>
-      </div>
-      <div>
-        <event v-if="isEventVisible"></event>
-      </div>
-      <div>
-        <addEvent v-if="isAddEventVisible"></addEvent>
-      </div>
+      <Dashboard v-if="isAccountHomeVisible"></Dashboard>
+      <Orders v-if="isOrdersVisible"></Orders>
+      <Bank v-if="isBankVisible"></Bank>
+      <event v-if="isEventVisible"></event>
+      <addEvent v-if="isAddEventVisible"></addEvent>
     </div>
   </div>
 </template>
+
 <script>
 import { mapActions, mapGetters } from "vuex";
 import Dashboard from "./dashboard/dashboard.vue";
@@ -171,7 +101,7 @@ export default {
       se: true,
       sidenavWidth: 0,
       isDropdownOpen: false,
-      isNavOpen: false,
+      isOpen: false,
 
       isAccountHomeVisible: true,
       isBankVisible: false,
@@ -211,13 +141,11 @@ export default {
     toggleDropdown() {
       this.isDropdownOpen = !this.isDropdownOpen;
     },
-    toggleNav() {
-      this.isNavOpen = !this.isNavOpen;
-      this.sidenavWidth = this.isNavOpen ? 250 : 0;
+    openSidebar() {
+      this.isOpen = true;
     },
-    closeNav() {
-      this.isNavOpen = false;
-      this.sidenavWidth = 0;
+    closeSidebar() {
+      this.isOpen = false;
     },
     toggleSection() {
       this.isSectionVisible = !this.isSectionVisible;
@@ -286,11 +214,11 @@ export default {
     onClickOrderTab() {
       this.hideAll();
       this.isOrdersVisible = true;
-      this.mobileTab = "orders";
+      this.mobileTab = "user-management";
       this.$router
         .push({
           query: {
-            activeTab: "orders",
+            activeTab: "user-management",
           },
         })
         .catch((err) => {});
@@ -312,7 +240,7 @@ export default {
       if (this.$route.query) {
         if (this.$route.query.activeTab == "dashboard") {
           this.onClickHomeTab();
-        } else if (this.$route.query.activeTab == "orders") {
+        } else if (this.$route.query.activeTab == "user-management") {
           this.onClickOrderTab();
         } else if (this.$route.query.activeTab == "bank") {
           this.onClickBankTab();
@@ -335,82 +263,60 @@ export default {
   },
 };
 </script>
-<style>
-.bg-inf {
-  background-color: #f4f6fd;
+
+<style scoped>
+/* Sidebar base styles */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -260px;
+  width: 260px;
+  height: 100%;
+  background-color: #198754; /* Bootstrap success green */
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  z-index: 1050;
+  transition: left 0.3s ease;
 }
-.text {
-  color: #2f4cde;
-}
-.toggle-button {
-  padding: 10px 20px;
-  background-color: #f2f2f2;
-  border: 1px solid #ccc;
-  cursor: pointer;
+/* Default content */
+.page-content {
+  transition: margin-left 0.3s ease; /* smooth push */
+  margin-left: 0; /* start aligned */
 }
 
-.sidenav {
-  height: 100%;
-  width: 0;
+/* When sidebar is open */
+.page-shift {
+  margin-left: 250px; /* same width as your sidebar */
+}
+
+/* When sidebar is open */
+.sidebar.sidebar-open {
+  left: 0;
+}
+
+/* Overlay behind sidebar */
+.sidebar-overlay {
   position: fixed;
-  z-index: 1;
   top: 0;
   left: 0;
-
-  overflow-x: hidden;
-  transition: 0.5s;
-  padding-top: 60px;
-}
-
-.sidenav a {
-  padding: 8px 8px 8px 32px;
-  text-decoration: none;
-  font-size: 25px;
-  color: #818181;
-  display: block;
-  transition: 0.3s;
-}
-
-.sidenav a:hover {
-  color: #f1f1f1;
-}
-
-.sidenav .closebtn {
-  position: absolute;
-  top: 0;
-  right: 25px;
-  font-size: 36px;
-  margin-left: 50px;
-}
-
-#main {
-  transition: margin-left 0.5s;
-  padding: 16px;
-}
-
-@media screen and (max-height: 450px) {
-  .sidenav {
-    padding-top: 15px;
-  }
-  .sidenav a {
-    font-size: 18px;
-  }
-}
-.section {
-  margin-top: 20px;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
   width: 100%;
-  box-sizing: border-box;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1049;
 }
-.push-right {
-  margin-left: 250px; /* Adjust this value according to your needs */
+
+/* Sidebar content styling */
+.sidebar-content a {
+  display: block;
+  padding: 10px 0;
+  color: white;
+  text-decoration: none;
 }
-.page-content {
-  width: auto;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
+.sidebar-content a:hover {
+  text-decoration: underline;
+}
+
+.sidebar-header {
+  background-color: #157347;
 }
 </style>

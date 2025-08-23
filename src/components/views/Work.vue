@@ -1,22 +1,60 @@
 <template>
-    <div class="container text-start my-5">
-        <h1>How It Works</h1>
-        <p>
-        This section will explain how the event ticketing system works, including the process of hosting events, purchasing tickets, and managing bookings.
-        </p>
-        <div class="row">
-        <div class="col-md-6">
-            <h2>Hosting Events</h2>
-            <p>
-            Event organizers can create and manage events through our platform. They can set event details, ticket prices, and availability.
-            </p>
-        </div>
-        <div class="col-md-6">
-            <h2>Purchasing Tickets</h2>
-            <p>
-            Users can browse available events and purchase tickets directly through the platform. Payment options are secure and user-friendly.
-            </p>
-        </div>
-        </div>
-    </div>
+  <div class="staff-login">
+    <h2>Staff Login</h2>
+    <form @submit.prevent="loginStaff">
+      <div>
+        <label>Name</label>
+        <input
+          v-model="name"
+          type="text"
+          required
+          placeholder="Enter staff name"
+        />
+      </div>
+      <div>
+        <label>Passcode</label>
+        <input
+          v-model="passcode"
+          type="password"
+          required
+          placeholder="Enter passcode"
+        />
+      </div>
+      <button type="submit">Login</button>
+    </form>
+  </div>
 </template>
+
+<script>
+import axios from "axios";
+
+export default {
+  data() {
+    return {
+      name: "",
+      passcode: "",
+    };
+  },
+  methods: {
+    async loginStaff() {
+      try {
+
+        const res = await axios.post(
+          "https://event-ticket-qa70.onrender.com/api/staff/login",
+          { name: this.name, passcode: this.passcode },
+        );
+
+        if (res.data.success) {
+          localStorage.setItem("staffToken", res.data.token);
+          alert("Staff login successful!");
+          this.$router.push("/scanner");
+        } else {
+          alert(res.data.message);
+        }
+      } catch (err) {
+        alert(err.response?.data?.message || "Login failed");
+      }
+    },
+  },
+};
+</script>

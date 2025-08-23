@@ -1,7 +1,8 @@
 
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../components/views/HomeView.vue'
+
 import isAdmin from "@/helpers/isAdmin.js";
+import isUser from "@/helpers/isUser.js";
 import GoogleLoginCallback from '@/components/views/GoogleLoginCallback.vue';
 
 
@@ -35,9 +36,9 @@ component: () => import(/* webpackChunkName: "about" */ '../components/views/Wor
 
 
 {
-  path: "/dash",
+  path: "/dashboard",
   name: "dash",
-    //   beforeEnter: isAdmin,
+   beforeEnter: isUser,
   component: () =>
     import( /* webpackChunkName: "about" */ "../components/dash.vue")
 },
@@ -45,11 +46,23 @@ component: () => import(/* webpackChunkName: "about" */ '../components/views/Wor
 {
   path: "/admin",
   name: "admin",
+  beforeEnter: isAdmin,
+   
   // route level code-splitting
   // this generates a separate chunk (about.[hash].js) for this route
   // which is lazy-loaded when the route is visited.
   component: () =>
     import( /* webpackChunkName: "about" */ "../components/Admin.vue")
+  
+},
+{
+  path: "/scanner",
+  name: "scanner",
+  // route level code-splitting
+  // this generates a separate chunk (about.[hash].js) for this route
+  // which is lazy-loaded when the route is visited.
+  component: () =>
+    import( /* webpackChunkName: "about" */ "../components/scanner.vue")
 },
 
 
@@ -89,6 +102,15 @@ component: () => import(/* webpackChunkName: "about" */ '../components/views/Wor
     import( /* webpackChunkName: "about" */ "../components/auth/Login.vue")
 },
 {
+  path: "/staff-login",
+  name: "staff",
+  // route level code-splitting
+  // this generates a separate chunk (about.[hash].js) for this route
+  // which is lazy-loaded when the route is visited.
+  component: () =>
+    import( /* webpackChunkName: "about" */ "../components/auth/staffLogin.vue")
+},
+{
   path: "/register",
   name: "register",
   // route level code-splitting
@@ -125,7 +147,7 @@ component: () => import(/* webpackChunkName: "about" */ '../components/views/Wor
   // this generates a separate chunk (about.[hash].js) for this route
   // which is lazy-loaded when the route is visited.
   component: () =>
-    import( /* webpackChunkName: "about" */ "../components/auth/Profile.vue")
+    import( /* webpackChunkName: "about" */ "../components/auth/staffLogin.vue")
 },
 
 {
