@@ -24,7 +24,7 @@
                   <div class="col-12 col-sm-10 col-md-8 col-lg-6">
                     <form @submit.prevent="createAffiliate" class="mx-auto mb-4">
                       <!-- Product Selection -->
-                      <div class="text-center mb-3 bg-success text-white">
+                      <div class="text-center mb-3 text-white">
                         <h5 class="m-0">Create Affiliate Link</h5>
                       </div>
 
@@ -163,6 +163,40 @@
                   </button>
                 </div>
 
+                <!-- Affiliate Summary -->
+                <div class="card shadow-sm">
+                  <div class="text-center bg-success p-2 text-white">
+                    <h5 class="mb-0 text-center">Affiliate Summary</h5>
+                  </div>
+                  <div class="card-body p-0">
+                    <div class="table-responsive">
+                      <table class="table table-striped mb-0">
+                        <thead>
+                          <tr>
+                            <th>Affiliate Name</th>
+                            <th>Code</th>
+                            <th>Total Orders</th>
+                            <th>Total Earnings (₦)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-if="!affiliateSummary.length">
+                            <td colspan="4" class="text-center text-muted">
+                              No summary available
+                            </td>
+                          </tr>
+                          <tr v-for="summary in affiliateSummary" :key="summary.code">
+                            <td>{{ summary.name }}</td>
+                            <td>{{ summary.code }}</td>
+                            <td>{{ summary.totalOrders }}</td>
+                            <td>{{ summary.totalEarnings }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+
                 <!-- Affiliate Orders -->
                 <div class="card mb-4 shadow-sm">
                   <div class="text-center bg-success p-2 text-white">
@@ -202,40 +236,6 @@
                     </div>
                   </div>
                 </div>
-
-                <!-- Affiliate Summary -->
-                <div class="card shadow-sm">
-                  <div class="text-center bg-success p-2 text-white">
-                    <h5 class="mb-0 text-center">Affiliate Summary</h5>
-                  </div>
-                  <div class="card-body p-0">
-                    <div class="table-responsive">
-                      <table class="table table-striped mb-0">
-                        <thead>
-                          <tr>
-                            <th>Affiliate Name</th>
-                            <th>Code</th>
-                            <th>Total Orders</th>
-                            <th>Total Earnings (₦)</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr v-if="!affiliateSummary.length">
-                            <td colspan="4" class="text-center text-muted">
-                              No summary available
-                            </td>
-                          </tr>
-                          <tr v-for="summary in affiliateSummary" :key="summary.code">
-                            <td>{{ summary.name }}</td>
-                            <td>{{ summary.code }}</td>
-                            <td>{{ summary.totalOrders }}</td>
-                            <td>{{ summary.totalEarnings }}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -248,7 +248,7 @@
               <ul class="list-group shadow-sm">
                 <li v-for="member in staff" :key="member._id" class="list-group-item">
                   <div><strong>Name:</strong> {{ member.name }}</div>
-                  <div><strong>Email:</strong> {{ member.passcode }}</div>
+                  <div><strong>passcode:</strong> {{ member.passcode }}</div>
                   <div class="d-flex gap-2">
                     <button
                       class="btn btn-sm btn-outline-danger"

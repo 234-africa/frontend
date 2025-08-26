@@ -86,32 +86,22 @@
                   </select>
                 </div>
               </div>
-              <div class="col-md-5 d-none">
-                <div class="">
-                  <label for="currency" class="form-label">Currency:</label>
-                  <select
-                    v-model="product.currency"
-                    id="currency"
-                    class="form-control"
-                    required
-                  >
-                    <option value="">-- Select Currency --</option>
-                    <option value="USD">Dollar ($)</option>
-                    <option value="NGN">Naira (₦)</option>
-                    <option value="GBP">Pound (£)</option>
-                    <option value="EUR">Euro (€)</option>
-                    <option value="GHS">Ghanaian Cedi (₵)</option>
-                  </select>
+              <div class="col-md-5">
+                <div>
+                  <label for="customUrl" class="form-label">Use custom URL</label>
+                  <div class="input-group pt-2">
+                    <span class="input-group-text">234Africa.live/event/</span>
+                    <input
+                      type="text"
+                      v-model="product.customizeUrl"
+                      @input="checkUrl"
+                      class="form-control pt-md-2"
+                      id="customUrl"
+                      placeholder="Enter your custom link"
+                    />
+                  </div>
+                  <small v-if="urlStatus" :class="statusClass">{{ urlStatus }}</small>
                 </div>
-                <label for="Price" class="form-label mb-3 d-none">Price:</label>
-                <input
-                  v-model="product.price"
-                  type="text"
-                  placeholder="price"
-                  id="price"
-                  class="form-control"
-                />
-                <small>Leave blank for a free event</small>
               </div>
             </div>
             <div class="mb-3">
@@ -296,7 +286,7 @@
           <div v-if="currentStep === 3">
             <div class="my-4 text-start">
               <h5><strong>Create your ticket types</strong></h5>
-              <p class="text-danger small">* prices tickets</p>
+              <p class="text-danger small"></p>
 
               <!-- Ticket Rows -->
               <div
@@ -400,6 +390,9 @@ export default {
   },
   data() {
     return {
+      //  customizeUrl: "",
+      urlStatus: "",
+      statusClass: "",
       currentStep: 0,
       steps: ["Basic Info", "Event Details", "Media Upload", "Tickets"],
       categories: [],
@@ -409,6 +402,7 @@ export default {
         title: "",
         description: "",
         currency: "",
+        customizeUrl: "",
         tag: "",
         price: "",
         event: {
@@ -421,8 +415,7 @@ export default {
         },
       },
       address: "",
-     
-    
+
       eventType: "single", // or "recurring"
       eventFrequency: "",
       photos: [],
@@ -443,6 +436,35 @@ export default {
     }
   },
   methods: {
+    debouncedCheck() {
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = setTimeout(() => {
+        this.checkCustomUrl();
+      }, 500); // Wait 500ms after typing stops
+    },
+    async checkUrl() {
+      if (!this.product.customizeUrl.trim()) {
+        this.urlStatus = "";
+        return;
+      }
+
+      try {
+        const res = await axios.post("https://event-ticket-qa70.onrender.com/api/check-custom-url", {
+          url: this.product.customizeUrl,
+        });
+
+        if (res.data.success) {
+          this.urlStatus = res.data.message; // "This URL is available"
+          this.statusClass = "text-success";
+        } else {
+          this.urlStatus = res.data.message; // "This URL is already taken"
+          this.statusClass = "text-danger";
+        }
+      } catch (err) {
+        this.urlStatus = "Error checking URL";
+        this.statusClass = "text-danger";
+      }
+    },
     isValidTitle() {
       return this.product.title.trim().split(/\s+/).length >= 2;
     },
@@ -492,6 +514,7 @@ export default {
       formData.append("title", this.product.title);
       formData.append("description", this.product.description);
       formData.append("tag", this.product.tag);
+      formData.append("customizeUrl", this.product.customizeUrl);
       formData.append("price", this.product.price);
       formData.append("currency", this.product.currency);
       formData.append("eventDate", new Date(this.product.event.startDate).toISOString());

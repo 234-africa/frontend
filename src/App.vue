@@ -1,18 +1,16 @@
 <template>
   <div id="app" class="text-capitalize">
-    <nav class="navbar-fixed-top bi "> 
+    <nav class="navbar-fixed-top bi">
       <topp />
     </nav>
-    
 
-      <div class="">
-        <div>
-          <notifications position="top right" classes="my-custom-class" />
-        </div>
-        <router-view />
-        <sitemap />
+    <div class="">
+      <div>
+        <notifications position="top right" classes="my-custom-class" />
       </div>
-   
+      <router-view />
+      <sitemap />
+    </div>
   </div>
 </template>
 <script>
@@ -27,46 +25,54 @@ export default {
 </script>
 
 <style>
-  :root {
-    --bs-primary: #f4a213 !important; ;
-  }
+* {
+  box-sizing: border-box;
+}
 
-  .btn-primary {
-    background-color: var(--bs-primary) !important;
-    border-color: var(--bs-primary) !important;
-    color: white !important;
-  }
+body,
+html {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* hides horizontal scroll */
+}
+
+:root {
+  --bs-primary: #f4a213 !important;
+}
+
+.btn-primary {
+  background-color: var(--bs-primary) !important;
+  border-color: var(--bs-primary) !important;
+  color: white !important;
+}
 body .text-primary {
-    color: var(--bs-primary) !important;
-  }
-  .btn-outline-primary{
- background-color: transparent !important;
-    border-color: var(--bs-primary) !important;
-    color: var(--bs-primary) !important;
+  color: var(--bs-primary) !important;
+}
+.btn-outline-primary {
+  background-color: transparent !important;
+  border-color: var(--bs-primary) !important;
+  color: var(--bs-primary) !important;
+}
+.btn-outline-primary:hover {
+  background-color: var(--bs-primary) !important;
+  border-color: var(--bs-primary) !important;
+  color: white !important;
+}
+.btn-primary:hover {
+  background-color: white !important;
+  border-color: var(--bs-primary) !important;
+  color: var(--bs-primary) !important;
+}
 
-  }
-    .btn-outline-primary:hover{
- background-color: var(--bs-primary) !important;
-    border-color: var(--bs-primary) !important;
-    color: white !important;
-    
-  }
-  .btn-primary:hover {
-    background-color: white !important;
-    border-color: var(--bs-primary) !important;
-    color: var(--bs-primary) !important;
-  }
+.text-primary {
+  color: var(--bs-primary) !important;
+}
 
-  .text-primary {
-    color: var(--bs-primary) !important;
-  }
+.bg-primary {
+  background-color: var(--bs-primary) !important;
+}
 
-  .bg-primary {
-    background-color: var(--bs-primary) !important;
-  }
-
-  .border-primary {
-    border-color: var(--bs-primary) !important;
-  }
+.border-primary {
+  border-color: var(--bs-primary) !important;
+}
 </style>
-

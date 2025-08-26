@@ -101,6 +101,13 @@ component: () => import(/* webpackChunkName: "about" */ '../components/views/Wor
   component: () =>
     import( /* webpackChunkName: "about" */ "../components/auth/Login.vue")
 },
+  {
+    path: '/confirm-email',
+    name: 'ConfirmEmail',
+      component: () =>
+    import( /* webpackChunkName: "about" */ "../components/auth/confirmEmail.vue")
+
+  },
 {
   path: "/staff-login",
   name: "staff",
@@ -151,7 +158,7 @@ component: () => import(/* webpackChunkName: "about" */ '../components/views/Wor
 },
 
 {
-  path: "/product",
+  path: "/event",
   name: "product",
   // route level code-splitting
   // this generates a separate chunk (about.[hash].js) for this route
@@ -160,7 +167,7 @@ component: () => import(/* webpackChunkName: "about" */ '../components/views/Wor
     import( /* webpackChunkName: "about" */ "../components/Product.vue")
 },
  {
-    path: "/product/:title",
+    path: "/event/:title",
     name: 'ProductDetails',
     props: true,
     component: () =>

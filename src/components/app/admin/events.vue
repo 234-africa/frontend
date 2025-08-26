@@ -47,8 +47,8 @@
     </div>
 
     <!-- 💰 Price Modal -->
-    <div v-if="showPriceModal" class="modal" @click.self="showPriceModal = false">
-      <div class="modal-content">
+    <div v-if="showPriceModal" class="modal w-100" @click.self="showPriceModal = false">
+      <div class="modal-content h-25">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h5 class="m-0 fw-bold">Price</h5>
           <button class="btn-icon" @click="showPriceModal = false">
@@ -57,7 +57,7 @@
         </div>
 
         <div class="row">
-          <div class="col">
+          <div class="col-6">
             <label>Minimum amount</label>
             <input
               v-model.number="tempFilters.minPrice"
@@ -65,7 +65,7 @@
               class="form-control"
             />
           </div>
-          <div class="col">
+          <div class="col-6">
             <label>Maximum amount</label>
             <input
               v-model.number="tempFilters.maxPrice"
@@ -86,7 +86,7 @@
 
     <!-- 📅 Date Modal -->
     <div v-if="showDateModal" class="modal" @click.self="showDateModal = false">
-      <div class="modal-content">
+      <div class="modal-content h-25">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h5 class="m-0 fw-bold">Date</h5>
           <button class="btn-icon" @click="showDateModal = false">
@@ -103,10 +103,10 @@
         </div>
 
         <div class="row">
-          <div class="col">
+          <div class="col-6">
             <input v-model="tempFilters.startDate" type="date" class="form-control" />
           </div>
-          <div class="col">
+          <div class="col-6">
             <input v-model="tempFilters.endDate" type="date" class="form-control" />
           </div>
         </div>
@@ -121,7 +121,7 @@
     </div>
     <div v-if="showEditModal" class="modal" @click.self="showEditModal = false">
       <div class=" ">
-        <div class="modal-content" style="max-height: 90vh; overflow-y: auto">
+        <div class="modal-content w-100 h-75" style="max-height: 90vh; overflow-y: auto">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="m-0 fw-bold">Edit</h5>
             <button class="btn-icon" @click="showEditModal = false">
@@ -131,8 +131,8 @@
           <editProduct
             v-if="showEditProduct"
             :product-id="selectedProductId"
-            @close="showEditModal = false"
             @refresh="fetchProducts"
+            @close="showEditModal = false"
           ></editProduct>
         </div>
       </div>
@@ -185,7 +185,9 @@
                         : product.event.tickets[0].price ===
                           product.event.tickets[product.event.tickets.length - 1].price
                         ? formatPrice(product.event.tickets[0].price)
-                        : `${formatPrice(product.event.tickets[0].price)} - ${formatPrice(
+                        : `From ${formatPrice(
+                            product.event.tickets[0].price
+                          )} - ${formatPrice(
                             product.event.tickets[product.event.tickets.length - 1].price
                           )}`
                     }}
@@ -431,25 +433,46 @@ export default {
   justify-content: center;
   align-items: center;
   z-index: 1050;
+  padding: 1rem;
+  box-sizing: border-box;
 }
+
 .modal-content {
   background: #fff;
-  padding: 30px;
+  padding: 1.5rem;
   border-radius: 16px;
-
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   animation: fadeIn 0.3s ease-in-out;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
+
+/* Mobile adjustments */
+@media (max-width: 576px) {
+  .modal-content {
+    padding: 1rem;
+    border-radius: 8px;
+    height: 100vh;
+    max-height: 100vh;
+    width: 100%;
+  }
+}
+
+/* Optional fade-in animation */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
+
 .btn-icon {
   background: none;
   border: none;

@@ -109,7 +109,7 @@ export default {
 }
 
 .table-responsive {
-  overflow-x: auto;
+  overflow-x: hidden;
 }
 
 .custom-table {

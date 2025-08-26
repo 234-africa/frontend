@@ -7,6 +7,7 @@
         
     <form @submit.prevent="loginStaff">
           <div class="form-group">
+            <label class="form-label">Enter Staff Name</label>
             <input
               v-model="name"
           type="text"
@@ -16,6 +17,7 @@
             />
           </div>
           <div class="form-group">
+            <label class="form-label">Enter Passcode</label>
             <input
               v-model="passcode"
           type="passcode"

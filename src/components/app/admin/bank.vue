@@ -76,9 +76,7 @@ export default {
   methods: {
     async fetchBanks() {
       try {
-        const res = await axios.get(
-          "https://event-ticket-qa70.onrender.com/api/all-banks"
-        );
+        const res = await axios.get("https://event-ticket-qa70.onrender.com/api/all-banks");
         this.banks = res.data.banks;
       } catch (err) {
         console.error("Error fetching banks:", err);
@@ -95,7 +93,7 @@ export default {
 }
 
 .table-responsive {
-  overflow-x: auto;
+  overflow-x: hidden;
 }
 
 .custom-table {

@@ -1,6 +1,5 @@
 <template>
   <div>
-
     <body class="h-100 pt-5">
       <div class="authincation h-100">
         <div class="container h-100">
@@ -11,7 +10,7 @@
                   <div class="col-xl-12">
                     <div class="auth-form">
                       <h4 class="text-center mb-4">Forgot Password</h4>
-                      <form   @submit.prevent="handleSubmit">
+                      <form @submit.prevent="handleSubmit">
                         <div class="form-group">
                           <label><strong>Email</strong></label>
                           <input
@@ -19,16 +18,13 @@
                             class="form-control"
                             placeholder="hello@example.com"
                             v-model="email"
-                          >
+                          />
                         </div>
                         <div class="text-center">
-                          <button
-                            type="submit"
-                            class="btn btn-primary btn-block"
-                          >SUBMIT</button>
-
+                          <button type="submit" class="btn btn-primary btn-block">
+                            SUBMIT
+                          </button>
                         </div>
-
                       </form>
                     </div>
                   </div>
@@ -38,7 +34,6 @@
           </div>
         </div>
       </div>
-
     </body>
   </div>
 </template>
@@ -50,7 +45,7 @@ export default {
   data() {
     return {
       email: "",
-      message: ""
+      message: "",
     };
   },
 
@@ -58,19 +53,18 @@ export default {
     async handleSubmit() {
       const response = await axios
         .post("https://event-ticket-qa70.onrender.com/api/auth/forgotPassword", {
-          email: this.email
+          email: this.email,
         })
-        .then(response => {
-
+        .then((response) => {
           this.message = response.data.message;
-            Swal.fire(response.data.message);
+          Swal.fire(response.data.message);
+          console.log(this.message);
         })
-        .catch(err => console.log(err));
-      console.log(response);
+        .catch((err) => console.log(err));
     },
     clear() {
       this.$refs.form.reset();
-    }
-  }
+    },
+  },
 };
 </script>

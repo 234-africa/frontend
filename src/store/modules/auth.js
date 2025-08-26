@@ -1,6 +1,7 @@
 // store/index.js
 
-import axiosInstance from "../../helpers/axiosInstance";
+import axios from "axios";
+import axiosInstance from "@/helpers/axiosInstance";
 import Swal from "sweetalert2";
 import router from "@/router";
 
@@ -27,6 +28,13 @@ const mutations = {
   setError(state, error) {
     state.error = error;
   },
+  logout(state) {
+    state.user = null;
+    state.userDetails = null;
+    state.token = null;
+    state.users = [];
+    state.error = null;
+  },
 };
 const actions = {
   setToken({ commit }, token) {
@@ -38,8 +46,8 @@ const actions = {
   },
   REGISTER_USER({ commit }, payload) {
     return new Promise((resolve, reject) => {
-      axiosInstance
-        .post("/auth/signup", payload)
+      axios
+        .post("https://event-ticket-qa70.onrender.com/api/auth/signup", payload)
         .then((res) => {
           if (res.data.success == true) {
             resolve(res.data);
@@ -50,19 +58,29 @@ const actions = {
         });
     });
   },
+  // store/auth.js (Vuex action)
   LOGIN_USER({ commit }, payload) {
     return new Promise((resolve, reject) => {
-      axiosInstance
-        .post("/auth/login", payload)
+      axios
+        .post("https://event-ticket-qa70.onrender.com/api/auth/login", payload)
         .then((res) => {
-          if (res.data.success == true) {
+          if (res.data.success) {
             const token = res.data.token;
+
+            // ✅ Save token
             localStorage.setItem("token", token);
+
+            // ✅ Set axios auth header for future requests
+            axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+            // ✅ Commit to store
+            commit("SET_TOKEN", token);
+
             resolve(res.data);
           } else {
             reject(res.data);
           }
-          window.location.href = "/dashboard";
+         // window.location.href = "/dashboard";
         })
         .catch((err) => {
           reject(err.response.data);
@@ -71,13 +89,10 @@ const actions = {
   },
 
   logout({ commit }) {
-    return new Promise((resolve, reject) => {
-      commit("logout");
-      localStorage.removeItem("token");
-      delete axiosInstance.defaults.headers.common["Authorization"];
-      resolve();
-      window.location.href = "/login"; // Redirect to the login page
-    });
+    commit("logout");
+    localStorage.removeItem("token");
+    delete axiosInstance.defaults.headers.common["Authorization"];
+    window.location.href = "/login";
   },
   async sendCodeToBackend({ commit }, code) {
     try {
@@ -97,7 +112,7 @@ const actions = {
 
       localStorage.setItem("token", response.data.token);
       Swal.fire("login successful");
-      window.location.href = "/dashboard";
+      //  window.location.href = "/dashboard";
     } catch (error) {
       console.error("Failed to send authorization code:", error);
     }

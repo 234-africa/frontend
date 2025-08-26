@@ -86,16 +86,20 @@
                   </select>
                 </div>
               </div>
-              <div class="col-md-5 d-none">
-                <label for="Price" class="form-label mb-3">Price:</label>
-                <input
-                  v-model="product.price"
-                  type="text"
-                  placeholder="price"
-                  id="price"
-                  class="form-control"
-                />
-                <small>Leave blank for a free event</small>
+              <div class="col-md-5">
+                <div class="">
+                  <label for="customUrl" class="form-label">Use custom URL</label>
+                  <div class="input-group pt-2">
+                    <span class="input-group-text">234Africa.live/event/</span>
+                    <input
+                      type="text"
+                      v-model="product.customizeUrl"
+                      class="form-control pt-md-2"
+                      id="customUrl"
+                      placeholder="Enter your custom link"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
             <div class="mb-3">
@@ -441,6 +445,7 @@ export default {
         title: "",
         description: "",
         tag: "",
+        customizeUrl: "",
         price: "",
         event: {
           startDate: "",
@@ -467,7 +472,9 @@ export default {
   },
   async created() {
     try {
-      const res = await axios.get("https://event-ticket-qa70.onrender.com/api/categories");
+      const res = await axios.get(
+        "https://event-ticket-qa70.onrender.com/api/categories"
+      );
       this.categories = res.data.categories || res.data;
       console.log("Categories fetched:", this.categories);
     } catch (error) {
@@ -525,6 +532,7 @@ export default {
       formData.append("description", this.product.description);
       formData.append("tag", this.product.tag);
       formData.append("price", this.product.price);
+      formData.append("customizeUrl", this.product.customizeUrl);
 
       formData.append("eventDate", new Date(this.product.event.startDate).toISOString());
       if (this.product.event.endDate) {

@@ -1,5 +1,5 @@
 <template>
-  <div class=" ">
+  <div class="form-container">
     <!-- Stepper -->
     <div class="stepper pt-2 mx-auto">
       <div
@@ -7,8 +7,8 @@
         :key="index"
         class="step"
         :class="{
-          active: currentStep === index,
-          completed: index < currentStep,
+          'step-active': currentStep === index,
+          'step-completed': index < currentStep,
         }"
       >
         <div class="circle">
@@ -26,7 +26,7 @@
     </div>
 
     <!-- Form -->
-    <div class="row justify-content-center">
+    <div class="row text-start">
       <div class="col-12">
         <form
           @submit.prevent="submitProduct"
@@ -82,16 +82,21 @@
                   </select>
                 </div>
               </div>
-              <div class="col-md-5 d-none">
-                <label for="Price" class="form-label mb-3">Price:</label>
-                <input
-                  v-model="product.price"
-                  type="text"
-                  placeholder="price"
-                  id="price"
-                  class="form-control"
-                />
-                <small>Leave blank for a free event</small>
+              <div class="col-md-5">
+                <div class="">
+                  <label for="customUrl" class="form-label">Use custom URL</label>
+                  <div class="input-group pt-2">
+                    <span class="input-group-text">234Africa.live/event/</span>
+                    <input
+                      type="text"
+                      v-model="product.customizeUrl"
+                      class="form-control pt-md-2"
+                      id="customUrl"
+                      placeholder="Enter your custom link"
+                      readonly
+                    />
+                  </div>
+                </div>
               </div>
             </div>
             <div class="mb-3">
@@ -253,9 +258,12 @@
                     </label>
 
                     <!-- Preview -->
-                    <div v-if="previewUrl" class="text-center mt-3">
+                    <div
+                      v-if="previewUrl || (product.photos && product.photos.length)"
+                      class="text-center mt-3"
+                    >
                       <img
-                        :src="previewUrl"
+                        :src="previewUrl || product.photos[0]"
                         alt="Preview"
                         class="img-fluid rounded shadow"
                         style="max-height: 250px"
@@ -357,7 +365,7 @@
               Next
             </button>
             <button v-else type="submit" class="btn btn-primary btn-primary:hover">
-              Create Event
+              Update Event
             </button>
           </div>
           <spinner v-if="spinner" />
@@ -452,30 +460,62 @@ export default {
           `https://event-ticket-qa70.onrender.com/api/product/${this.productId}`
         );
         console.log("Product data:", response.data);
+
         const data = response.data.product;
 
-        // Fill your form fields:
+        // Basic fields
         this.product.title = data.title;
         this.product.description = data.description;
         this.product.tag = data.tag?.join(", ") || "";
-        this.product.price = data.price;
+        //this.product.price = data.price;
 
         this.categoryID = data.category;
-        this.product.event.startDate = data.event?.startDate?.split("T")[0] || "";
-        this.product.event.endDate = data.event?.endDate?.split("T")[0] || "";
-        this.product.event.startTime = data.event?.startTime || "";
 
-        this.product.event.timezone = data.event?.timezone || "";
-        this.address = data.event?.location?.name || "";
+        // Photos (for preview)
+        this.product.photos = data.photos || [];
+        this.product.customizeUrl = data.customizeUrl || "";
 
-        this.tickets = data.tickets || [];
+        // Event mapping
+        if (data.event) {
+          const start = data.event.start;
+          const end = data.event.end;
+
+          if (start) {
+            const dateObj = new Date(start);
+            const hours = String(dateObj.getHours()).padStart(2, "0");
+            const minutes = String(dateObj.getMinutes()).padStart(2, "0");
+
+            this.product.event.startDate = start.split("T")[0];
+            this.product.event.startTime = `${hours}:${minutes}`; // ensures correct HH:mm format
+          }
+
+          if (end) {
+            const endObj = new Date(end);
+            const hours = String(endObj.getHours()).padStart(2, "0");
+            const minutes = String(endObj.getMinutes()).padStart(2, "0");
+
+            this.product.event.endDate = end.split("T")[0];
+            this.product.event.endTime = `${hours}:${minutes}`;
+          }
+
+          this.product.event.timezone = data.event.timezone || "";
+          this.address = data.event.location?.name || "";
+
+          // Tickets
+          this.tickets = data.event.tickets || [];
+        }
 
         console.log("Product loaded:", data);
-      } catch (err) {
-        console.error("Failed to fetch product:", err);
-        alert("Failed to load event details.");
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          localStorage.removeItem("token");
+          router.push("/login");
+        } else {
+          throw error;
+        }
       }
     },
+
     getAmPm(timeString) {
       if (!timeString) return "AM";
       const hour = parseInt(timeString.split(":")[0], 10);
@@ -578,14 +618,15 @@ export default {
   },
 };
 </script>
-
 <style scoped>
+/* Container for the form or content */
 .form-container {
   width: 95%;
   margin: auto;
   margin-top: 30px;
 }
 
+/* Stepper layout */
 .stepper {
   position: relative;
   display: flex;
@@ -594,6 +635,7 @@ export default {
   margin-bottom: 30px;
 }
 
+/* Each step container */
 .step {
   display: flex;
   flex-direction: column;
@@ -601,56 +643,80 @@ export default {
   flex: 1;
   z-index: 1;
   color: #999;
+  text-align: center;
 }
 
+/* Step circle */
 .step .circle {
-  width: 20px;
-  height: 20px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: #ccc;
+  background-color: #ccc;
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 5px;
   font-weight: bold;
-}
-
-.step.active .circle {
-  background: black;
-}
-
-.step.completed .circle {
-  background: #00bfa5;
-}
-
-.step.active {
-  color: black;
-}
-
-.step.completed {
-  color: #00bfa5;
-}
-
-.label {
   font-size: 14px;
-  font-weight: 500;
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
+/* Step label below the circle */
+.step .label {
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* ACTIVE step */
+.step.step-active .circle {
+  background-color: #f4a213;
+  border: 2px solid #f4a213;
+  color: white;
+}
+
+/* COMPLETED step (with checkmark) */
+.step.step-completed .circle {
+  background-color: #f4a213;
+  border: 2px solid #f4a213;
+  color: white;
+}
+
+.step.step-active .label,
+.step.step-completed .label {
+  color: #f4a213;
+}
+
+/* Progress line background */
 .progress-line {
   position: absolute;
   bottom: 14px;
   left: 0;
   right: 0;
   height: 4px;
-  background: #e0e0e0;
+  background-color: #e0e0e0;
   z-index: 0;
 }
 
+/* Progress fill based on currentStep */
 .progress-fill {
   height: 4px;
-  background: #00bfa5;
+  background-color: #f4a213;
   transition: width 0.3s ease-in-out;
   width: 0%;
+}
+
+/* Optional: Responsive tweaks */
+@media (max-width: 576px) {
+  .step .label {
+    font-size: 11px;
+  }
+
+  .step .circle {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+  }
 }
 </style>

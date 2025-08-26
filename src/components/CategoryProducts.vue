@@ -37,13 +37,14 @@
             :key="product._id"
           >
             <div>
-           <img
-  :src="product.photos[0] || 'https://via.placeholder.com/400x300?text=No+Image'"
-  class="img-fluid rounded w-100"
-  style="height: 200px; object-fit: cover"
-  alt="Event Image"
-/>
-
+              <img
+                :src="
+                  product.photos[0] || 'https://via.placeholder.com/400x300?text=No+Image'
+                "
+                class="img-fluid rounded w-100"
+                style="height: 200px; object-fit: cover"
+                alt="Event Image"
+              />
 
               <div class="pt-2">
                 <div>
@@ -60,19 +61,18 @@
                   </p>
 
                   <p>
-  {{
-    product.event.tickets[0].price === 0 &&
-    product.event.tickets[product.event.tickets.length - 1].price === 0
-      ? 'Free'
-      : product.event.tickets[0].price ===
-        product.event.tickets[product.event.tickets.length - 1].price
-      ? formatPrice(product.event.tickets[0].price)
-      : `${formatPrice(product.event.tickets[0].price)} - ${formatPrice(
-          product.event.tickets[product.event.tickets.length - 1].price
-        )}`
-  }}
-</p>
-
+                    {{
+                      product.event.tickets[0].price === 0 &&
+                      product.event.tickets[product.event.tickets.length - 1].price === 0
+                        ? "Free"
+                        : product.event.tickets[0].price ===
+                          product.event.tickets[product.event.tickets.length - 1].price
+                        ? formatPrice(product.event.tickets[0].price)
+                        : `${formatPrice(product.event.tickets[0].price)} - ${formatPrice(
+                            product.event.tickets[product.event.tickets.length - 1].price
+                          )}`
+                    }}
+                  </p>
                 </div>
 
                 <button
@@ -122,9 +122,7 @@ export default {
     const finalCategory = categoryType.replace(/\b\w/g, (l) => l.toUpperCase());
 
     const response = await axios.get(
-      `https://event-ticket-qa70.onrender.com/api/categories/${encodeURIComponent(
-        finalCategory
-      )}`
+      `https://event-ticket-qa70.onrender.com/api/categories/${encodeURIComponent(finalCategory)}`
     );
     console.log("Category Products Response:", response.data);
 
@@ -132,14 +130,11 @@ export default {
   },
 
   methods: {
-       goToProduct(productTitle) {
-      const normalizedProductTitle = productTitle
-        .replace(/\s+/g, "-")
-        .toLowerCase();
+    goToProduct(productTitle) {
+      const normalizedProductTitle = productTitle.replace(/\s+/g, "-").toLowerCase();
 
       // Open in new tab
       window.open(`/product/${normalizedProductTitle}`, "_blank");
-  
     },
     formatDate(date) {
       if (!date) return "No date";

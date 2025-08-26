@@ -55,6 +55,7 @@
                   <th>Amount</th>
 
                   <th>Ticket type</th>
+                  <th><button @click="downloadAndSendOrders">download</button></th>
                 </tr>
               </thead>
               <tbody class="">
@@ -139,6 +140,25 @@ export default {
     },
   },
   methods: {
+    async downloadAndSendOrders() {
+      try {
+        const response = await axios.get(
+          "https://event-ticket-qa70.onrender.com/api/orders/download-and-email",
+          {
+            headers: { Authorization: `Bearer ${this.getToken}` },
+          }
+        );
+
+        if (response.data.success) {
+          alert("✅ Orders sent to your email!");
+        } else {
+          alert("⚠️ " + response.data.message);
+        }
+      } catch (err) {
+        console.error(err);
+        alert("❌ Failed to send orders.");
+      }
+    },
     prevPage() {
       if (this.currentPage > 1) {
         this.currentPage--;

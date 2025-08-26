@@ -6,6 +6,7 @@
 
         <form @submit.prevent="registerUser">
           <div class="form-group">
+            <label class="form-label">Name</label>
             <input
               v-model="name"
               type="text"
@@ -15,6 +16,7 @@
             />
           </div>
           <div class="form-group">
+            <label class="form-label">Email</label>
             <input
               v-model="email"
               type="email"
@@ -24,6 +26,17 @@
             />
           </div>
           <div class="form-group">
+            <label class="form-label">Brand Name</label>
+            <input
+              v-model="brand"
+              type="text"
+              class="form-input"
+              placeholder="Brand Name"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
             <input
               v-model="password"
               type="password"
@@ -31,6 +44,19 @@
               placeholder="Password"
               required
             />
+          </div>
+          <div class="form-group">
+            <label class="form-label">confirm Password</label>
+            <input
+              v-model="confirmpassword"
+              :class="['form-input', { 'input-error': passwordMismatch }]"
+              type="password"
+              placeholder="Confirm Password"
+              required
+            />
+            <p v-if="passwordMismatch" class="error text-danger">
+              Passwords do not match.
+            </p>
           </div>
 
           <div class="form-submit">
@@ -56,22 +82,39 @@ export default {
     return {
       name: "",
       email: "",
+      brand: "",
       password: "",
+      confirmpassword: "",
+      errorMessage: "",
     };
+  },
+  computed: {
+    passwordMismatch() {
+      return (
+        this.password && this.confirmpassword && this.password !== this.confirmpassword
+      );
+    },
   },
   methods: {
     ...mapActions(["REGISTER_USER"]),
     registerUser() {
+      if (this.passwordMismatch) {
+        this.errorMessage = "Passwords must match.";
+        return;
+      }
       const payload = {
         name: this.name,
         email: this.email,
         password: this.password,
+        brand: this.brand,
       };
 
       this.REGISTER_USER(payload)
         .then((response) => {
           //const message =response.data.message
-          Swal.fire("Registration successful:");
+          Swal.fire(
+            "Registration successful: please check your mailbox to confirm your email"
+          );
 
           // Handle success scenario
           this.$router.push({ name: "login" });
@@ -87,6 +130,29 @@ export default {
 };
 </script>
 <style scoped>
+.input-error {
+  border: 1px solid red;
+  animation: shake 0.3s;
+}
+
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-3px);
+  }
+  50% {
+    transform: translateX(3px);
+  }
+  75% {
+    transform: translateX(-3px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
 .signup-wrapper {
   display: flex;
   justify-content: center;

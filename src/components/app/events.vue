@@ -45,10 +45,9 @@
         </div>
       </div>
     </div>
-
     <!-- 💰 Price Modal -->
     <div v-if="showPriceModal" class="modal w-100" @click.self="showPriceModal = false">
-      <div class="modal-content w-100">
+      <div class="modal-content h-25">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h5 class="m-0 fw-bold">Price</h5>
           <button class="btn-icon" @click="showPriceModal = false">
@@ -57,7 +56,7 @@
         </div>
 
         <div class="row">
-          <div class="col">
+          <div class="col-6">
             <label>Minimum amount</label>
             <input
               v-model.number="tempFilters.minPrice"
@@ -65,7 +64,7 @@
               class="form-control"
             />
           </div>
-          <div class="col">
+          <div class="col-6">
             <label>Maximum amount</label>
             <input
               v-model.number="tempFilters.maxPrice"
@@ -86,7 +85,7 @@
 
     <!-- 📅 Date Modal -->
     <div v-if="showDateModal" class="modal" @click.self="showDateModal = false">
-      <div class="modal-content">
+      <div class="modal-content h-25">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h5 class="m-0 fw-bold">Date</h5>
           <button class="btn-icon" @click="showDateModal = false">
@@ -103,10 +102,10 @@
         </div>
 
         <div class="row">
-          <div class="col">
+          <div class="col-6">
             <input v-model="tempFilters.startDate" type="date" class="form-control" />
           </div>
-          <div class="col">
+          <div class="col-6">
             <input v-model="tempFilters.endDate" type="date" class="form-control" />
           </div>
         </div>
@@ -137,9 +136,9 @@
         </div>
       </div>
     </div>
-    <div v-if="showUserModal" class="modal" @click.self="showUserModal = false">
-      <div class=" ">
-        <div class="modal-content w-100 h-75" style="max-height: 90vh; overflow-y: auto">
+    <div v-if="showUserModal" class="" @click.self="showUserModal = false">
+      <div class="modal">
+        <div class="modal-content w-100 h-50" style="overflow-y: auto">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="m-0 fw-bold">Assign</h5>
             <button class="btn-icon" @click="showUserModal = false">
@@ -186,7 +185,7 @@
 
           <div class="row">
             <div
-              class="col-md-4 pt-3"
+              class="col-md-4 pt-3 mb-3"
               v-for="product in filteredProducts"
               :key="product._id"
             >
@@ -221,7 +220,9 @@
                         : product.event.tickets[0].price ===
                           product.event.tickets[product.event.tickets.length - 1].price
                         ? formatPrice(product.event.tickets[0].price)
-                        : `${formatPrice(product.event.tickets[0].price)} - ${formatPrice(
+                        : `From ${formatPrice(
+                            product.event.tickets[0].price
+                          )} - ${formatPrice(
                             product.event.tickets[product.event.tickets.length - 1].price
                           )}`
                     }}
@@ -248,6 +249,12 @@
                     >
                       <i class="bi bi-pencil-fill me-1"></i>
                       Assign User
+                    </button>
+                    <button
+                      class="btn btn-outline-primary btn-sm ms-2"
+                      @click="copyFullEventUrl(product.customizeUrl)"
+                    >
+                      <i class="bi bi-clipboard me-1"></i>
                     </button>
 
                     <!-- Delete Button -->
@@ -344,13 +351,26 @@ export default {
     },
   },
   methods: {
+    async copyFullEventUrl(customizeUrl) {
+      const fullUrl = `https://jibbbb-f21da.web.app/event/${customizeUrl}`;
+      try {
+        await navigator.clipboard.writeText(fullUrl);
+        alert("Event URL copied to clipboard!");
+      } catch (error) {
+        alert("Failed to copy the URL.");
+        console.error(error);
+      }
+    },
     async fetchProducts() {
       try {
-        const res = await axios.get("https://event-ticket-qa70.onrender.com/api/user/products", {
-          headers: {
-            Authorization: `Bearer ${this.getToken}`,
-          },
-        });
+        const res = await axios.get(
+          "https://event-ticket-qa70.onrender.com/api/user/products",
+          {
+            headers: {
+              Authorization: `Bearer ${this.getToken}`,
+            },
+          }
+        );
         console.log(res.data);
         this.products = res.data.products;
       } catch (error) {
@@ -398,11 +418,14 @@ export default {
       console.log(productId);
 
       try {
-        await axios.delete(`https://event-ticket-qa70.onrender.com/api/product/${productId}`, {
-          headers: {
-            Authorization: `Bearer ${this.getToken}`,
-          },
-        });
+        await axios.delete(
+          `https://event-ticket-qa70.onrender.com/api/product/${productId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${this.getToken}`,
+            },
+          }
+        );
         alert("Product deleted successfully");
         this.fetchProducts(); // Refresh the list
       } catch (error) {
@@ -516,25 +539,46 @@ export default {
   justify-content: center;
   align-items: center;
   z-index: 1050;
+  padding: 1rem;
+  box-sizing: border-box;
 }
+
 .modal-content {
   background: #fff;
-  padding: 30px;
+  padding: 1.5rem;
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   animation: fadeIn 0.3s ease-in-out;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
+/* Mobile adjustments */
+@media (max-width: 576px) {
+  .modal-content {
+    padding: 1rem;
+    border-radius: 8px;
+    height: 100vh;
+    max-height: 100vh;
+    width: 100%;
+  }
+}
+
+/* Optional fade-in animation */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
+
 .btn-icon {
   background: none;
   border: none;

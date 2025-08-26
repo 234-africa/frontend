@@ -44,8 +44,8 @@
     </div>
 
     <!-- Mobile Dropdown -->
-    <div class="d-block d-md-none px-2 pb-2">
-      <div class="dropdown form-control p-2 w-auto" @click="toggleDropdown">
+    <div class="d-block d-md-none w-50 px-2 pb-2">
+      <div class="dropdown form-control p-2" @click="toggleDropdown">
         <a class="dropdown-toggle" :class="{ active: isDropdownOpen }">
           {{ mobileTab }}
         </a>
@@ -84,49 +84,6 @@
   </div>
 </template>
 
-<style scoped>
-/* Sidebar */
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: -260px; /* hidden by default */
-  width: 260px;
-  height: 100%;
-  background-color: #198754;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-  transition: left 0.3s ease;
-  z-index: 1050;
-  color: white;
-}
-.sidebar.sidebar-open {
-  left: 0; /* slide in */
-}
-
-/* Page Content */
-.page-content {
-  transition: margin-left 0.3s ease;
-  margin-left: 0;
-}
-.page-shift {
-  margin-left: 260px; /* same width as sidebar */
-}
-
-/* Sidebar Header */
-.sidebar-header {
-  background-color: #157347;
-}
-
-/* Sidebar links */
-.sidebar-content a {
-  display: block;
-  padding: 10px 0;
-  color: white;
-  text-decoration: none;
-}
-.sidebar-content a:hover {
-  text-decoration: underline;
-}
-</style>
 <script>
 import { mapActions, mapGetters } from "vuex";
 
@@ -373,3 +330,59 @@ export default {
   },
 };
 </script>
+<style scoped>
+/* Sidebar base styles */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -260px;
+  width: 260px;
+  height: 100%;
+  background-color: #198754; /* Bootstrap success green */
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  overflow-y: hidden;
+  z-index: 1050;
+  transition: left 0.3s ease;
+}
+/* Default content */
+.page-content {
+  transition: margin-left 0.3s ease; /* smooth push */
+  margin-left: 0; /* start aligned */
+}
+
+/* When sidebar is open */
+.page-shift {
+  margin-left: 250px; /* same width as your sidebar */
+}
+
+/* When sidebar is open */
+.sidebar.sidebar-open {
+  left: 0;
+}
+
+/* Overlay behind sidebar */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1049;
+}
+
+/* Sidebar content styling */
+.sidebar-content a {
+  display: block;
+  padding: 10px 0;
+  color: white;
+  text-decoration: none;
+}
+.sidebar-content a:hover {
+  text-decoration: underline;
+}
+
+.sidebar-header {
+  background-color: #157347;
+}
+</style>

@@ -167,7 +167,9 @@
                         : product.event.tickets[0].price ===
                           product.event.tickets[product.event.tickets.length - 1].price
                         ? formatPrice(product.event.tickets[0].price)
-                        : `${formatPrice(product.event.tickets[0].price)} - ${formatPrice(
+                        : `From ${formatPrice(
+                            product.event.tickets[0].price
+                          )} - ${formatPrice(
                             product.event.tickets[product.event.tickets.length - 1].price
                           )}`
                     }}
@@ -255,7 +257,9 @@ export default {
   methods: {
     async fetchProducts() {
       try {
-        const res = await axios.get("https://event-ticket-qa70.onrender.com/api/products");
+        const res = await axios.get(
+          "https://event-ticket-qa70.onrender.com/api/products"
+        );
         this.products = res.data.products;
         console.log(this.products);
       } catch (error) {

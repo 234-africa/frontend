@@ -1,11 +1,9 @@
 <template>
   <div class="container my-5">
     <div class="ticket-footer d-block d-md-none p-2">
-      <div
-        class="text-white d-flex justify-content-center align-items-center p-3 rounded-3"
-        style="background-color: #047143"
-      >
-        <span class="fw-bold fs-5"> Total: ₦{{ cartTotal.toLocaleString() }}</span>
+      <div class="text-white p-3 rounded-3 text-center" style="background-color: #047143">
+        <small>subTotal: {{ subTotal }}</small>
+        <div class="fw-bold fs-5 mb-1">Total: ₦{{ cartTotal }}</div>
       </div>
     </div>
 
@@ -31,8 +29,8 @@
             :key="index"
             class="currentStep text-center"
             :class="{
-              active: currentStep === index,
-              completed: index < currentStep,
+              'step-active': currentStep === index,
+              'step-completed': index < currentStep,
             }"
           >
             <div class="circle">
@@ -54,11 +52,7 @@
               <div class="ticket-content d-flex justify-content-between">
                 <div>
                   <h5>{{ ticket.name }}</h5>
-                  <p class="price">
-                    ₦{{
-                      (ticket.price * (ticket.selectedQuantity || 1)).toLocaleString()
-                    }}
-                  </p>
+                  <p class="price">₦{{ ticket.price || 0 }}</p>
                 </div>
 
                 <!-- Optional: Add a quantity selector if needed -->
@@ -73,7 +67,22 @@
               </div>
             </div>
           </div>
-          <small> Total includes a service fee</small>
+
+          <div class="d-block d-md-none">
+            <input
+              v-model="promoCode"
+              placeholder="Enter promo code"
+              class="form-control mb-2"
+            />
+
+            <button @click="applyPromo" class="btn btn-primary">Apply</button>
+
+            <div v-if="discountResult">
+              <p>{{ discountResult.message }}</p>
+            </div>
+            <br />
+            <small> Total includes a service fee </small>
+          </div>
         </div>
 
         <!-- Step 2: Contact Info -->
@@ -220,13 +229,13 @@
               </li>
             </ul>
           </div>
-          <div class="text-muted small" v-if="getCart[0]?.price !== null">
-            Service Charge (7.5%): ₦{{ serviceCharge }}
-          </div>
-          <span class="fw-bold fs-5"> Total: ₦{{ cartTotal }}</span>
+
+          <small>subTotal: {{ subTotal }}</small>
+          <div class="fw-semibold fs-6">Service Charge (7.5%): ₦{{ serviceCharge }}</div>
+
+          <div class="fw-bold fs-5">Total: ₦{{ cartTotal }}</div>
         </div>
         <div class="">
-          <h2>Apply Promo Code</h2>
           <input
             v-model="promoCode"
             placeholder="Enter promo code"
@@ -236,9 +245,7 @@
           <button @click="applyPromo" class="btn btn-primary">Apply</button>
 
           <div v-if="discountResult">
-            <p><strong>Discount:</strong> {{ discountResult.discount }}</p>
-            <p><strong>New Total:</strong> {{ discountResult.newTotal }}</p>
-            <p><strong>Message:</strong> {{ discountResult.message }}</p>
+            <small>{{ discountResult.message }}</small>
           </div>
         </div>
       </div>
@@ -254,6 +261,7 @@ import QrcodeVue from "qrcode.vue";
 import spinner from "./spinner.vue";
 import { ref } from "vue";
 import { getChartByID } from "apexcharts";
+import { startOfDay } from "@fullcalendar/core/internal";
 export default {
   components: {
     paystack,
@@ -287,9 +295,55 @@ export default {
     };
   },
   computed: {
-    serviceCharge() {
-      return (this.cartTotal * 0.075).toFixed(2);
+    // 1. Raw subtotal (tickets only, no service, no discount)
+    rawSubtotal() {
+      const subtotal = this.getCart.reduce((sum, product) => {
+        const ticketTotal = product.event.tickets.reduce((innerSum, ticket) => {
+          return innerSum + (ticket.selectedQuantity || 0) * (ticket.price || 0);
+        }, 0);
+        return sum + ticketTotal;
+      }, 0);
+
+      console.log("Raw Subtotal:", subtotal);
+      return subtotal;
     },
+
+    // Calculate discount based on raw subtotal
+    discountAmount() {
+      if (!this.discountResult) return 0;
+
+      let discount = 0;
+      if (this.discountResult.discountType === "percentage") {
+        discount = this.rawSubtotal * (this.discountResult.discountValue / 100);
+      } else if (this.discountResult.discountType === "flat") {
+        discount = this.discountResult.discountValue;
+      }
+
+      console.log("Discount Applied:", discount);
+      return +discount.toFixed(2);
+    },
+
+    // Subtotal after discount (raw subtotal - discount)
+    subTotal() {
+      const subTotal = this.rawSubtotal - this.discountAmount;
+      console.log("Subtotal After Discount:", subTotal);
+      return +subTotal.toFixed(2);
+    },
+
+    // Service charge based on subtotal after discount
+    serviceCharge() {
+      const charge = this.subTotal * 0.075;
+      console.log("Service Charge (7.5%):", charge);
+      return +charge.toFixed(2);
+    },
+
+    // Final cart total = subtotal after discount + service charge
+    cartTotal() {
+      const total = this.subTotal + this.serviceCharge;
+      console.log("Final Cart Total:", total);
+      return +total.toFixed(2);
+    },
+
     email() {
       return this.getContactInfo.email;
     },
@@ -302,19 +356,8 @@ export default {
         ? ["Tickets", "Contact", "Payment"]
         : ["Tickets", "Contact"];
     },
-    ...mapGetters(["getCart", "getContactInfo", "getSelectedTickets", "cartTotal"]),
-    cartTotal() {
-      const rawTotal = this.getCart.reduce((sum, product) => {
-        const ticketTotal = product.event.tickets.reduce((innerSum, ticket) => {
-          return innerSum + (ticket.selectedQuantity || 0) * (ticket.price || 0);
-        }, 0);
-        return sum + ticketTotal;
-      }, 0);
+    ...mapGetters(["getCart", "getContactInfo", "getSelectedTickets", "getCartTotal"]),
 
-      const discount = this.discountResult?.discount || 0;
-
-      return Math.max(rawTotal - discount, 0);
-    },
     selectedTickets() {
       return this.getCart.flatMap((product) => {
         return (
@@ -345,6 +388,16 @@ export default {
     },
   },
   methods: {
+    formatDate(date) {
+      if (!date) return "No date";
+      const options = {
+        weekday: "short",
+        //year: "numeric",
+        month: "short",
+        day: "numeric",
+      };
+      return new Date(date).toLocaleDateString("en-US", options);
+    },
     ...mapMutations(["setSelectedTickets"]),
     generateReference() {
       let text = "";
@@ -372,15 +425,23 @@ export default {
     async initializePayment() {
       try {
         this.spinner = true; // Show spinner while processing
-        const response = await axios.post("https://event-ticket-qa70.onrender.com/api/initialize", {
-          email: this.email,
-          amount: this.amount,
-        });
+        const response = await axios.post(
+          "https://event-ticket-qa70.onrender.com/api/initialize",
+          {
+            email: this.email,
+            amount: this.amount,
+          }
+        );
         console.log(response.data);
 
         const { authorization_url, reference } = response.data.data;
         // Save reference for verification later (optional)
         localStorage.setItem("paystack_reference", reference);
+        localStorage.setItem("cartTotal", this.amount);
+        localStorage.setItem("startDate", this.getCart[0]?.event?.start);
+        localStorage.setItem("startTime", this.getCart[0]?.event?.startTime);
+        localStorage.setItem("location", this.getCart[0]?.event?.location?.name);
+
         this.spinner = false; // Hide spinner after processing
 
         // Redirect to Paystack payment page
@@ -398,6 +459,9 @@ export default {
         const affiliate = localStorage.getItem("affiliateCode");
 
         const payload = {
+          startDate: this.getCart[0]?.event?.start,
+          startTime: this.getCart[0]?.event?.startTime,
+          location: this.getCart[0]?.event?.location.name,
           reference: this.reference,
           userId: this.getCart[0]?.user,
           title: this.getCart[0]?.title,
@@ -411,7 +475,10 @@ export default {
         };
 
         console.log("Sending order info:", payload);
-        const res = await axios.post("https://event-ticket-qa70.onrender.com/api/order", payload);
+        const res = await axios.post(
+          "https://event-ticket-qa70.onrender.com/api/order",
+          payload
+        );
         this.spinner = false; // Hide spinner after processing
         alert("ticket has been sent to your email");
         //this.showQRCode = true;
@@ -432,7 +499,10 @@ export default {
 
         console.log("Payload being sent:", payload);
 
-        const res = await axios.post("https://event-ticket-qa70.onrender.com/api/apply-promo", payload);
+        const res = await axios.post(
+          "https://event-ticket-qa70.onrender.com/api/apply-promo",
+          payload
+        );
 
         this.discountResult = res.data;
         localStorage.setItem("discountedTotal", res.data.newTotal);
@@ -622,7 +692,7 @@ h3 {
   font-weight: bold;
 }
 
-.currentStep.active .circle {
+.currentStep.step-active .circle {
   border-color: #f4a213;
   background-color: #f4a213;
   color: white;
@@ -640,8 +710,8 @@ h3 {
   color: #6c757d;
 }
 
-.currentStep.active .label,
-.currentStep.completed .label {
+.currentStep.step-active .label,
+.currentStep.step-completed .label {
   color: #f4a213;
 }
 

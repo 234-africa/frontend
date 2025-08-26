@@ -6,6 +6,7 @@
 
         <form @submit.prevent="loginUser">
           <div class="form-group">
+            <label class="form-label">Email</label>
             <input
               v-model="email"
               type="email"
@@ -15,6 +16,7 @@
             />
           </div>
           <div class="form-group">
+            <label class="form-label">Password</label>
             <input
               v-model="password"
               type="password"
@@ -26,21 +28,24 @@
           <div class="form-submit">
             <button type="submit" class="btn-primary">log in</button>
           </div>
-          <p class="text-center mt-3">
-            <router-link to="/forgot-password" class="link-blue"
-              >reset password</router-link
-            >
-          </p>
-          <p class="text-center mt-3">
-            dont have an account?
-            <router-link to="/register" class="link-blue">Sign up</router-link>
-          </p>
         </form>
-
-        <div class="auth-buttons">
+        <div class="auth-buttons pt-2 d-none">
           <button class="btn-google" @click="login">
             <span class="google-icon">G</span> Log in with Google
           </button>
+        </div>
+        <p class="text-center mt-1">
+          <router-link to="/forgot-password" class="link-blue"
+            >reset password</router-link
+          >
+        </p>
+        <p class="text-start">
+          dont have an account?
+          <router-link to="/register" class="link-blue">Sign up</router-link>
+        </p>
+        <div class="text-center mt-1 d-flex">
+          <small>login as staff member?</small>
+          <router-link to="/staff-login" class="link-blue">Staff Login</router-link>
         </div>
       </div>
     </div>
@@ -81,6 +86,7 @@ export default {
       });
     },
 
+    // login page
     loginUser() {
       const payload = {
         email: this.email,
@@ -88,13 +94,13 @@ export default {
       };
 
       this.LOGIN_USER(payload)
-        .then((response) => {
-          Swal.fire("login successful");
+        .then(() => {
+          Swal.fire("Login successful");
+          window.location.href = "/dashboard";
         })
         .catch((err) => {
-          const message = err.message;
-
-          Swal.fire("Oh oo!", `${message}`, "error");
+          const message = err.message || "Login failed";
+          Swal.fire("Oh oo!", message, "error");
         });
     },
   },

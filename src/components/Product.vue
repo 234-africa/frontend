@@ -14,7 +14,6 @@
       <div class="row pt-3 text-start">
         <!-- IMAGE COLUMN -->
         <div class="col-md-6">
-          <div class="tab-content"></div>
           <div class="">
             <!-- Event Title -->
             <h2 class="fw-bold">{{ product.title }}</h2>
@@ -54,7 +53,9 @@
                         : product.event.tickets[0].price ===
                           product.event.tickets[product.event.tickets.length - 1].price
                         ? formatPrice(product.event.tickets[0].price)
-                        : `${formatPrice(product.event.tickets[0].price)} - ${formatPrice(
+                        : `From ${formatPrice(
+                            product.event.tickets[0].price
+                          )} - ${formatPrice(
                             product.event.tickets[product.event.tickets.length - 1].price
                           )}`
                     }}
@@ -73,7 +74,13 @@
                 </div>
               </div>
             </div>
-
+            <div class="pt-2" v-if="product.user && product.user.brand">
+              <p class="mb-2">
+                posted by
+                <i class="bi bi-person-circle me-2"></i>
+                {{ product.user.brand }}
+              </p>
+            </div>
             <hr />
 
             <!-- TAGS SECTION -->
@@ -111,7 +118,9 @@
                     : product.event.tickets[0].price ===
                       product.event.tickets[product.event.tickets.length - 1].price
                     ? formatPrice(product.event.tickets[0].price)
-                    : `${formatPrice(product.event.tickets[0].price)} - ${formatPrice(
+                    : `From ${formatPrice(
+                        product.event.tickets[0].price
+                      )} - ${formatPrice(
                         product.event.tickets[product.event.tickets.length - 1].price
                       )}`
                 }}
@@ -163,7 +172,9 @@
                     : product.event.tickets[0].price ===
                       product.event.tickets[product.event.tickets.length - 1].price
                     ? formatPrice(product.event.tickets[0].price)
-                    : `${formatPrice(product.event.tickets[0].price)} - ${formatPrice(
+                    : `From ${formatPrice(
+                        product.event.tickets[0].price
+                      )} - ${formatPrice(
                         product.event.tickets[product.event.tickets.length - 1].price
                       )}`
                 }}
@@ -222,9 +233,7 @@ export default {
     }
 
     try {
-      const response = await axios.get(
-        `https://event-ticket-qa70.onrender.com/api/products`
-      );
+      const response = await axios.get(`https://event-ticket-qa70.onrender.com/api/products`);
       console.log("API Response:", response.data);
 
       this.products = this.shuffleArray(response.data.products || []).slice(0, 3);

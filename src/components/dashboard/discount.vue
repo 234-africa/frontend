@@ -12,10 +12,12 @@
             <div class="card-body">
               <div class="row g-3">
                 <div class="col-md-6">
+                  <label class="form-label">Enter Promo Code</label>
                   <input v-model="promo.code" placeholder="Code" class="form-control" />
                 </div>
 
                 <div class="col-md-6">
+                  <label class="form-label">Enter Discount Type</label>
                   <select v-model="promo.discountType" class="form-select">
                     <option value="percentage">Percentage</option>
                     <option value="fixed">Fixed</option>
@@ -23,6 +25,7 @@
                 </div>
 
                 <div class="col-md-6">
+                  <label class="form-label">Enter Discount Value</label>
                   <input
                     v-model.number="promo.discountValue"
                     type="number"
@@ -32,10 +35,12 @@
                 </div>
 
                 <div class="col-md-6">
+                  <label class="form-label">Expiry Date</label>
                   <input v-model="promo.expiryDate" type="date" class="form-control" />
                 </div>
 
                 <div class="col-md-6">
+                  <label class="form-label">usage Limit</label>
                   <input
                     v-model.number="promo.usageLimit"
                     type="number"
@@ -190,13 +195,9 @@ export default {
     },
     async createPromo() {
       try {
-        await axios.post(
-          "https://event-ticket-qa70.onrender.com/api/create-promo",
-          this.promo,
-          {
-            headers: { Authorization: `Bearer ${this.getToken}` },
-          }
-        );
+        await axios.post("https://event-ticket-qa70.onrender.com/api/create-promo", this.promo, {
+          headers: { Authorization: `Bearer ${this.getToken}` },
+        });
       } catch (err) {
         console.error(err.response?.data || err.message);
       }
@@ -205,13 +206,14 @@ export default {
 
     async fetchMyPromos() {
       try {
-        const res = await axios.get(
-          "https://event-ticket-qa70.onrender.com/api/my-promos",
-          {
-            headers: { Authorization: `Bearer ${this.getToken}` },
-          }
-        );
+       
+        const res = await axios.get("https://event-ticket-qa70.onrender.com/api/my-promos", {
+          headers: { Authorization: `Bearer ${this.getToken}` },
+        });
+        console.log("Token:", this.getToken);
+
         this.promos = res.data.promos || [];
+        console.log(this.promos);
       } catch (err) {
         console.error("Error fetching my promos:", err.response?.data || err.message);
       }
@@ -219,12 +221,9 @@ export default {
 
     async fetchPromos() {
       try {
-        const res = await axios.get(
-          "https://event-ticket-qa70.onrender.com/api/promo-orders",
-          {
-            headers: { Authorization: `Bearer ${this.getToken}` },
-          }
-        );
+        const res = await axios.get("https://event-ticket-qa70.onrender.com/api/promo-orders", {
+          headers: { Authorization: `Bearer ${this.getToken}` },
+        });
         // ✅ FIX: your API returns { success: true, data: [...] }
         this.promois = res.data.data || [];
       } catch (err) {
@@ -234,12 +233,9 @@ export default {
 
     async fetchProducts() {
       try {
-        const res = await axios.get(
-          "https://event-ticket-qa70.onrender.com/api/user/products",
-          {
-            headers: { Authorization: `Bearer ${this.getToken}` },
-          }
-        );
+        const res = await axios.get("https://event-ticket-qa70.onrender.com/api/user/products", {
+          headers: { Authorization: `Bearer ${this.getToken}` },
+        });
         this.products = res.data.products;
       } catch (error) {
         console.error("Error fetching products:", error);

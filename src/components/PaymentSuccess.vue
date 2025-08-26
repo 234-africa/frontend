@@ -40,8 +40,14 @@ export default {
         const reference = localStorage.getItem("paystack_reference");
         const affiliate = localStorage.getItem("affiliateCode");
         const promoCode = localStorage.getItem("promoCode");
-
+        const startDate = localStorage.getItem("startDate");
+        const startTime = localStorage.getItem("startTime");
+        const location = localStorage.getItem("location");
+        const price = Number(localStorage.getItem("cartTotal"));
         const payload = {
+          startDate,
+          startTime,
+          location,
           promoCode,
           affiliate,
           reference, // Paystack reference
@@ -52,11 +58,12 @@ export default {
           },
           userId: this.getCart[0]?.user, // Get user from first cart item
           tickets: this.getSelectedTickets, // Only selected ones
-          price: this.getCartTotal, // Total price from cart
+          price, // Total price from cart
         };
         console.log("Sending order info:", payload);
         const res = await axios.post("https://event-ticket-qa70.onrender.com/api/order", payload);
         console.log("Order info sent:", res.data);
+        // ✅ Clear storage values after successful order
       } catch (err) {
         console.error("Failed to send order info:", err);
       }

@@ -104,9 +104,13 @@ export default {
     },
     async createBank() {
       try {
-        const res = await axios.post("https://event-ticket-qa70.onrender.com/api/bank", this.form, {
-          headers: { Authorization: `Bearer ${this.getToken}` },
-        });
+        const res = await axios.post(
+          "https://event-ticket-qa70.onrender.com/api/bank",
+          this.form,
+          {
+            headers: { Authorization: `Bearer ${this.getToken}` },
+          }
+        );
 
         if (res.data.banks && res.data.banks.length > 0) {
           this.banks.push(res.data.banks[0]);

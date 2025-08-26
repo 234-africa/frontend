@@ -39,7 +39,7 @@
               <div class="home-hero_button-group">
                 <router-link
                   class="button text-decoration-none btn-primary btn-primary:hover"
-                  to="/dashboard"
+                  to="/dashboard?activeTab=add-event"
                   >Host an event</router-link
                 >
                 <router-link
@@ -120,8 +120,7 @@
                 </p>
                 <p class="mb-1">
                   <i class="bi bi-clock me-2"></i>
-                  {{ product.event.startTime }} -
-                  {{ product.event.endTime }}
+                  {{ product.event.startTime }}
                 </p>
 
                 <p class="mb-1">
@@ -179,7 +178,7 @@
         <!-- Image Section -->
         <div class="col-lg-6 text-center">
           <img
-            src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d"
+            src="WhatsApp Image 2025-08-26 at 16.50.53_abdf8872.jpg"
             alt="People enjoying an event"
             class="img-fluid rounded"
           />
@@ -190,7 +189,7 @@
         <!-- SVG Illustration -->
         <div class="col-md-6 text-center mt-4 mt-md-0">
           <img
-            src="/undraw_data-reports_l2u3.svg"
+            src="/WhatsApp Image 2025-08-25 at 15.27.25_f8d06780.jpg"
             class="img-fluid"
             alt="Manage Events Illustration"
           />
@@ -264,7 +263,7 @@
               </div>
               <div class="col-md-6 mb-4 mb-md-0 text-center">
                 <img
-                  src="/undraw_active-support_v6g0.svg"
+                  src="/WhatsApp Image 2025-08-25 at 15.27.25_58bc1d25.jpg"
                   class="img-fluid"
                   alt="Live Support"
                 />
@@ -316,9 +315,7 @@ export default {
     },
     async fetchCategories() {
       try {
-        const response = await axios.get(
-          "https://event-ticket-qa70.onrender.com/api/categories"
-        );
+        const response = await axios.get("https://event-ticket-qa70.onrender.com/api/categories");
         if (response.data.status) {
           this.categories = response.data.categories;
         }
@@ -329,9 +326,7 @@ export default {
     },
     async fetchProducts() {
       try {
-        const res = await axios.get(
-          "https://event-ticket-qa70.onrender.com/api/products"
-        );
+        const res = await axios.get("https://event-ticket-qa70.onrender.com/api/products");
         const allProducts = res.data.products;
 
         // Shuffle the array
