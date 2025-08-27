@@ -315,7 +315,7 @@ export default {
     },
     async fetchCategories() {
       try {
-        const response = await axios.get("https://event-ticket-qa70.onrender.com/api/categories");
+        const response = await axios.get("https://event-ticket-backend-gnmw.onrender.com/api/categories");
         if (response.data.status) {
           this.categories = response.data.categories;
         }
@@ -326,7 +326,7 @@ export default {
     },
     async fetchProducts() {
       try {
-        const res = await axios.get("https://event-ticket-qa70.onrender.com/api/products");
+        const res = await axios.get("https://event-ticket-backend-gnmw.onrender.com/api/products");
         const allProducts = res.data.products;
 
         // Shuffle the array
@@ -343,7 +343,7 @@ export default {
       const normalizedProductTitle = productTitle.replace(/\s+/g, "-").toLowerCase();
 
       // Open in new tab
-      window.open(`/product/${normalizedProductTitle}`, "_blank");
+      window.open(`/event/${normalizedProductTitle}`, "_blank");
     },
     formatDate(date) {
       if (!date) return "No date";

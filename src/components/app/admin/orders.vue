@@ -89,7 +89,7 @@ export default {
   methods: {
     async fetchOrders() {
       try {
-        const response = await axios.get("https://event-ticket-qa70.onrender.com/api/all-orders");
+        const response = await axios.get("https://event-ticket-backend-gnmw.onrender.com/api/all-orders");
         this.orders = response.data.orders;
       } catch (err) {
         this.error = "Failed to fetch orders";

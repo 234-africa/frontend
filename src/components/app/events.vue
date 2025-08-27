@@ -364,7 +364,7 @@ export default {
     async fetchProducts() {
       try {
         const res = await axios.get(
-          "https://event-ticket-qa70.onrender.com/api/user/products",
+          "https://event-ticket-backend-gnmw.onrender.com/api/user/products",
           {
             headers: {
               Authorization: `Bearer ${this.getToken}`,
@@ -395,7 +395,7 @@ export default {
 
       try {
         const res = await axios.post(
-          "https://event-ticket-qa70.onrender.com/api/staff",
+          "https://event-ticket-backend-gnmw.onrender.com/api/staff",
           {
             staffName: this.staffName,
             productId: this.selectedProductId,
@@ -419,7 +419,7 @@ export default {
 
       try {
         await axios.delete(
-          `https://event-ticket-qa70.onrender.com/api/product/${productId}`,
+          `https://event-ticket-backend-gnmw.onrender.com/api/product/${productId}`,
           {
             headers: {
               Authorization: `Bearer ${this.getToken}`,
@@ -436,7 +436,7 @@ export default {
       const normalizedProductTitle = productTitle.replace(/\s+/g, "-").toLowerCase();
 
       // Open in new tab
-      window.open(`/product/${normalizedProductTitle}`, "_blank");
+      window.open(`/event/${normalizedProductTitle}`, "_blank");
     },
     formatDate(date) {
       if (!date) return "No date";

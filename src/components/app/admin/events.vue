@@ -299,7 +299,7 @@ export default {
   methods: {
     async fetchProducts() {
       try {
-        const res = await axios.get("https://event-ticket-qa70.onrender.com/api/products");
+        const res = await axios.get("https://event-ticket-backend-gnmw.onrender.com/api/products");
         this.products = res.data.products;
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -310,7 +310,7 @@ export default {
       console.log(productId);
 
       try {
-        await axios.delete(`https://event-ticket-qa70.onrender.com/api/product/${productId}`);
+        await axios.delete(`https://event-ticket-backend-gnmw.onrender.com/api/product/${productId}`);
         alert("Product deleted successfully");
         this.fetchProducts(); // Refresh the list
       } catch (error) {

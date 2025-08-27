@@ -96,7 +96,7 @@ export default {
       this.error = ""; // Reset error message
 
       try {
-        const res = await axios.get(`https://event-ticket-qa70.onrender.com/api/order/${reference}`);
+        const res = await axios.get(`https://event-ticket-backend-gnmw.onrender.com/api/order/${reference}`);
         this.ticket = res.data.order;
       } catch (err) {
         if (err.response) {

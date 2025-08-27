@@ -52,7 +52,7 @@ export default {
   methods: {
     async handleSubmit() {
       const response = await axios
-        .post("https://event-ticket-qa70.onrender.com/api/auth/forgotPassword", {
+        .post("https://event-ticket-backend-gnmw.onrender.com/api/auth/forgotPassword", {
           email: this.email,
         })
         .then((response) => {

@@ -234,7 +234,7 @@ export default {
   },
   mounted() {
     axios
-      .get("https://event-ticket-qa70.onrender.com/api/categories")
+      .get("https://event-ticket-backend-gnmw.onrender.com/api/categories")
       .then((res) => {
         //  console.log(res);
 

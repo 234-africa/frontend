@@ -40,7 +40,7 @@ export default {
       try {
 
         const res = await axios.post(
-          "https://event-ticket-qa70.onrender.com/api/staff/login",
+          "https://event-ticket-backend-gnmw.onrender.com/api/staff/login",
           { name: this.name, passcode: this.passcode },
         );
 

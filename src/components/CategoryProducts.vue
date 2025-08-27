@@ -32,7 +32,7 @@
       <div class="" v-if="products.length > 0">
         <div class="row">
           <div
-            class="col-md-4 pt-3 pt-md-0"
+            class="col-md-4 pt-3 pb-3 pt-md-0"
             v-for="product in products"
             :key="product._id"
           >
@@ -47,36 +47,36 @@
               />
 
               <div class="pt-2">
-                <div>
-                  <h5>{{ product.title }}</h5>
-
-                  <p class="mb-1">
-                    <i class="bi bi-calendar-event me-2"></i>
-                    {{ formatDate(product.event.date) }}
-                  </p>
-
-                  <p class="mb-1">
-                    <i class="bi bi-geo-alt me-2"></i>
-                    {{ product.event.location || "No location" }}
-                  </p>
-
-                  <p>
-                    {{
-                      product.event.tickets[0].price === 0 &&
-                      product.event.tickets[product.event.tickets.length - 1].price === 0
-                        ? "Free"
-                        : product.event.tickets[0].price ===
+                <h5>{{ product.title }}</h5>
+                <p class="mb-1">
+                  <i class="bi bi-calendar-event me-2"></i>
+                  {{ formatDate(product.event.start) }}
+                  <span v-if="product.event.end"
+                    >- {{ formatDate(product.event.end) }}
+                  </span>
+                </p>
+                <p class="mb-1">
+                  <i class="bi bi-geo-alt me-2"></i>
+                  {{ product.event.location.name || "No location" }}
+                </p>
+                <p>
+                  {{
+                    product.event.tickets[0].price === 0 &&
+                    product.event.tickets[product.event.tickets.length - 1].price === 0
+                      ? "Free"
+                      : product.event.tickets[0].price ===
+                        product.event.tickets[product.event.tickets.length - 1].price
+                      ? formatPrice(product.event.tickets[0].price)
+                      : `From ${formatPrice(
+                          product.event.tickets[0].price
+                        )} - ${formatPrice(
                           product.event.tickets[product.event.tickets.length - 1].price
-                        ? formatPrice(product.event.tickets[0].price)
-                        : `${formatPrice(product.event.tickets[0].price)} - ${formatPrice(
-                            product.event.tickets[product.event.tickets.length - 1].price
-                          )}`
-                    }}
-                  </p>
-                </div>
+                        )}`
+                  }}
+                </p>
 
                 <button
-                  class="btn btn-outline-primary"
+                  class="btn btn-outline-primary btn-sm"
                   @click="goToProduct(product.title)"
                 >
                   View Event
@@ -122,7 +122,9 @@ export default {
     const finalCategory = categoryType.replace(/\b\w/g, (l) => l.toUpperCase());
 
     const response = await axios.get(
-      `https://event-ticket-qa70.onrender.com/api/categories/${encodeURIComponent(finalCategory)}`
+      `https://event-ticket-backend-gnmw.onrender.com/api/categories/${encodeURIComponent(
+        finalCategory
+      )}`
     );
     console.log("Category Products Response:", response.data);
 
@@ -134,7 +136,7 @@ export default {
       const normalizedProductTitle = productTitle.replace(/\s+/g, "-").toLowerCase();
 
       // Open in new tab
-      window.open(`/product/${normalizedProductTitle}`, "_blank");
+      window.open(`/event/${normalizedProductTitle}`, "_blank");
     },
     formatDate(date) {
       if (!date) return "No date";

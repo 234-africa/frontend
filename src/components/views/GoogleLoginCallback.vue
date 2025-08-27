@@ -11,7 +11,7 @@ export default {
   mounted() {
     const code = this.$route.query.code;
 
-    axios.get(`https://event-ticket-qa70.onrender.com/api/auth/google/callback?code=${code}`)
+    axios.get(`https://event-ticket-backend-gnmw.onrender.com/api/auth/google/callback?code=${code}`)
       .then(response => {
         const token = response.data.token;
         // Store the token or perform other actions as needed

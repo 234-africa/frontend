@@ -258,7 +258,7 @@ export default {
     async fetchProducts() {
       try {
         const res = await axios.get(
-          "https://event-ticket-qa70.onrender.com/api/products"
+          "https://event-ticket-backend-gnmw.onrender.com/api/products"
         );
         this.products = res.data.products;
         console.log(this.products);
@@ -270,7 +270,7 @@ export default {
       const normalizedProductTitle = productTitle.replace(/\s+/g, "-").toLowerCase();
 
       // Open in new tab
-      window.open(`/product/${normalizedProductTitle}`, "_blank");
+      window.open(`/event/${normalizedProductTitle}`, "_blank");
     },
     formatDate(date) {
       if (!date) return "";

@@ -435,7 +435,7 @@ export default {
   },
   async created() {
     try {
-      const res = await axios.get("https://event-ticket-qa70.onrender.com/api/categories");
+      const res = await axios.get("https://event-ticket-backend-gnmw.onrender.com/api/categories");
       this.categories = res.data.categories || res.data;
       console.log("Categories fetched:", this.categories);
       if (this.productId) {
@@ -457,7 +457,7 @@ export default {
     async fetchProduct() {
       try {
         const response = await axios.get(
-          `https://event-ticket-qa70.onrender.com/api/product/${this.productId}`
+          `https://event-ticket-backend-gnmw.onrender.com/api/product/${this.productId}`
         );
         console.log("Product data:", response.data);
 
@@ -590,7 +590,7 @@ export default {
 
       try {
         const response = await axios.put(
-          `https://event-ticket-qa70.onrender.com/api/product/${this.productId}`, // 👈 PUT endpoint with ID
+          `https://event-ticket-backend-gnmw.onrender.com/api/product/${this.productId}`, // 👈 PUT endpoint with ID
           formData,
           {
             headers: {
