@@ -260,7 +260,6 @@ import paystack from "vue-paystack";
 import QrcodeVue from "qrcode.vue";
 import spinner from "./spinner.vue";
 import { ref } from "vue";
-import { getChartByID } from "apexcharts";
 import { startOfDay } from "@fullcalendar/core/internal";
 export default {
   components: {

@@ -352,7 +352,7 @@ export default {
   },
   methods: {
     async copyFullEventUrl(customizeUrl) {
-      const fullUrl = `https://jibbbb-f21da.web.app/event/${customizeUrl}`;
+      const fullUrl = `https://234tickets.live/event/${customizeUrl}`;
       try {
         await navigator.clipboard.writeText(fullUrl);
         alert("Event URL copied to clipboard!");
