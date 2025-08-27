@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: 234tickets-frontend
+    env: node
+    plan: free
+    buildCommand: npm run build
+    startCommand: npx serve -s dist
+    envVars:
+      - key: NODE_VERSION
+        value: 18
