@@ -269,21 +269,26 @@ export default {
 
       return this.products.filter((product) => {
         const titleMatch = product.title?.toLowerCase().includes(term);
-        const locationMatch = product.event?.location?.name
-          ?.toLowerCase()
-          .includes(term.toLowerCase());
-        const price = product.price || 0;
-        const priceMatch =
-          (!this.filters.minPrice || price >= this.filters.minPrice) &&
-          (!this.filters.maxPrice || price <= this.filters.maxPrice);
+        const locationMatch = product.event?.location?.name?.toLowerCase().includes(term);
 
+        // ✅ Extract min and max ticket prices
+        const tickets = product.event?.tickets || [];
+        const sortedTickets = [...tickets].sort((a, b) => a.price - b.price);
+        const minTicketPrice = sortedTickets[0]?.price || 0;
+        const maxTicketPrice = sortedTickets[sortedTickets.length - 1]?.price || 0;
+
+        // ✅ Adjusted price filter logic
+        const priceMatch =
+          (!this.filters.minPrice || maxTicketPrice >= this.filters.minPrice) &&
+          (!this.filters.maxPrice || minTicketPrice <= this.filters.maxPrice);
+
+        // ✅ Date filters
         const eventDate = new Date(product.event?.date);
         const startDate = this.filters.startDate
           ? new Date(this.filters.startDate)
           : null;
         const endDate = this.filters.endDate ? new Date(this.filters.endDate) : null;
 
-        // Remove time from comparisons to match only by date
         const eventDateOnly = new Date(eventDate.toDateString());
         const startDateOnly = startDate ? new Date(startDate.toDateString()) : null;
         const endDateOnly = endDate ? new Date(endDate.toDateString()) : null;
@@ -299,7 +304,9 @@ export default {
   methods: {
     async fetchProducts() {
       try {
-        const res = await axios.get("https://event-ticket-backend-gnmw.onrender.com/api/products");
+        const res = await axios.get(
+          "https://event-ticket-backend-gnmw.onrender.com/api/products"
+        );
         this.products = res.data.products;
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -310,7 +317,9 @@ export default {
       console.log(productId);
 
       try {
-        await axios.delete(`https://event-ticket-backend-gnmw.onrender.com/api/product/${productId}`);
+        await axios.delete(
+          `https://event-ticket-backend-gnmw.onrender.com/api/product/${productId}`
+        );
         alert("Product deleted successfully");
         this.fetchProducts(); // Refresh the list
       } catch (error) {
