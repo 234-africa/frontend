@@ -18,6 +18,9 @@
     "@tinymce/tinymce-vue": "^6.2.0",
     "@vue-stripe/vue-stripe": "^4.5.0",
     "@vue/cli-service": "~5.0.0",
+    "@vue/cli-plugin-babel": "~5.0.0",
+    "@vue/cli-plugin-router": "~5.0.0",
+    "@vue/cli-plugin-vuex": "~5.0.0",
     "@vueup/vue-quill": "^1.2.0",
     "@vueuse/motion": "^2.0.0",
     "animejs": "^3.2.1",
@@ -61,14 +64,11 @@
     "vue3-quill": "^0.3.1",
     "vue3-spinners": "^1.2.2",
     "vuex": "^4.0.2",
-    "vuex-persistedstate": "^4.1.0"
+    "vuex-persistedstate": "^4.1.0",
+    "vue-stripe-js": "^1.0.1"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "~5.0.0",
-    "@vue/cli-plugin-router": "~5.0.0",
-    "@vue/cli-plugin-vuex": "~5.0.0",
     "@vue/test-utils": "^2.3.2",
-    "jest": "^29.5.0",
-    "vue-stripe-js": "^1.0.1"
+    "jest": "^29.5.0"
   }
 }
