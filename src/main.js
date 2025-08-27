@@ -26,5 +26,5 @@ store.commit('loadCartFromStorage'); // Load cart data from localStorage
 import VueSweetalert2 from "vue-sweetalert2";
 
 
-createApp(App).use(store, 'QuillEditor', QuillEditor, Notifications,VueSweetalert2, VueApexCharts,vue3GoogleLogin, {
+createApp(App).use(store, 'QuillEditor', QuillEditor, Notifications,VueSweetalert2,vue3GoogleLogin, {
      }).use(router).mount('#app')
