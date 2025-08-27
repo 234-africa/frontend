@@ -2,12 +2,10 @@
   "name": "rest",
   "version": "0.1.0",
   "private": true,
- "scripts": {
-  "serve": "npx vue-cli-service serve",
-  "build": "npx vue-cli-service build",
-  "start": "serve -s dist"
-},
-  
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build"
+  },
   "dependencies": {
     "@fullcalendar/core": "^6.1.7",
     "@fullcalendar/daygrid": "^6.1.7",
@@ -21,6 +19,7 @@
     "@vueup/vue-quill": "^1.2.0",
     "@vueuse/motion": "^2.0.0",
     "animejs": "^3.2.1",
+    "apexcharts": "^3.41.0",
     "axios": "^1.4.0",
     "bootstrap": "^4.6.2",
     "bootstrap-icons": "^1.13.1",
@@ -40,12 +39,13 @@
     "pinia-plugin-persistedstate": "^3.1.0",
     "popper.js": "^1.16.1",
     "qrcode.vue": "^3.6.0",
-    "serve": "^14.2.4",
     "spinkit": "^2.0.1",
     "stripe": "^12.8.0",
     "sweetalert2": "^11.7.5",
     "typescript": "^5.1.3",
+    "uninstall": "^0.0.0",
     "vue": "^3.2.36",
+    "vue-apexcharts": "^1.6.2",
     "vue-chartjs": "^5.2.0",
     "vue-google-charts": "^1.1.0",
     "vue-google-oauth2": "^1.5.10",
@@ -55,6 +55,7 @@
     "vue-router": "^4.0.3",
     "vue-star-rating": "^2.1.0",
     "vue-sweetalert2": "^5.0.5",
+    "vue3-apexcharts": "^1.4.1",
     "vue3-autocounter": "^1.0.6",
     "vue3-google-login": "^2.0.15",
     "vue3-google-map": "^0.23.1",
