@@ -1,6 +1,6 @@
 <template>
   <div>
-    <body class="h-100 pt-5">
+    <div class="h-100 pt-5">
       <div class="authincation h-100">
         <div class="container h-100">
           <div class="row justify-content-center h-100 align-items-center">
@@ -34,7 +34,7 @@
           </div>
         </div>
       </div>
-    </body>
+    </div>
   </div>
 </template>
 
