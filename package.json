@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "build": "vue-cli-service build",
+    "start": "serve -s dist"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.7",
@@ -39,6 +40,7 @@
     "pinia-plugin-persistedstate": "^3.1.0",
     "popper.js": "^1.16.1",
     "qrcode.vue": "^3.6.0",
+    "serve": "^14.2.4",
     "spinkit": "^2.0.1",
     "stripe": "^12.8.0",
     "sweetalert2": "^11.7.5",
