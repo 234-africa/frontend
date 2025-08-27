@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "npx vue-cli-service build",
-    "start": "npx serve -s dist"
-  },
+  "serve": "npx vue-cli-service serve",
+  "build": "npx vue-cli-service build",
+  "start": "serve -s dist"
+},
+  
   "dependencies": {
     "@fullcalendar/core": "^6.1.7",
     "@fullcalendar/daygrid": "^6.1.7",
