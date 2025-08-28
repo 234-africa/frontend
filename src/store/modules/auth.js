@@ -47,7 +47,7 @@ const actions = {
   REGISTER_USER({ commit }, payload) {
     return new Promise((resolve, reject) => {
       axios
-        .post("https://event-ticket-backend-gnmw.onrender.com/api/auth/signup", payload)
+        .post("http://localhost:4000/api/auth/signup", payload)
         .then((res) => {
           if (res.data.success == true) {
             resolve(res.data);
@@ -62,7 +62,7 @@ const actions = {
   LOGIN_USER({ commit }, payload) {
     return new Promise((resolve, reject) => {
       axios
-        .post("https://event-ticket-backend-gnmw.onrender.com/api/auth/login", payload)
+        .post("http://localhost:4000/api/auth/login", payload)
         .then((res) => {
           if (res.data.success) {
             const token = res.data.token;
@@ -102,7 +102,7 @@ const actions = {
       console.log("Authorization header:", headers.Authorization);
 
       const response = await axiosInstance.post(
-        "https://event-ticket-backend-gnmw.onrender.com/api/auth/google",
+        "http://localhost:4000/api/auth/google",
         null,
         { headers }
       );
