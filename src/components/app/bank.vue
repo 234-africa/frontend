@@ -157,7 +157,7 @@ export default {
     async deleteBank(id) {
       if (!confirm("Delete this bank info?")) return;
       try {
-        await axios.delete(`http://localhost:4000/api/bank/${id}`, {
+        await axios.delete(`https://event-ticket-backend-yx81.onrender.com/api/bank/${id}`, {
           headers: { Authorization: `Bearer ${this.getToken}` },
         });
         this.banks = this.banks.filter((b) => b._id !== id);
