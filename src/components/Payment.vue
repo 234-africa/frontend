@@ -60,7 +60,11 @@
                   class="ticket-select mt-2"
                   v-model.number="ticket.selectedQuantity"
                 >
-                  <option v-for="n in ticket.quantity + 1" :key="n" :value="n - 1">
+                  <option
+                    v-for="n in Math.min(ticket.quantity, 3) + 1"
+                    :key="n"
+                    :value="n - 1"
+                  >
                     {{ n - 1 }}
                   </option>
                 </select>
