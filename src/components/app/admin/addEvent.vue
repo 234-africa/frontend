@@ -347,6 +347,7 @@
                     type="text"
                     class="form-control"
                     placeholder="e.g. General Admission"
+                    required
                   />
                 </div>
 
@@ -356,6 +357,10 @@
                     v-model.number="ticket.quantity"
                     type="number"
                     class="form-control"
+                    :disabled="ticket.type === 'unlimited'"
+                    :required="ticket.type === 'limited'"
+                    min="1"
+                    placeholder="e.g. 100"
                   />
                 </div>
 
@@ -366,14 +371,38 @@
                     type="number"
                     class="form-control"
                     placeholder="Blank for free event"
+                    min="0"
+                    required
                   />
                 </div>
 
-                <div class="col-md-2 d-flex align-items-end">
+                <div class="col-md-2">
+                  <label class="form-label">Type</label>
+                  <select v-model="ticket.type" class="form-select" required>
+                    <option value="limited">Limited</option>
+                    <option value="unlimited">Unlimited</option>
+                  </select>
+                </div>
+
+                <div class="col-md-2">
+                  <label class="form-label">Purchase Limit</label>
+                  <input
+                    v-model.number="ticket.purchaseLimit"
+                    type="number"
+                    class="form-control"
+                    :disabled="ticket.type === 'unlimited'"
+                    min="1"
+                    placeholder="Max tickets per order"
+                    required
+                  />
+                </div>
+
+                <div class="col-md-1 d-flex align-items-end">
                   <button
-                    class="btn btn-outline-danger w-25"
+                    class="btn btn-outline-danger"
                     title="Delete"
                     @click="removeTicket(index)"
+                    type="button"
                   >
                     <i class="bi bi-trash"></i>
                   </button>
@@ -472,7 +501,9 @@ export default {
   },
   async created() {
     try {
-      const res = await axios.get("https://event-ticket-backend-yx81.onrender.com/api/categories");
+      const res = await axios.get(
+        "https://event-ticket-backend-yx81.onrender.com/api/categories"
+      );
       this.categories = res.data.categories || res.data;
       console.log("Categories fetched:", this.categories);
     } catch (error) {

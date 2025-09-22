@@ -294,13 +294,14 @@
                 :key="index"
                 class="row g-3 align-items-end mb-2"
               >
-                <div class="col-md-3">
+                <div class="col-md-2">
                   <label class="form-label">Ticket name</label>
                   <input
                     v-model="ticket.name"
                     type="text"
                     class="form-control"
                     placeholder="e.g. General Admission"
+                    required
                   />
                 </div>
 
@@ -310,6 +311,10 @@
                     v-model.number="ticket.quantity"
                     type="number"
                     class="form-control"
+                    :disabled="ticket.type === 'unlimited'"
+                    :required="ticket.type === 'limited'"
+                    min="1"
+                    placeholder="e.g. 100"
                   />
                 </div>
 
@@ -323,11 +328,33 @@
                   />
                 </div>
 
-                <div class="col-md-2 d-flex align-items-end">
+                <div class="col-md-2">
+                  <label class="form-label">Type</label>
+                  <select v-model="ticket.type" class="form-control" required>
+                    <option disabled value="">Select type</option>
+                    <option value="limited">Limited</option>
+                    <option value="unlimited">Unlimited</option>
+                  </select>
+                </div>
+
+                <div class="col-md-2">
+                  <label class="form-label">Purchase Limit</label>
+                  <input
+                    v-model.number="ticket.purchaseLimit"
+                    type="number"
+                    class="form-control"
+                    min="1"
+                    placeholder="tickets per order"
+                    required
+                  />
+                </div>
+
+                <div class="col-md-1 d-flex align-items-end">
                   <button
-                    class="btn btn-outline-danger w-25"
+                    class="btn btn-outline-danger"
                     title="Delete"
                     @click="removeTicket(index)"
+                    type="button"
                   >
                     <i class="bi bi-trash"></i>
                   </button>

@@ -61,7 +61,10 @@
                   v-model.number="ticket.selectedQuantity"
                 >
                   <option
-                    v-for="n in Math.min(ticket.quantity, 3) + 1"
+                    v-for="n in Math.min(
+                      ticket.purchaseLimit,
+                      ticket.quantity || Infinity
+                    ) + 1"
                     :key="n"
                     :value="n - 1"
                   >
