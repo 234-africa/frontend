@@ -261,13 +261,7 @@ export default {
     },
     async fetchProducts() {
       try {
-<<<<<<< HEAD
-        const res = await axios.get(
-          "https://event-ticket-backend-yx81.onrender.com/api/products"
-        );
-=======
-        const res = await axios.get("https://event-ticket-qa70.onrender.com/api/products");
->>>>>>> 24f4f118 (m)
+        const res = await axios.get("https://event-ticket-backend-yx81.onrender.com/api/products");
         this.products = res.data.products;
         console.log(this.products);
       } catch (error) {

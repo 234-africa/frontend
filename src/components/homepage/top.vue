@@ -234,11 +234,7 @@ export default {
   },
   mounted() {
     axios
-<<<<<<< HEAD
       .get("https://event-ticket-backend-yx81.onrender.com/api/categories")
-=======
-      .get("https://event-ticket-qa70.onrender.com/api/categories")
->>>>>>> 24f4f118 (m)
       .then((res) => {
         //  console.log(res);
 

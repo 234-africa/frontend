@@ -1,10 +1,6 @@
 import axios from 'axios';
 
-<<<<<<< HEAD
 const API_URL = 'https://event-ticket-backend-yx81.onrender.com/api/';
-=======
-const API_URL = 'http://localhost:4000/api/';
->>>>>>> 24f4f118 (m)
 
 let headers = {};
 

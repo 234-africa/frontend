@@ -52,11 +52,9 @@ export default {
   methods: {
     async fetchUsers() {
       try {
-<<<<<<< HEAD
-        const res = await axios.get("https://event-ticket-backend-yx81.onrender.com/api/users");
-=======
-        const res = await axios.get("http://localhost:4000/api/users");
->>>>>>> 24f4f118 (m)
+        const res = await axios.get(
+          "https://event-ticket-backend-yx81.onrender.com/api/users"
+        );
         this.users = res.data.users;
         console.log(this.users);
       } catch (error) {

@@ -4,21 +4,11 @@
     <form @submit.prevent="loginStaff">
       <div>
         <label>Name</label>
-        <input
-          v-model="name"
-          type="text"
-          required
-          placeholder="Enter staff name"
-        />
+        <input v-model="name" type="text" required placeholder="Enter staff name" />
       </div>
       <div>
         <label>Passcode</label>
-        <input
-          v-model="passcode"
-          type="password"
-          required
-          placeholder="Enter passcode"
-        />
+        <input v-model="passcode" type="password" required placeholder="Enter passcode" />
       </div>
       <button type="submit">Login</button>
     </form>
@@ -38,14 +28,9 @@ export default {
   methods: {
     async loginStaff() {
       try {
-
         const res = await axios.post(
-<<<<<<< HEAD
           "https://event-ticket-backend-yx81.onrender.com/api/staff/login",
-=======
-          "https://event-ticket-qa70.onrender.com/api/staff/login",
->>>>>>> 24f4f118 (m)
-          { name: this.name, passcode: this.passcode },
+          { name: this.name, passcode: this.passcode }
         );
 
         if (res.data.success) {

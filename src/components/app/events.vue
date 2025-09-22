@@ -366,7 +366,6 @@ export default {
     },
     async fetchProducts() {
       try {
-<<<<<<< HEAD
         const res = await axios.get(
           "https://event-ticket-backend-yx81.onrender.com/api/user/products",
           {
@@ -375,13 +374,6 @@ export default {
             },
           }
         );
-=======
-        const res = await axios.get("https://event-ticket-qa70.onrender.com/api/user/products", {
-          headers: {
-            Authorization: `Bearer ${this.getToken}`,
-          },
-        });
->>>>>>> 24f4f118 (m)
         console.log(res.data);
         this.products = res.data.products;
       } catch (error) {
@@ -406,11 +398,7 @@ export default {
 
       try {
         const res = await axios.post(
-<<<<<<< HEAD
           "https://event-ticket-backend-yx81.onrender.com/api/staff",
-=======
-          "https://event-ticket-qa70.onrender.com/api/staff",
->>>>>>> 24f4f118 (m)
           {
             staffName: this.staffName,
             productId: this.selectedProductId,
@@ -433,22 +421,14 @@ export default {
       console.log(productId);
 
       try {
-<<<<<<< HEAD
         await axios.delete(
-          `https://event-ticket-backend-yx81.onrender.com/api/product/${productId}`,
+          `https://event-ticket-qa70.onrender.com/api/product/${productId}`,
           {
             headers: {
               Authorization: `Bearer ${this.getToken}`,
             },
           }
         );
-=======
-        await axios.delete(`https://event-ticket-qa70.onrender.com/api/product/${productId}`, {
-          headers: {
-            Authorization: `Bearer ${this.getToken}`,
-          },
-        });
->>>>>>> 24f4f118 (m)
         alert("Product deleted successfully");
         this.fetchProducts(); // Refresh the list
       } catch (error) {

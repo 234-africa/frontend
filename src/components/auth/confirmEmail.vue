@@ -24,11 +24,7 @@ export default {
     }
 
     try {
-<<<<<<< HEAD
-      const response = await axios.get(`https://event-ticket-backend-yx81.onrender.com/api/auth/confirm/${token}`);
-=======
       const response = await axios.get(`http://localhost:4000/api/auth/confirm/${token}`);
->>>>>>> 24f4f118 (m)
       this.successMessage = response.data.message || "Email confirmed successfully!";
       alert(this.successMessage);
     } catch (error) {

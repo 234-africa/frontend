@@ -435,11 +435,9 @@ export default {
   },
   async created() {
     try {
-<<<<<<< HEAD
-      const res = await axios.get("https://event-ticket-backend-yx81.onrender.com/api/categories");
-=======
-      const res = await axios.get("http://localhost:4000/api/categories");
->>>>>>> 24f4f118 (m)
+      const res = await axios.get(
+        "https://event-ticket-backend-yx81.onrender.com/api/categories"
+      );
       this.categories = res.data.categories || res.data;
       console.log("Categories fetched:", this.categories);
       if (this.productId) {
@@ -461,11 +459,7 @@ export default {
     async fetchProduct() {
       try {
         const response = await axios.get(
-<<<<<<< HEAD
           `https://event-ticket-backend-yx81.onrender.com/api/product/${this.productId}`
-=======
-          `http://localhost:4000/api/product/${this.productId}`
->>>>>>> 24f4f118 (m)
         );
         console.log("Product data:", response.data);
 
@@ -598,11 +592,7 @@ export default {
 
       try {
         const response = await axios.put(
-<<<<<<< HEAD
           `https://event-ticket-backend-yx81.onrender.com/api/product/${this.productId}`, // 👈 PUT endpoint with ID
-=======
-          `http://localhost:4000/api/product/${this.productId}`, // 👈 PUT endpoint with ID
->>>>>>> 24f4f118 (m)
           formData,
           {
             headers: {

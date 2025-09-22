@@ -199,11 +199,7 @@ export default {
       console.log(productSlug);
 
       const response = await axios.get(
-<<<<<<< HEAD
         `https://event-ticket-backend-yx81.onrender.com/api/product/${productSlug}`
-=======
-        `https://event-ticket-qa70.onrender.com/api/product/${productSlug}`
->>>>>>> 24f4f118 (m)
       );
 
       this.product = response.data.product || {};
@@ -213,11 +209,9 @@ export default {
     }
 
     try {
-<<<<<<< HEAD
-      const response = await axios.get(`https://event-ticket-backend-yx81.onrender.com/api/products`);
-=======
-      const response = await axios.get(`https://event-ticket-qa70.onrender.com/api/products`);
->>>>>>> 24f4f118 (m)
+      const response = await axios.get(
+        `https://event-ticket-backend-yx81.onrender.com/api/products`
+      );
       console.log("API Response:", response.data);
 
       this.products = this.shuffleArray(response.data.products || []).slice(0, 3);

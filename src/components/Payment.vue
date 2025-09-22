@@ -445,14 +445,13 @@ export default {
     async initializePayment() {
       try {
         this.spinner = true; // Show spinner while processing
-<<<<<<< HEAD
-        const response = await axios.post("https://event-ticket-backend-yx81.onrender.com/api/initialize", {
-=======
-        const response = await axios.post("https://event-ticket-qa70.onrender.com/api/initialize", {
->>>>>>> 24f4f118 (m)
-          email: this.email,
-          amount: this.amount,
-        });
+        const response = await axios.post(
+          "https://event-ticket-backend-yx81.onrender.com/api/initialize",
+          {
+            email: this.email,
+            amount: this.amount,
+          }
+        );
         console.log(response.data);
 
         const { authorization_url, reference } = response.data.data;
@@ -497,11 +496,10 @@ export default {
         };
 
         console.log("Sending order info:", payload);
-<<<<<<< HEAD
-        const res = await axios.post("https://event-ticket-backend-yx81.onrender.com/api/order", payload);
-=======
-        const res = await axios.post("https://event-ticket-qa70.onrender.com/api/order", payload);
->>>>>>> 24f4f118 (m)
+        const res = await axios.post(
+          "https://event-ticket-backend-yx81.onrender.com/api/order",
+          payload
+        );
         this.spinner = false; // Hide spinner after processing
         alert(
           "Your ticket has been confirmed, check your  email inbox & spam for booking confirmation"
@@ -524,11 +522,10 @@ export default {
 
         console.log("Payload being sent:", payload);
 
-<<<<<<< HEAD
-        const res = await axios.post("https://event-ticket-backend-yx81.onrender.com/api/apply-promo", payload);
-=======
-        const res = await axios.post("https://event-ticket-qa70.onrender.com/api/apply-promo", payload);
->>>>>>> 24f4f118 (m)
+        const res = await axios.post(
+          "https://event-ticket-backend-yx81.onrender.com/api/apply-promo",
+          payload
+        );
 
         this.discountResult = res.data;
         localStorage.setItem("discountedTotal", res.data.newTotal);

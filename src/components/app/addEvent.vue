@@ -428,11 +428,9 @@ export default {
   },
   async created() {
     try {
-<<<<<<< HEAD
-      const res = await axios.get("https://event-ticket-backend-yx81.onrender.com/api/categories");
-=======
-      const res = await axios.get("https://event-ticket-qa70.onrender.com/api/categories");
->>>>>>> 24f4f118 (m)
+      const res = await axios.get(
+        "https://event-ticket-backend-yx81.onrender.com/api/categories"
+      );
       this.categories = res.data.categories || res.data;
       console.log("Categories fetched:", this.categories);
     } catch (error) {
@@ -453,13 +451,12 @@ export default {
       }
 
       try {
-<<<<<<< HEAD
-        const res = await axios.post("https://event-ticket-backend-yx81.onrender.com/api/check-custom-url", {
-=======
-        const res = await axios.post("https://event-ticket-qa70.onrender.com/api/check-custom-url", {
->>>>>>> 24f4f118 (m)
-          url: this.product.customizeUrl,
-        });
+        const res = await axios.post(
+          "https://event-ticket-backend-yx81.onrender.com/api/check-custom-url",
+          {
+            url: this.product.customizeUrl,
+          }
+        );
 
         if (res.data.success) {
           this.urlStatus = res.data.message; // "This URL is available"
@@ -550,11 +547,7 @@ export default {
 
       try {
         const response = await axios.post(
-<<<<<<< HEAD
           "https://event-ticket-backend-yx81.onrender.com/api/products",
-=======
-          "http://localhost:4000/api/products",
->>>>>>> 24f4f118 (m)
           formData,
           {
             headers: {

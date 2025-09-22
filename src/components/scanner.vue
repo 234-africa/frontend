@@ -83,11 +83,7 @@ export default {
       const token = localStorage.getItem("staffToken");
       console.log(token);
       const res = await axios.get(
-<<<<<<< HEAD
         "https://event-ticket-backend-yx81.onrender.com/api/staff",
-=======
-        "https://event-ticket-qa70.onrender.com/api/staff",
->>>>>>> 24f4f118 (m)
         {
           headers: {
             Authorization: `Bearer ${token}`,

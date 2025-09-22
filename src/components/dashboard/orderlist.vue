@@ -330,11 +330,7 @@ export default {
     async fetchStaff() {
       try {
         const res = await axios.get(
-<<<<<<< HEAD
           "https://event-ticket-backend-yx81.onrender.com/api/user-staff",
-=======
-          "https://event-ticket-qa70.onrender.com/api/user-staff",
->>>>>>> 24f4f118 (m)
           {
             headers: { Authorization: `Bearer ${this.getToken}` },
           }
@@ -347,13 +343,12 @@ export default {
     async deleteStaff(id) {
       if (!confirm("Delete this bank info?")) return;
       try {
-<<<<<<< HEAD
-        await axios.delete(`https://event-ticket-backend-yx81.onrender.com/api/staff/${id}`, {
-=======
-        await axios.delete(`https://event-ticket-qa70.onrender.com/api/staff/${id}`, {
->>>>>>> 24f4f118 (m)
-          headers: { Authorization: `Bearer ${this.getToken}` },
-        });
+        await axios.delete(
+          `https://event-ticket-backend-yx81.onrender.com/api/staff/${id}`,
+          {
+            headers: { Authorization: `Bearer ${this.getToken}` },
+          }
+        );
         this.staff = this.staff.filter((b) => b._id !== id);
       } catch (err) {
         console.error("Error deleting staff:", err);
@@ -371,11 +366,7 @@ export default {
 
       try {
         const res = await axios.post(
-<<<<<<< HEAD
           "https://event-ticket-backend-yx81.onrender.com/api/affiliate",
-=======
-          "https://event-ticket-qa70.onrender.com/api/affiliate",
->>>>>>> 24f4f118 (m)
           {
             name: this.affiliateName,
             code: this.affiliateCode,
@@ -399,11 +390,7 @@ export default {
     },
     fetchAffiliates() {
       axios
-<<<<<<< HEAD
         .get("https://event-ticket-backend-yx81.onrender.com/api/affiliates", {
-=======
-        .get("https://event-ticket-qa70.onrender.com/api/affiliates", {
->>>>>>> 24f4f118 (m)
           headers: {
             Authorization: `Bearer ${this.getToken}`,
           },
@@ -417,11 +404,7 @@ export default {
     },
     fetchAffiliateOrders() {
       axios
-<<<<<<< HEAD
         .get("https://event-ticket-backend-yx81.onrender.com/api/affiliate-orders", {
-=======
-        .get("https://event-ticket-qa70.onrender.com/api/affiliate-orders", {
->>>>>>> 24f4f118 (m)
           headers: {
             Authorization: `Bearer ${this.getToken}`,
           },
@@ -436,15 +419,14 @@ export default {
     },
     fetchAffiliateSummary() {
       axios
-<<<<<<< HEAD
-        .get("https://event-ticket-backend-yx81.onrender.com/api/affiliate-orders-summary", {
-=======
-        .get("https://event-ticket-qa70.onrender.com/api/affiliate-orders-summary", {
->>>>>>> 24f4f118 (m)
-          headers: {
-            Authorization: `Bearer ${this.getToken}`,
-          },
-        })
+        .get(
+          "https://event-ticket-backend-yx81.onrender.com/api/affiliate-orders-summary",
+          {
+            headers: {
+              Authorization: `Bearer ${this.getToken}`,
+            },
+          }
+        )
         .then((res) => {
           this.affiliateSummary = res.data.data || [];
           console.log("orderss", this.affiliateSummary);
@@ -466,11 +448,7 @@ export default {
   async created() {
     try {
       const res = await axios.get(
-<<<<<<< HEAD
         "https://event-ticket-backend-yx81.onrender.com/api/user/products",
-=======
-        "https://event-ticket-qa70.onrender.com/api/user/products",
->>>>>>> 24f4f118 (m)
         {
           headers: {
             Authorization: `Bearer ${this.getToken}`,
