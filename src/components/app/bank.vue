@@ -94,7 +94,7 @@ export default {
     /** ✅ BANK METHODS **/
     async fetchBanks() {
       try {
-        const res = await axios.get("https://event-ticket-qa70.onrender.com/api/bank", {
+        const res = await axios.get("https://event-ticket-backend-yx81.onrender.com/api/bank", {
           headers: { Authorization: `Bearer ${this.getToken}` },
         });
         this.banks = res.data.banks;
@@ -105,7 +105,7 @@ export default {
     async createBank() {
       try {
         const res = await axios.post(
-          "https://event-ticket-qa70.onrender.com/api/bank",
+          "https://event-ticket-backend-yx81.onrender.com/api/bank",
           this.form,
           {
             headers: { Authorization: `Bearer ${this.getToken}` },
@@ -134,7 +134,7 @@ export default {
     async updateBank() {
       try {
         const res = await axios.put(
-          `https://event-ticket-qa70.onrender.com/api/bank/${this.editId}`,
+          `https://event-ticket-backend-yx81.onrender.com/api/bank/${this.editId}`,
           this.form,
           {
             headers: { Authorization: `Bearer ${this.getToken}` },

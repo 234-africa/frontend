@@ -434,7 +434,7 @@ export default {
     async initializePayment() {
       try {
         this.spinner = true; // Show spinner while processing
-        const response = await axios.post("https://event-ticket-qa70.onrender.com/api/initialize", {
+        const response = await axios.post("https://event-ticket-backend-yx81.onrender.com/api/initialize", {
           email: this.email,
           amount: this.amount,
         });
@@ -482,7 +482,7 @@ export default {
         };
 
         console.log("Sending order info:", payload);
-        const res = await axios.post("https://event-ticket-qa70.onrender.com/api/order", payload);
+        const res = await axios.post("https://event-ticket-backend-yx81.onrender.com/api/order", payload);
         this.spinner = false; // Hide spinner after processing
         alert(
           "Your ticket has been confirmed, check your  email inbox & spam for booking confirmation"
@@ -505,7 +505,7 @@ export default {
 
         console.log("Payload being sent:", payload);
 
-        const res = await axios.post("https://event-ticket-qa70.onrender.com/api/apply-promo", payload);
+        const res = await axios.post("https://event-ticket-backend-yx81.onrender.com/api/apply-promo", payload);
 
         this.discountResult = res.data;
         localStorage.setItem("discountedTotal", res.data.newTotal);

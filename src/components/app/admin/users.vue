@@ -52,7 +52,7 @@ export default {
   methods: {
     async fetchUsers() {
       try {
-        const res = await axios.get("https://event-ticket-qa70.onrender.com/api/users");
+        const res = await axios.get("https://event-ticket-backend-yx81.onrender.com/api/users");
         this.users = res.data.users;
         console.log(this.users);
       } catch (error) {

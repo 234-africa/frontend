@@ -305,7 +305,7 @@ export default {
     async fetchProducts() {
       try {
         const res = await axios.get(
-          "https://event-ticket-qa70.onrender.com/api/products"
+          "https://event-ticket-backend-yx81.onrender.com/api/products"
         );
         this.products = res.data.products;
       } catch (error) {
@@ -318,7 +318,7 @@ export default {
 
       try {
         await axios.delete(
-          `https://event-ticket-qa70.onrender.com/api/product/${productId}`
+          `https://event-ticket-backend-yx81.onrender.com/api/product/${productId}`
         );
         alert("Product deleted successfully");
         this.fetchProducts(); // Refresh the list

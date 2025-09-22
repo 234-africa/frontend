@@ -143,7 +143,7 @@ export default {
     async downloadAndSendOrders() {
       try {
         const response = await axios.get(
-          "https://event-ticket-qa70.onrender.com/api/orders/download-and-email",
+          "https://event-ticket-backend-yx81.onrender.com/api/orders/download-and-email",
           {
             headers: { Authorization: `Bearer ${this.getToken}` },
           }
@@ -179,7 +179,7 @@ export default {
 
   mounted() {
     axios
-      .get("https://event-ticket-qa70.onrender.com/api/orders", {
+      .get("https://event-ticket-backend-yx81.onrender.com/api/orders", {
         headers: {
           Authorization: `Bearer ${this.getToken}`,
         },
