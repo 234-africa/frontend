@@ -89,7 +89,11 @@ export default {
   methods: {
     async fetchOrders() {
       try {
+<<<<<<< HEAD
         const response = await axios.get("https://event-ticket-backend-yx81.onrender.com/api/all-orders");
+=======
+        const response = await axios.get("http://localhost:4000/api/all-orders");
+>>>>>>> 24f4f118 (m)
         this.orders = response.data.orders;
       } catch (err) {
         this.error = "Failed to fetch orders";

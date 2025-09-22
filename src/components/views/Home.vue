@@ -129,17 +129,7 @@
                 </p>
 
                 <p>
-                  {{
-                    product.event.tickets[0].price === 0 &&
-                    product.event.tickets[product.event.tickets.length - 1].price === 0
-                      ? "Free"
-                      : product.event.tickets[0].price ===
-                        product.event.tickets[product.event.tickets.length - 1].price
-                      ? formatPrice(product.event.tickets[0].price)
-                      : `${formatPrice(product.event.tickets[0].price)} - ${formatPrice(
-                          product.event.tickets[product.event.tickets.length - 1].price
-                        )}`
-                  }}
+                  {{ getTicketPriceRange(product.event.tickets) }}
                 </p>
               </div>
 
@@ -306,6 +296,17 @@ export default {
     this.fetchProducts();
   },
   methods: {
+    getTicketPriceRange(tickets) {
+      if (!tickets || tickets.length === 0) return "";
+
+      const sorted = [...tickets].sort((a, b) => a.price - b.price);
+      const lowest = sorted[0].price;
+      const highest = sorted[sorted.length - 1].price;
+
+      if (lowest === 0 && highest === 0) return "Free";
+      if (lowest === highest) return this.formatPrice(lowest);
+      return `${this.formatPrice(lowest)} - ${this.formatPrice(highest)}`;
+    },
     goToCategory(categoryType) {
       // Replace spaces with hyphens and trim any leading/trailing spaces
       const formattedCategory = categoryType.replace(/\s+/g, "-").trim();
@@ -315,9 +316,13 @@ export default {
     },
     async fetchCategories() {
       try {
+<<<<<<< HEAD
         const response = await axios.get(
           "https://event-ticket-backend-yx81.onrender.com/api/categories"
         );
+=======
+        const response = await axios.get("https://event-ticket-qa70.onrender.com/api/categories");
+>>>>>>> 24f4f118 (m)
         if (response.data.status) {
           this.categories = response.data.categories;
         }
@@ -328,9 +333,13 @@ export default {
     },
     async fetchProducts() {
       try {
+<<<<<<< HEAD
         const res = await axios.get(
           "https://event-ticket-backend-yx81.onrender.com/api/products"
         );
+=======
+        const res = await axios.get("https://event-ticket-qa70.onrender.com/api/products");
+>>>>>>> 24f4f118 (m)
         const allProducts = res.data.products;
 
         // Shuffle the array

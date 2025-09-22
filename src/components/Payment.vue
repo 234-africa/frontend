@@ -46,7 +46,7 @@
         <div v-if="currentStep === 0" class="ticket-section text-start">
           <h3>🎟️ Choose Tickets</h3>
 
-          <div class="ticket-card" v-for="product in getCart" :key="product._id">
+          <div class="ticket-card" v-for="product in getCartSorted" :key="product._id">
             <!-- Loop through tickets inside each product -->
             <div v-for="ticket in product.event.tickets" :key="ticket._id" class="">
               <div class="ticket-content d-flex justify-content-between">
@@ -294,6 +294,17 @@ export default {
     };
   },
   computed: {
+    getCartSorted() {
+      return this.getCart.map((product) => {
+        return {
+          ...product,
+          event: {
+            ...product.event,
+            tickets: [...product.event.tickets].sort((a, b) => a.price - b.price),
+          },
+        };
+      });
+    },
     // 1. Raw subtotal (tickets only, no service, no discount)
     rawSubtotal() {
       const subtotal = this.getCart.reduce((sum, product) => {
@@ -434,7 +445,11 @@ export default {
     async initializePayment() {
       try {
         this.spinner = true; // Show spinner while processing
+<<<<<<< HEAD
         const response = await axios.post("https://event-ticket-backend-yx81.onrender.com/api/initialize", {
+=======
+        const response = await axios.post("https://event-ticket-qa70.onrender.com/api/initialize", {
+>>>>>>> 24f4f118 (m)
           email: this.email,
           amount: this.amount,
         });
@@ -482,7 +497,11 @@ export default {
         };
 
         console.log("Sending order info:", payload);
+<<<<<<< HEAD
         const res = await axios.post("https://event-ticket-backend-yx81.onrender.com/api/order", payload);
+=======
+        const res = await axios.post("https://event-ticket-qa70.onrender.com/api/order", payload);
+>>>>>>> 24f4f118 (m)
         this.spinner = false; // Hide spinner after processing
         alert(
           "Your ticket has been confirmed, check your  email inbox & spam for booking confirmation"
@@ -505,7 +524,11 @@ export default {
 
         console.log("Payload being sent:", payload);
 
+<<<<<<< HEAD
         const res = await axios.post("https://event-ticket-backend-yx81.onrender.com/api/apply-promo", payload);
+=======
+        const res = await axios.post("https://event-ticket-qa70.onrender.com/api/apply-promo", payload);
+>>>>>>> 24f4f118 (m)
 
         this.discountResult = res.data;
         localStorage.setItem("discountedTotal", res.data.newTotal);

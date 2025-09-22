@@ -195,7 +195,11 @@ export default {
     },
     async createPromo() {
       try {
+<<<<<<< HEAD
         await axios.post("https://event-ticket-backend-yx81.onrender.com/api/create-promo", this.promo, {
+=======
+        await axios.post("https://event-ticket-qa70.onrender.com/api/create-promo", this.promo, {
+>>>>>>> 24f4f118 (m)
           headers: { Authorization: `Bearer ${this.getToken}` },
         });
       } catch (err) {
@@ -207,7 +211,11 @@ export default {
     async fetchMyPromos() {
       try {
        
+<<<<<<< HEAD
         const res = await axios.get("https://event-ticket-backend-yx81.onrender.com/api/my-promos", {
+=======
+        const res = await axios.get("https://event-ticket-qa70.onrender.com/api/my-promos", {
+>>>>>>> 24f4f118 (m)
           headers: { Authorization: `Bearer ${this.getToken}` },
         });
         console.log("Token:", this.getToken);
@@ -221,7 +229,11 @@ export default {
 
     async fetchPromos() {
       try {
+<<<<<<< HEAD
         const res = await axios.get("https://event-ticket-backend-yx81.onrender.com/api/promo-orders", {
+=======
+        const res = await axios.get("https://event-ticket-qa70.onrender.com/api/promo-orders", {
+>>>>>>> 24f4f118 (m)
           headers: { Authorization: `Bearer ${this.getToken}` },
         });
         // ✅ FIX: your API returns { success: true, data: [...] }
@@ -233,7 +245,11 @@ export default {
 
     async fetchProducts() {
       try {
+<<<<<<< HEAD
         const res = await axios.get("https://event-ticket-backend-yx81.onrender.com/api/user/products", {
+=======
+        const res = await axios.get("https://event-ticket-qa70.onrender.com/api/user/products", {
+>>>>>>> 24f4f118 (m)
           headers: { Authorization: `Bearer ${this.getToken}` },
         });
         this.products = res.data.products;

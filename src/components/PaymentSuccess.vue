@@ -64,10 +64,14 @@ export default {
           price, // Total price from cart
         };
         console.log("Sending order info:", payload);
+<<<<<<< HEAD
         const res = await axios.post(
           "https://event-ticket-backend-yx81.onrender.com/api/order",
           payload
         );
+=======
+        const res = await axios.post("https://event-ticket-qa70.onrender.com/api/order", payload);
+>>>>>>> 24f4f118 (m)
         console.log("Order info sent:", res.data);
         // ✅ Clear storage values after successful order
       } catch (err) {
@@ -84,9 +88,13 @@ export default {
     }
 
     try {
+<<<<<<< HEAD
       const res = await axios.get(
         `https://event-ticket-backend-yx81.onrender.com/api/verify/${this.reference}`
       );
+=======
+      const res = await axios.get(`https://event-ticket-qa70.onrender.com/api/verify/${this.reference}`);
+>>>>>>> 24f4f118 (m)
       if (res.data.data.status === "success") {
         this.verified = true;
         await this.sendOrderInfo(); // Send order info after successful verification

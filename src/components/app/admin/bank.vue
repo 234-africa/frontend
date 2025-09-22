@@ -76,7 +76,11 @@ export default {
   methods: {
     async fetchBanks() {
       try {
+<<<<<<< HEAD
         const res = await axios.get("https://event-ticket-backend-yx81.onrender.com/api/all-banks");
+=======
+        const res = await axios.get("http://localhost:4000/api/all-banks");
+>>>>>>> 24f4f118 (m)
         this.banks = res.data.banks;
       } catch (err) {
         console.error("Error fetching banks:", err);

@@ -213,19 +213,7 @@
                     {{ product.event.location.name || "No location" }}
                   </p>
                   <p>
-                    {{
-                      product.event.tickets[0].price === 0 &&
-                      product.event.tickets[product.event.tickets.length - 1].price === 0
-                        ? "Free"
-                        : product.event.tickets[0].price ===
-                          product.event.tickets[product.event.tickets.length - 1].price
-                        ? formatPrice(product.event.tickets[0].price)
-                        : `From ${formatPrice(
-                            product.event.tickets[0].price
-                          )} - ${formatPrice(
-                            product.event.tickets[product.event.tickets.length - 1].price
-                          )}`
-                    }}
+                    {{ getTicketPriceRange(product.event.tickets) }}
                   </p>
 
                   <div class="d-flex">
@@ -355,6 +343,17 @@ export default {
     },
   },
   methods: {
+    getTicketPriceRange(tickets) {
+      if (!tickets || tickets.length === 0) return "";
+
+      const sorted = [...tickets].sort((a, b) => a.price - b.price);
+      const lowest = sorted[0].price;
+      const highest = sorted[sorted.length - 1].price;
+
+      if (lowest === 0 && highest === 0) return "Free";
+      if (lowest === highest) return this.formatPrice(lowest);
+      return `${this.formatPrice(lowest)} - ${this.formatPrice(highest)}`;
+    },
     async copyFullEventUrl(customizeUrl) {
       const fullUrl = `https://234tickets.live/event/${customizeUrl}`;
       try {
@@ -367,6 +366,7 @@ export default {
     },
     async fetchProducts() {
       try {
+<<<<<<< HEAD
         const res = await axios.get(
           "https://event-ticket-backend-yx81.onrender.com/api/user/products",
           {
@@ -375,6 +375,13 @@ export default {
             },
           }
         );
+=======
+        const res = await axios.get("https://event-ticket-qa70.onrender.com/api/user/products", {
+          headers: {
+            Authorization: `Bearer ${this.getToken}`,
+          },
+        });
+>>>>>>> 24f4f118 (m)
         console.log(res.data);
         this.products = res.data.products;
       } catch (error) {
@@ -399,7 +406,11 @@ export default {
 
       try {
         const res = await axios.post(
+<<<<<<< HEAD
           "https://event-ticket-backend-yx81.onrender.com/api/staff",
+=======
+          "https://event-ticket-qa70.onrender.com/api/staff",
+>>>>>>> 24f4f118 (m)
           {
             staffName: this.staffName,
             productId: this.selectedProductId,
@@ -422,6 +433,7 @@ export default {
       console.log(productId);
 
       try {
+<<<<<<< HEAD
         await axios.delete(
           `https://event-ticket-backend-yx81.onrender.com/api/product/${productId}`,
           {
@@ -430,6 +442,13 @@ export default {
             },
           }
         );
+=======
+        await axios.delete(`https://event-ticket-qa70.onrender.com/api/product/${productId}`, {
+          headers: {
+            Authorization: `Bearer ${this.getToken}`,
+          },
+        });
+>>>>>>> 24f4f118 (m)
         alert("Product deleted successfully");
         this.fetchProducts(); // Refresh the list
       } catch (error) {

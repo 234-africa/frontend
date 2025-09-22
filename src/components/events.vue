@@ -160,19 +160,7 @@
                     {{ product.event.location.name || "No location" }}
                   </p>
                   <p>
-                    {{
-                      product.event.tickets[0].price === 0 &&
-                      product.event.tickets[product.event.tickets.length - 1].price === 0
-                        ? "Free"
-                        : product.event.tickets[0].price ===
-                          product.event.tickets[product.event.tickets.length - 1].price
-                        ? formatPrice(product.event.tickets[0].price)
-                        : `From ${formatPrice(
-                            product.event.tickets[0].price
-                          )} - ${formatPrice(
-                            product.event.tickets[product.event.tickets.length - 1].price
-                          )}`
-                    }}
+                    {{ getTicketPriceRange(product.event.tickets) }}
                   </p>
 
                   <button
@@ -260,11 +248,26 @@ export default {
     },
   },
   methods: {
+    getTicketPriceRange(tickets) {
+      if (!tickets || tickets.length === 0) return "";
+
+      const sorted = [...tickets].sort((a, b) => a.price - b.price);
+      const lowest = sorted[0].price;
+      const highest = sorted[sorted.length - 1].price;
+
+      if (lowest === 0 && highest === 0) return "Free";
+      if (lowest === highest) return this.formatPrice(lowest);
+      return `${this.formatPrice(lowest)} - ${this.formatPrice(highest)}`;
+    },
     async fetchProducts() {
       try {
+<<<<<<< HEAD
         const res = await axios.get(
           "https://event-ticket-backend-yx81.onrender.com/api/products"
         );
+=======
+        const res = await axios.get("https://event-ticket-qa70.onrender.com/api/products");
+>>>>>>> 24f4f118 (m)
         this.products = res.data.products;
         console.log(this.products);
       } catch (error) {

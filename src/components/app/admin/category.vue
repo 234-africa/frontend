@@ -103,7 +103,11 @@ export default {
     },
   data() {
     return {
+<<<<<<< HEAD
       baseUrl: "https://event-ticket-backend-yx81.onrender.com/api",
+=======
+      baseUrl: "http://localhost:4000/api",
+>>>>>>> 24f4f118 (m)
       categories: [],
       newCategory: { type: "", photo: null },
       editingCategory: null,

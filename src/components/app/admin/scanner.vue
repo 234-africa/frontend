@@ -96,7 +96,11 @@ export default {
       this.error = ""; // Reset error message
 
       try {
+<<<<<<< HEAD
         const res = await axios.get(`https://95eb7e2b76c5.ngrok-free.app/api/order/${reference}`);
+=======
+        const res = await axios.get(`http://localhost:4000/api/order/${reference}`);
+>>>>>>> 24f4f118 (m)
         this.ticket = res.data.order;
       } catch (err) {
         if (err.response) {
