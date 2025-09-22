@@ -28,7 +28,7 @@ const mutations = {
   setError(state, error) {
     state.error = error;
   },
-  logout(state) {
+   logout(state) {
     state.user = null;
     state.userDetails = null;
     state.token = null;
@@ -37,6 +37,22 @@ const mutations = {
   },
 };
 const actions = {
+    async initAuth({ dispatch, commit }) {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      commit("logout");
+      return;
+    }
+
+    commit("SET_TOKEN", token);
+
+    try {
+      await dispatch("getUser"); // fetch user details from API
+    } catch (err) {
+      commit("logout");
+    }
+  },
+  
   setToken({ commit }, token) {
     commit("setToken", token);
   },
@@ -58,29 +74,19 @@ const actions = {
         });
     });
   },
-  // store/auth.js (Vuex action)
   LOGIN_USER({ commit }, payload) {
     return new Promise((resolve, reject) => {
       axios
         .post("https://event-ticket-backend-yx81.onrender.com/api/auth/login", payload)
         .then((res) => {
-          if (res.data.success) {
+          if (res.data.success == true) {
             const token = res.data.token;
-
-            // ✅ Save token
             localStorage.setItem("token", token);
-
-            // ✅ Set axios auth header for future requests
-            axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
-            // ✅ Commit to store
-            commit("SET_TOKEN", token);
-
             resolve(res.data);
           } else {
             reject(res.data);
           }
-         // window.location.href = "/dashboard";
+          window.location.href = "/dashboard";
         })
         .catch((err) => {
           reject(err.response.data);
@@ -89,11 +95,11 @@ const actions = {
   },
 
   logout({ commit }) {
-    commit("logout");
-    localStorage.removeItem("token");
-    delete axiosInstance.defaults.headers.common["Authorization"];
-    window.location.href = "/login";
-  },
+  commit("logout");
+  localStorage.removeItem("token");
+  delete axiosInstance.defaults.headers.common["Authorization"];
+  window.location.href = "/login";
+},
   async sendCodeToBackend({ commit }, code) {
     try {
       const headers = {
@@ -112,7 +118,7 @@ const actions = {
 
       localStorage.setItem("token", response.data.token);
       Swal.fire("login successful");
-      //  window.location.href = "/dashboard";
+      window.location.href = "/dashboard";
     } catch (error) {
       console.error("Failed to send authorization code:", error);
     }

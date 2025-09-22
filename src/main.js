@@ -2,6 +2,7 @@ import {
     createApp
 } from 'vue'
 import App from './App.vue'
+
 import router from './router'
 import store from './store'
 import Notifications from '@kyvg/vue3-notification'
@@ -18,7 +19,7 @@ import $ from 'jquery';
 
 import vue3GoogleLogin from 'vue3-google-login'
 
-
+await store.dispatch("initAuth");
 
 
 store.commit('loadCartFromStorage'); // Load cart data from localStorage
