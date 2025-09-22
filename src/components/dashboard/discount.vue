@@ -203,7 +203,7 @@ export default {
           }
         );
       } catch (err) {
-        console.error(err.response?.data || err.message);
+        alert(JSON.stringify(err.response?.data.message));
       }
       this.fetchMyPromos();
     },
