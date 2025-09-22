@@ -65,9 +65,11 @@
     "jest": "^29.5.0",
     "vue-stripe-js": "^1.0.1"
   },
-  "scripts": {
+ "scripts": {
+    "postinstall": "node -e \"require('fs').chmodSync('node_modules/.bin/vue-cli-service', 0o755)\"",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "test:unit": "vue-cli-service test:unit"
+    "lint": "vue-cli-service lint",
+    "start": "vue-cli-service serve"
   }
 }
