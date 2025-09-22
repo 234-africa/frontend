@@ -41,14 +41,6 @@
           <span>
             Hello, <strong>{{ currentUser?.name || "Guest" }}</strong>
           </span>
-          <img
-            v-if="currentUser"
-            :src="currentUser.picture"
-            alt="Profile"
-            width="32"
-            height="32"
-            class="rounded-circle me-2"
-          />
         </div>
 
         <!-- Authenticated Links -->
