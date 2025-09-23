@@ -462,9 +462,7 @@ export default {
   },
   async created() {
     try {
-      const res = await axios.get(
-        "https://event-ticket-backend-yx81.onrender.com/api/categories"
-      );
+      const res = await axios.get("http://localhost:5000/api/categories");
       this.categories = res.data.categories || res.data;
       console.log("Categories fetched:", this.categories);
       if (this.productId) {
@@ -486,7 +484,7 @@ export default {
     async fetchProduct() {
       try {
         const response = await axios.get(
-          `https://event-ticket-backend-yx81.onrender.com/api/product/${this.productId}`
+          `http://localhost:5000/api/product/${this.productId}`
         );
         console.log("Product data:", response.data);
 
@@ -602,8 +600,8 @@ export default {
       if (this.product.event.endDate) {
         formData.append("endDate", new Date(this.product.event.endDate).toISOString());
       }
-      formData.append("startTime", this.product.event.startTime + " " + this.startAmPm);
-      formData.append("endTime", this.product.event.endTime + " " + this.endAmPm);
+      formData.append("startTime", this.product.event.startTime);
+      formData.append("endTime", this.product.event.endTime);
       formData.append("timezone", this.product.event.timezone);
       formData.append("locationName", this.address);
 
@@ -619,7 +617,7 @@ export default {
 
       try {
         const response = await axios.put(
-          `https://event-ticket-backend-yx81.onrender.com/api/product/${this.productId}`, // 👈 PUT endpoint with ID
+          `http://localhost:5000/api/product/${this.productId}`, // 👈 PUT endpoint with ID
           formData,
           {
             headers: {

@@ -196,7 +196,7 @@ export default {
     async createPromo() {
       try {
         await axios.post(
-          "https://event-ticket-backend-yx81.onrender.com/api/create-promo",
+          "http://localhost:5000/api/create-promo",
           this.promo,
           {
             headers: { Authorization: `Bearer ${this.getToken}` },
@@ -211,7 +211,7 @@ export default {
     async fetchMyPromos() {
       try {
         const res = await axios.get(
-          "https://event-ticket-backend-yx81.onrender.com/api/my-promos",
+          "http://localhost:5000/api/my-promos",
           {
             headers: { Authorization: `Bearer ${this.getToken}` },
           }
@@ -228,7 +228,7 @@ export default {
     async fetchPromos() {
       try {
         const res = await axios.get(
-          "https://event-ticket-backend-yx81.onrender.com/api/promo-orders",
+          "http://localhost:5000/api/promo-orders",
           {
             headers: { Authorization: `Bearer ${this.getToken}` },
           }
@@ -243,7 +243,7 @@ export default {
     async fetchProducts() {
       try {
         const res = await axios.get(
-          "https://event-ticket-backend-yx81.onrender.com/api/user/products",
+          "http://localhost:5000/api/user/products",
           {
             headers: { Authorization: `Bearer ${this.getToken}` },
           }

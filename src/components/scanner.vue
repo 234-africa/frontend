@@ -82,14 +82,11 @@ export default {
     try {
       const token = localStorage.getItem("staffToken");
       console.log(token);
-      const res = await axios.get(
-        "https://event-ticket-backend-yx81.onrender.com/api/staff",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await axios.get("http://localhost:5000/api/staff", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       console.log(token);
       this.products = res.data.products; // get the nested products array
     } catch (err) {

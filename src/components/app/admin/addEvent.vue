@@ -501,9 +501,7 @@ export default {
   },
   async created() {
     try {
-      const res = await axios.get(
-        "https://event-ticket-backend-yx81.onrender.com/api/categories"
-      );
+      const res = await axios.get("http://localhost:5000/api/categories");
       this.categories = res.data.categories || res.data;
       console.log("Categories fetched:", this.categories);
     } catch (error) {
@@ -568,8 +566,8 @@ export default {
         formData.append("endDate", new Date(this.product.event.endDate).toISOString());
       }
 
-      formData.append("startTime", this.product.event.startTime + " " + this.startAmPm);
-      formData.append("endTime", this.product.event.endTime + " " + this.endAmPm);
+      formData.append("startTime", this.product.event.startTime + " ");
+      formData.append("endTime", this.product.event.endTime + " ");
       formData.append("timezone", this.product.event.timezone);
       formData.append("locationName", this.address); // Send address as name
 
@@ -588,7 +586,7 @@ export default {
 
       try {
         const response = await axios.post(
-          "https://event-ticket-backend-yx81.onrender.com/api/products",
+          "http://localhost:5000/api/products",
           formData,
           {
             headers: {

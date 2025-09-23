@@ -330,7 +330,7 @@ export default {
     async fetchStaff() {
       try {
         const res = await axios.get(
-          "https://event-ticket-backend-yx81.onrender.com/api/user-staff",
+          "http://localhost:5000/api/user-staff",
           {
             headers: { Authorization: `Bearer ${this.getToken}` },
           }
@@ -344,7 +344,7 @@ export default {
       if (!confirm("Delete this bank info?")) return;
       try {
         await axios.delete(
-          `https://event-ticket-backend-yx81.onrender.com/api/staff/${id}`,
+          `http://localhost:5000/api/staff/${id}`,
           {
             headers: { Authorization: `Bearer ${this.getToken}` },
           }
@@ -366,7 +366,7 @@ export default {
 
       try {
         const res = await axios.post(
-          "https://event-ticket-backend-yx81.onrender.com/api/affiliate",
+          "http://localhost:5000/api/affiliate",
           {
             name: this.affiliateName,
             code: this.affiliateCode,
@@ -390,7 +390,7 @@ export default {
     },
     fetchAffiliates() {
       axios
-        .get("https://event-ticket-backend-yx81.onrender.com/api/affiliates", {
+        .get("http://localhost:5000/api/affiliates", {
           headers: {
             Authorization: `Bearer ${this.getToken}`,
           },
@@ -404,7 +404,7 @@ export default {
     },
     fetchAffiliateOrders() {
       axios
-        .get("https://event-ticket-backend-yx81.onrender.com/api/affiliate-orders", {
+        .get("http://localhost:5000/api/affiliate-orders", {
           headers: {
             Authorization: `Bearer ${this.getToken}`,
           },
@@ -420,7 +420,7 @@ export default {
     fetchAffiliateSummary() {
       axios
         .get(
-          "https://event-ticket-backend-yx81.onrender.com/api/affiliate-orders-summary",
+          "http://localhost:5000/api/affiliate-orders-summary",
           {
             headers: {
               Authorization: `Bearer ${this.getToken}`,
@@ -448,7 +448,7 @@ export default {
   async created() {
     try {
       const res = await axios.get(
-        "https://event-ticket-backend-yx81.onrender.com/api/user/products",
+        "http://localhost:5000/api/user/products",
         {
           headers: {
             Authorization: `Bearer ${this.getToken}`,

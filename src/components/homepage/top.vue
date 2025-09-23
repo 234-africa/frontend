@@ -234,7 +234,7 @@ export default {
   },
   mounted() {
     axios
-      .get("https://event-ticket-backend-yx81.onrender.com/api/categories")
+      .get("http://localhost:5000/api/categories")
       .then((res) => {
         //  console.log(res);
 

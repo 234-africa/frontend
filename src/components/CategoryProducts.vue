@@ -122,7 +122,7 @@ export default {
     const finalCategory = categoryType.replace(/\b\w/g, (l) => l.toUpperCase());
 
     const response = await axios.get(
-      `https://event-ticket-backend-yx81.onrender.com/api/categories/${encodeURIComponent(
+      `http://localhost:5000/api/categories/${encodeURIComponent(
         finalCategory
       )}`
     );

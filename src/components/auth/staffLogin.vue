@@ -52,7 +52,7 @@ export default {
       try {
 
         const res = await axios.post(
-          "https://event-ticket-backend-gnmw.onrender.com/api/staff/login",
+          "http://localhost:5000/api/staff/login",
           { name: this.name, passcode: this.passcode },
         );
 
