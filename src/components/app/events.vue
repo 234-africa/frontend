@@ -422,7 +422,7 @@ export default {
 
       try {
         await axios.delete(
-          `https://event-ticket-qa70.onrender.com/api/product/${productId}`,
+          `https://event-ticket-backend-yx81.onrender.com/api/product/${productId}`,
           {
             headers: {
               Authorization: `Bearer ${this.getToken}`,
