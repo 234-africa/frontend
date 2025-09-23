@@ -553,7 +553,7 @@ export default {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   animation: fadeIn 0.3s ease-in-out;
   width: 100%;
-  max-width: 600px;
+  max-width: 800px;
   max-height: 90vh;
   overflow-y: auto;
   box-sizing: border-box;
