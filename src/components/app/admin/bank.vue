@@ -77,7 +77,7 @@ export default {
     async fetchBanks() {
       try {
         const res = await axios.get(
-          "http://localhost:5000/api/all-banks"
+          "https://event-ticket-backend-yx81.onrender.com/api/all-banks"
         );
         this.banks = res.data.banks;
       } catch (err) {

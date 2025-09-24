@@ -455,7 +455,7 @@ export default {
   },
   async created() {
     try {
-      const res = await axios.get("http://localhost:5000/api/categories");
+      const res = await axios.get("https://event-ticket-backend-yx81.onrender.com/api/categories");
       this.categories = res.data.categories || res.data;
       console.log("Categories fetched:", this.categories);
     } catch (error) {
@@ -476,7 +476,7 @@ export default {
       }
 
       try {
-        const res = await axios.post("http://localhost:5000/api/check-custom-url", {
+        const res = await axios.post("https://event-ticket-backend-yx81.onrender.com/api/check-custom-url", {
           url: this.product.customizeUrl,
         });
 
@@ -569,7 +569,7 @@ export default {
 
       try {
         const response = await axios.post(
-          "http://localhost:5000/api/products",
+          "https://event-ticket-backend-yx81.onrender.com/api/products",
           formData,
           {
             headers: {

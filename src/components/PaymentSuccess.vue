@@ -65,7 +65,7 @@ export default {
         };
         console.log("Sending order info:", payload);
         const res = await axios.post(
-          "http://localhost:5000/api/order",
+          "https://event-ticket-backend-yx81.onrender.com/api/order",
           payload
         );
         console.log("Order info sent:", res.data);
@@ -85,7 +85,7 @@ export default {
 
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/verify/${this.reference}`
+        `https://event-ticket-backend-yx81.onrender.com/api/verify/${this.reference}`
       );
       if (res.data.data.status === "success") {
         this.verified = true;

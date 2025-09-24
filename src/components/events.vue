@@ -261,7 +261,7 @@ export default {
     },
     async fetchProducts() {
       try {
-        const res = await axios.get("http://localhost:5000/api/products");
+        const res = await axios.get("https://event-ticket-backend-yx81.onrender.com/api/products");
         this.products = res.data.products;
         console.log(this.products);
       } catch (error) {
