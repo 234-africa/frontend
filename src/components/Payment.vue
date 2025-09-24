@@ -453,7 +453,7 @@ export default {
       try {
         this.spinner = true; // Show spinner while processing
         const response = await axios.post(
-          "https://event-ticket-backend-yx81.onrender.com/api/initialize",
+          "http://localhost:5000/api/initialize",
           {
             email: this.email,
             amount: this.amount,
@@ -504,7 +504,7 @@ export default {
 
         console.log("Sending order info:", payload);
         const res = await axios.post(
-          "https://event-ticket-backend-yx81.onrender.com/api/order",
+          "http://localhost:5000/api/order",
           payload
         );
         this.spinner = false; // Hide spinner after processing
@@ -530,7 +530,7 @@ export default {
         console.log("Payload being sent:", payload);
 
         const res = await axios.post(
-          "https://event-ticket-backend-yx81.onrender.com/api/apply-promo",
+          "http://localhost:5000/api/apply-promo",
           payload
         );
 

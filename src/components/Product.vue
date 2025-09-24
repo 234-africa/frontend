@@ -199,7 +199,7 @@ export default {
       console.log(productSlug);
 
       const response = await axios.get(
-        `https://event-ticket-backend-yx81.onrender.com/api/product/${productSlug}`
+        `http://localhost:5000/api/product/${productSlug}`
       );
 
       this.product = response.data.product || {};
@@ -210,7 +210,7 @@ export default {
 
     try {
       const response = await axios.get(
-        `https://event-ticket-backend-yx81.onrender.com/api/products`
+        `http://localhost:5000/api/products`
       );
       console.log("API Response:", response.data);
 

@@ -60,7 +60,7 @@ export default {
   methods: {
     async handleSubmit() {
       const response = await axios
-        .post("https://event-ticket-backend-yx81.onrender.com/api/auth/updatePassword", {
+        .post("http://localhost:5000/api/auth/updatePassword", {
           password: this.password,
           token: this.$route.query.token,
         })

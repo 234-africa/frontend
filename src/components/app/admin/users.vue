@@ -53,7 +53,7 @@ export default {
     async fetchUsers() {
       try {
         const res = await axios.get(
-          "https://event-ticket-backend-yx81.onrender.com/api/users"
+          "http://localhost:5000/api/users"
         );
         this.users = res.data.users;
         console.log(this.users);

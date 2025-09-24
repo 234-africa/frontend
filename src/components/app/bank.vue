@@ -95,7 +95,7 @@ export default {
     async fetchBanks() {
       try {
         const res = await axios.get(
-          "https://event-ticket-backend-yx81.onrender.com/api/bank",
+          "http://localhost:5000/api/bank",
           {
             headers: { Authorization: `Bearer ${this.getToken}` },
           }
@@ -108,7 +108,7 @@ export default {
     async createBank() {
       try {
         const res = await axios.post(
-          "https://event-ticket-backend-yx81.onrender.com/api/bank",
+          "http://localhost:5000/api/bank",
           this.form,
           {
             headers: { Authorization: `Bearer ${this.getToken}` },
@@ -137,7 +137,7 @@ export default {
     async updateBank() {
       try {
         const res = await axios.put(
-          `https://event-ticket-backend-yx81.onrender.com/api/bank/${this.editId}`,
+          `http://localhost:5000/api/bank/${this.editId}`,
           this.form,
           {
             headers: { Authorization: `Bearer ${this.getToken}` },
@@ -157,7 +157,7 @@ export default {
     async deleteBank(id) {
       if (!confirm("Delete this bank info?")) return;
       try {
-        await axios.delete(`https://event-ticket-backend-yx81.onrender.com/api/bank/${id}`, {
+        await axios.delete(`http://localhost:5000/api/bank/${id}`, {
           headers: { Authorization: `Bearer ${this.getToken}` },
         });
         this.banks = this.banks.filter((b) => b._id !== id);

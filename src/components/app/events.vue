@@ -367,7 +367,7 @@ export default {
     async fetchProducts() {
       try {
         const res = await axios.get(
-          "https://event-ticket-backend-yx81.onrender.com/api/user/products",
+          "http://localhost:5000/api/user/products",
           {
             headers: {
               Authorization: `Bearer ${this.getToken}`,
@@ -398,7 +398,7 @@ export default {
 
       try {
         const res = await axios.post(
-          "https://event-ticket-backend-yx81.onrender.com/api/staff",
+          "http://localhost:5000/api/staff",
           {
             staffName: this.staffName,
             productId: this.selectedProductId,
@@ -422,7 +422,7 @@ export default {
 
       try {
         await axios.delete(
-          `https://event-ticket-backend-yx81.onrender.com/api/product/${productId}`,
+          `http://localhost:5000/api/product/${productId}`,
           {
             headers: {
               Authorization: `Bearer ${this.getToken}`,
