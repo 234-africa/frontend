@@ -96,7 +96,7 @@ export default {
       this.error = ""; // Reset error message
 
       try {
-        const res = await axios.get(`https://95eb7e2b76c5.ngrok-free.app/api/order/${reference}`);
+        const res = await axios.get(`https://event-ticket-backend-yx81.onrender.com/api/order/${reference}`);
         this.ticket = res.data.order;
       } catch (err) {
         if (err.response) {

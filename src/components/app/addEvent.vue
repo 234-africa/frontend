@@ -330,8 +330,8 @@
 
                 <div class="col-md-2">
                   <label class="form-label">Type</label>
-                  <select v-model="ticket.type" class="form-select" required>
-                    <option disabled value="">Select type</option>
+                  <select v-model="ticket.type" class="form-control" required>
+                    <option value="" disabled selected>Select type</option>
                     <option value="limited">Limited</option>
                     <option value="unlimited">Unlimited</option>
                   </select>
@@ -447,7 +447,7 @@ export default {
       eventFrequency: "",
       photos: [],
       previewUrl: null,
-      tickets: [{ name: "", price: null, quantity: null }],
+      tickets: [{ name: "", type: "", price: null, quantity: null }],
     };
   },
   computed: {
