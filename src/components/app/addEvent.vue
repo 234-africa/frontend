@@ -289,11 +289,7 @@
               <p class="text-danger small"></p>
 
               <!-- Ticket Rows -->
-              <div
-                v-for="(ticket, index) in tickets"
-                :key="index"
-                class="row g-3 align-items-end mb-2"
-              >
+              <div class="row mb-3" v-for="(ticket, index) in tickets" :key="index">
                 <div class="col-md-2">
                   <label class="form-label">Ticket name</label>
                   <input
@@ -318,7 +314,7 @@
                   />
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-2">
                   <label class="form-label">Price</label>
                   <input
                     v-model.number="ticket.price"
@@ -328,9 +324,9 @@
                   />
                 </div>
 
-                <div class="col-md-2">
+                <div class="col-md-3">
                   <label class="form-label">Type</label>
-                  <select v-model="ticket.type" class="form-control" required>
+                  <select v-model="ticket.type" class="form-select" required>
                     <option value="" disabled selected>Select type</option>
                     <option value="limited">Limited</option>
                     <option value="unlimited">Unlimited</option>
@@ -359,19 +355,16 @@
                     <i class="bi bi-trash"></i>
                   </button>
                 </div>
-              </div>
 
-              <!-- Timeslot Capacity -->
-
-              <!-- Add Ticket Buttons -->
-              <div class="d-flex gap-3">
-                <button
-                  class="btn btn-primary btn-primary:hover"
-                  type="button"
-                  @click="addTicket('Paid')"
-                >
-                  + ticket
-                </button>
+                <div class="d-flex gap-3">
+                  <button
+                    class="btn btn-primary btn-primary:hover"
+                    type="button"
+                    @click="addTicket('Paid')"
+                  >
+                    + ticket
+                  </button>
+                </div>
               </div>
             </div>
           </div>

@@ -323,14 +323,11 @@
           <div v-if="currentStep === 3">
             <div class="my-4 text-start">
               <h5><strong>Create your ticket types</strong></h5>
+              <p class="text-danger small"></p>
 
               <!-- Ticket Rows -->
-              <div
-                v-for="(ticket, index) in tickets"
-                :key="index"
-                class="row g-3 align-items-end mb-2"
-              >
-                <div class="col-md-3">
+              <div class="row mb-3" v-for="(ticket, index) in tickets" :key="index">
+                <div class="col-md-2">
                   <label class="form-label">Ticket name</label>
                   <input
                     v-model="ticket.name"
@@ -354,22 +351,20 @@
                   />
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-2">
                   <label class="form-label">Price</label>
                   <input
                     v-model.number="ticket.price"
                     type="number"
                     class="form-control"
                     placeholder="Blank for free event"
-                    min="0"
-                    required
                   />
                 </div>
 
-                <div class="col-md-2">
+                <div class="col-md-3">
                   <label class="form-label">Type</label>
                   <select v-model="ticket.type" class="form-select" required>
-                    <option disabled value="">Select type</option>
+                    <option value="" disabled selected>Select type</option>
                     <option value="limited">Limited</option>
                     <option value="unlimited">Unlimited</option>
                   </select>
@@ -381,9 +376,8 @@
                     v-model.number="ticket.purchaseLimit"
                     type="number"
                     class="form-control"
-                    :disabled="ticket.type === 'unlimited'"
                     min="1"
-                    placeholder="Max tickets per order"
+                    placeholder="tickets per order"
                     required
                   />
                 </div>
@@ -398,19 +392,16 @@
                     <i class="bi bi-trash"></i>
                   </button>
                 </div>
-              </div>
 
-              <!-- Timeslot Capacity -->
-
-              <!-- Add Ticket Buttons -->
-              <div class="d-flex gap-3">
-                <button
-                  class="btn btn-primary btn-primary:hover"
-                  type="button"
-                  @click="addTicket('Paid')"
-                >
-                  + ticket
-                </button>
+                <div class="d-flex gap-3">
+                  <button
+                    class="btn btn-primary btn-primary:hover"
+                    type="button"
+                    @click="addTicket('Paid')"
+                  >
+                    + ticket
+                  </button>
+                </div>
               </div>
             </div>
           </div>

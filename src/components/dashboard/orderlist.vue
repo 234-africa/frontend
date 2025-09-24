@@ -341,7 +341,7 @@ export default {
       }
     },
     async deleteStaff(id) {
-      if (!confirm("Delete this bank info?")) return;
+      if (!confirm("Delete this staff info?")) return;
       try {
         await axios.delete(
           `https://event-ticket-backend-yx81.onrender.com/api/staff/${id}`,
