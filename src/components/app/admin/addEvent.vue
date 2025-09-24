@@ -203,11 +203,6 @@
                         v-model="product.event.startTime"
                       />
                     </div>
-
-                    <select class="form-select w-md-50" v-model="startAmPm">
-                      <option>AM</option>
-                      <option>PM</option>
-                    </select>
                   </div>
                 </div>
 
@@ -221,11 +216,6 @@
                         v-model="product.event.endTime"
                       />
                     </div>
-
-                    <select class="form-select w-md-50" v-model="endAmPm">
-                      <option>AM</option>
-                      <option>PM</option>
-                    </select>
                   </div>
                 </div>
 
@@ -379,6 +369,7 @@
                 <div class="col-md-2">
                   <label class="form-label">Type</label>
                   <select v-model="ticket.type" class="form-select" required>
+                    <option disabled value="">Select type</option>
                     <option value="limited">Limited</option>
                     <option value="unlimited">Unlimited</option>
                   </select>
@@ -501,7 +492,9 @@ export default {
   },
   async created() {
     try {
-      const res = await axios.get("https://event-ticket-backend-yx81.onrender.com/api/categories");
+      const res = await axios.get(
+        "https://event-ticket-backend-yx81.onrender.com/api/categories"
+      );
       this.categories = res.data.categories || res.data;
       console.log("Categories fetched:", this.categories);
     } catch (error) {

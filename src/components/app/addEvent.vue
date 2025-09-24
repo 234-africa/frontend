@@ -330,7 +330,7 @@
 
                 <div class="col-md-2">
                   <label class="form-label">Type</label>
-                  <select v-model="ticket.type" class="form-control" required>
+                  <select v-model="ticket.type" class="form-select" required>
                     <option disabled value="">Select type</option>
                     <option value="limited">Limited</option>
                     <option value="unlimited">Unlimited</option>
@@ -455,7 +455,9 @@ export default {
   },
   async created() {
     try {
-      const res = await axios.get("https://event-ticket-backend-yx81.onrender.com/api/categories");
+      const res = await axios.get(
+        "https://event-ticket-backend-yx81.onrender.com/api/categories"
+      );
       this.categories = res.data.categories || res.data;
       console.log("Categories fetched:", this.categories);
     } catch (error) {
@@ -476,9 +478,12 @@ export default {
       }
 
       try {
-        const res = await axios.post("https://event-ticket-backend-yx81.onrender.com/api/check-custom-url", {
-          url: this.product.customizeUrl,
-        });
+        const res = await axios.post(
+          "https://event-ticket-backend-yx81.onrender.com/api/check-custom-url",
+          {
+            url: this.product.customizeUrl,
+          }
+        );
 
         if (res.data.success) {
           this.urlStatus = res.data.message; // "This URL is available"

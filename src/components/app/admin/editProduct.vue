@@ -462,7 +462,9 @@ export default {
   },
   async created() {
     try {
-      const res = await axios.get("https://event-ticket-backend-yx81.onrender.com/api/categories");
+      const res = await axios.get(
+        "https://event-ticket-backend-yx81.onrender.com/api/categories"
+      );
       this.categories = res.data.categories || res.data;
       console.log("Categories fetched:", this.categories);
       if (this.productId) {
@@ -507,28 +509,14 @@ export default {
           const start = data.event.start;
           const end = data.event.end;
 
-          if (start) {
-            const dateObj = new Date(start);
-            const hours = String(dateObj.getHours()).padStart(2, "0");
-            const minutes = String(dateObj.getMinutes()).padStart(2, "0");
+          this.product.event.startDate = start?.split("T")[0] || "";
+          this.product.event.startTime = (data.event.startTime || "").trim();
 
-            this.product.event.startDate = start.split("T")[0];
-            this.product.event.startTime = `${hours}:${minutes}`; // ensures correct HH:mm format
-          }
-
-          if (end) {
-            const endObj = new Date(end);
-            const hours = String(endObj.getHours()).padStart(2, "0");
-            const minutes = String(endObj.getMinutes()).padStart(2, "0");
-
-            this.product.event.endDate = end.split("T")[0];
-            this.product.event.endTime = `${hours}:${minutes}`;
-          }
+          this.product.event.endDate = end?.split("T")[0] || "";
+          this.product.event.endTime = (data.event.endTime || "").trim();
 
           this.product.event.timezone = data.event.timezone || "";
           this.address = data.event.location?.name || "";
-
-          // Tickets
           this.tickets = data.event.tickets || [];
         }
 
