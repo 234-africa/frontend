@@ -43,36 +43,38 @@
 
     <!-- 📊 Users Table -->
     <div class="card-body p-0">
-      <table class="table table-striped mb-0">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Total Earnings</th>
-            <th>Order Count</th>
-            <th>Total Paid Out</th>
-            <th>Unpaid Earnings</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="user in filteredUsers" :key="user._id">
-            <td>{{ user._id }}</td>
-            <td>{{ user.name }}</td>
-            <td>{{ user.email }}</td>
-            <td>₦{{ user.totalEarnings }}</td>
-            <td>{{ user.orderCount }}</td>
-            <td>₦{{ user.totalPaidOut }}</td>
-            <td>₦{{ user.unpaidEarnings }}</td>
-            <td>
-              <button @click="goToEditUser(user._id)" class="btn btn-sm btn-primary">
-                Update
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-container">
+        <table class="table table-striped mb-0 custom-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Total Earnings</th>
+              <th>Order Count</th>
+              <th>Total Paid Out</th>
+              <th>Unpaid Earnings</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="user in filteredUsers" :key="user._id">
+              <td>{{ user._id }}</td>
+              <td>{{ user.name }}</td>
+              <td>{{ user.email }}</td>
+              <td>₦{{ user.totalEarnings }}</td>
+              <td>{{ user.orderCount }}</td>
+              <td>₦{{ user.totalPaidOut }}</td>
+              <td>₦{{ user.unpaidEarnings }}</td>
+              <td>
+                <button @click="goToEditUser(user._id)" class="btn btn-sm btn-primary">
+                  Update
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
@@ -96,7 +98,9 @@ export default {
   methods: {
     async fetchUsers() {
       try {
-        const res = await axios.get("https://event-ticket-backend-yx81.onrender.com/api/users");
+        const res = await axios.get(
+          "https://event-ticket-backend-yx81.onrender.com/api/users"
+        );
         this.users = res.data.users;
         console.log(this.users);
       } catch (error) {
@@ -105,9 +109,12 @@ export default {
     },
     async makePayout(userId, amount) {
       try {
-        const res = await axios.post(`https://event-ticket-backend-yx81.onrender.com/api/users/${userId}/payout`, {
-          amount,
-        });
+        const res = await axios.post(
+          `https://event-ticket-backend-yx81.onrender.com/api/users/${userId}/payout`,
+          {
+            amount,
+          }
+        );
 
         if (res.data.success) {
           alert(`✅ ${res.data.message}`);
