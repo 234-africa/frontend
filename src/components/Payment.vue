@@ -131,7 +131,7 @@
               />
             </div>
             <div v-if="emailMismatch" class="text-danger mt-1">
-              Email address do not match
+              Email address does not match
             </div>
             <div class="mb-3">
               <label class="form-label">Phone Number *</label>
