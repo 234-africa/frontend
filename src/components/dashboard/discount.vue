@@ -195,9 +195,13 @@ export default {
     },
     async createPromo() {
       try {
-        await axios.post("https://event-ticket-backend-yx81.onrender.com/api/create-promo", this.promo, {
-          headers: { Authorization: `Bearer ${this.getToken}` },
-        });
+        await axios.post(
+          "https://event-ticket-backend-yx81.onrender.com/api/create-promo",
+          this.promo,
+          {
+            headers: { Authorization: `Bearer ${this.getToken}` },
+          }
+        );
         alert("Promo created successfully!");
       } catch (err) {
         alert(JSON.stringify(err.response?.data.message));
@@ -207,9 +211,12 @@ export default {
 
     async fetchMyPromos() {
       try {
-        const res = await axios.get("https://event-ticket-backend-yx81.onrender.com/api/my-promos", {
-          headers: { Authorization: `Bearer ${this.getToken}` },
-        });
+        const res = await axios.get(
+          "https://event-ticket-backend-yx81.onrender.com/api/my-promos",
+          {
+            headers: { Authorization: `Bearer ${this.getToken}` },
+          }
+        );
         console.log("Token:", this.getToken);
 
         this.promos = res.data.promos || [];
@@ -221,9 +228,12 @@ export default {
 
     async fetchPromos() {
       try {
-        const res = await axios.get("https://event-ticket-backend-yx81.onrender.com/api/promo-orders", {
-          headers: { Authorization: `Bearer ${this.getToken}` },
-        });
+        const res = await axios.get(
+          "https://event-ticket-backend-yx81.onrender.com/api/promo-orders",
+          {
+            headers: { Authorization: `Bearer ${this.getToken}` },
+          }
+        );
         // ✅ FIX: your API returns { success: true, data: [...] }
         this.promois = res.data.data || [];
       } catch (err) {
@@ -233,9 +243,12 @@ export default {
 
     async fetchProducts() {
       try {
-        const res = await axios.get("https://event-ticket-backend-yx81.onrender.com/api/user/products", {
-          headers: { Authorization: `Bearer ${this.getToken}` },
-        });
+        const res = await axios.get(
+          "https://event-ticket-backend-yx81.onrender.com/api/user/products",
+          {
+            headers: { Authorization: `Bearer ${this.getToken}` },
+          }
+        );
         this.products = res.data.products;
       } catch (error) {
         console.error("Error fetching products:", error);

@@ -130,6 +130,9 @@
                 required
               />
             </div>
+            <div v-if="contact.confirmEmail && !emailsMatch" class="text-danger mt-1">
+              Email address do not match
+            </div>
             <div class="mb-3">
               <label class="form-label">Phone Number *</label>
               <div class="input-group">
@@ -277,6 +280,7 @@ export default {
   data() {
     return {
       currentStep: 0,
+      emailMismatch: false,
       timer: "10:00",
       spinner: false,
       reference: "",
@@ -301,6 +305,9 @@ export default {
     };
   },
   computed: {
+    emailsMatch() {
+      return this.contact.email === this.contact.confirmEmail;
+    },
     getCartSorted() {
       return this.getCart.map((product) => {
         return {
