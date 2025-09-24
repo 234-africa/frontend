@@ -187,7 +187,7 @@ export default {
       console.log(productSlug);
 
       const response = await axios.get(
-        `https://event-ticket-backend-yx81.onrender.com  /api/product/${productSlug}`
+        `https://event-ticket-backend-yx81.onrender.com/api/product/${productSlug}`
       );
 
       this.product = response.data.product || {};
@@ -197,7 +197,7 @@ export default {
     }
 
     try {
-      const response = await axios.get(`https://event-ticket-backend-yx81.onrender.com  /api/products`);
+      const response = await axios.get(`https://event-ticket-backend-yx81.onrender.com/api/products`);
       console.log("API Response:", response.data);
 
       this.products = this.shuffleArray(response.data.products || []).slice(0, 3);

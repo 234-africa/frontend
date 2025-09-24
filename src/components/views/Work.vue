@@ -29,7 +29,7 @@ export default {
     async loginStaff() {
       try {
         const res = await axios.post(
-          "https://event-ticket-backend-yx81.onrender.com  /api/staff/login",
+          "https://event-ticket-backend-yx81.onrender.com/api/staff/login",
           { name: this.name, passcode: this.passcode }
         );
 

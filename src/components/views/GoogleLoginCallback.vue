@@ -13,7 +13,7 @@ export default {
 
     axios
       .get(
-        `https://event-ticket-backend-yx81.onrender.com  /api/auth/google/callback?code=${code}`
+        `https://event-ticket-backend-yx81.onrender.com/api/auth/google/callback?code=${code}`
       )
       .then((response) => {
         const token = response.data.token;
