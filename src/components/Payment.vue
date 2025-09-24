@@ -130,7 +130,7 @@
                 required
               />
             </div>
-            <div v-if="contact.confirmEmail && !emailsMatch" class="text-danger mt-1">
+            <div v-if="emailMismatch" class="text-danger mt-1">
               Email address do not match
             </div>
             <div class="mb-3">
@@ -207,6 +207,7 @@
           </button>
           <button
             v-if="currentStep < steps.length - 1"
+            :disabled="currentStep === 1 && emailMismatch"
             type="button"
             class="btn btn-primary"
             @click="nextStep"
@@ -305,8 +306,8 @@ export default {
     };
   },
   computed: {
-    emailsMatch() {
-      return this.contact.email === this.contact.confirmEmail;
+    emailMismatch() {
+      return this.contact.email !== this.contact.confirmEmail;
     },
     getCartSorted() {
       return this.getCart.map((product) => {

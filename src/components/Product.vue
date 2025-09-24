@@ -46,19 +46,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-3">
                   <span class="text-muted fw-medium">Price</span>
                   <p>
-                    {{
-                      product.event.tickets[0].price === 0 &&
-                      product.event.tickets[product.event.tickets.length - 1].price === 0
-                        ? "Free"
-                        : product.event.tickets[0].price ===
-                          product.event.tickets[product.event.tickets.length - 1].price
-                        ? formatPrice(product.event.tickets[0].price)
-                        : `From ${formatPrice(
-                            product.event.tickets[0].price
-                          )} - ${formatPrice(
-                            product.event.tickets[product.event.tickets.length - 1].price
-                          )}`
-                    }}
+                    {{ getTicketPriceRange(product.event.tickets) }}
                   </p>
                 </div>
 
