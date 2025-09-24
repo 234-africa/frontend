@@ -316,7 +316,7 @@ export default {
     },
     async fetchCategories() {
       try {
-        const response = await axios.get("https://event-ticket-backend-yx81.onrender.com/api/categories");
+        const response = await axios.get("https://event-ticket-backend-yx81.onrender.com  /api/categories");
         if (response.data.status) {
           this.categories = response.data.categories;
         }
@@ -327,7 +327,7 @@ export default {
     },
     async fetchProducts() {
       try {
-        const res = await axios.get("https://event-ticket-backend-yx81.onrender.com/api/products");
+        const res = await axios.get("https://event-ticket-backend-yx81.onrender.com  /api/products");
         const allProducts = res.data.products;
 
         // Shuffle the array

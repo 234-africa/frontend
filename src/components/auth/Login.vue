@@ -75,7 +75,7 @@ export default {
           .initCodeClient({
             client_id: process.env.VUE_APP_CLIENT_ID,
             scope: "email profile openid",
-            redirect_uri: "https://event-ticket-backend-yx81.onrender.com/auth/callback",
+            redirect_uri: "https://event-ticket-backend-yx81.onrender.com  /auth/callback",
             callback: (response) => {
               if (response.code) {
                 this.sendCodeToBackend(response.code);

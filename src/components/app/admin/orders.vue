@@ -90,7 +90,7 @@ export default {
     async fetchOrders() {
       try {
         const response = await axios.get(
-          "https://event-ticket-backend-yx81.onrender.com/api/all-orders"
+          "https://event-ticket-backend-yx81.onrender.com  /api/all-orders"
         );
         this.orders = response.data.orders;
       } catch (err) {

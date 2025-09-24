@@ -493,7 +493,7 @@ export default {
   async created() {
     try {
       const res = await axios.get(
-        "https://event-ticket-backend-yx81.onrender.com/api/categories"
+        "https://event-ticket-backend-yx81.onrender.com  /api/categories"
       );
       this.categories = res.data.categories || res.data;
       console.log("Categories fetched:", this.categories);
@@ -579,7 +579,7 @@ export default {
 
       try {
         const response = await axios.post(
-          "https://event-ticket-backend-yx81.onrender.com/api/products",
+          "https://event-ticket-backend-yx81.onrender.com  /api/products",
           formData,
           {
             headers: {
