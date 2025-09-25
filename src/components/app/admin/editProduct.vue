@@ -324,11 +324,15 @@
                     placeholder="Blank for free event"
                   />
                 </div>
-
                 <div class="col-md-2">
                   <label class="form-label">Type</label>
-                  <select v-model="ticket.type" class="form-control" required>
-                    <option disabled value="">Select type</option>
+                  <select
+                    v-model="ticket.type"
+                    class="form-select p-2"
+                    style="color: #212529"
+                    required
+                  >
+                    <option disabled value="">Select Type</option>
                     <option value="limited">Limited</option>
                     <option value="unlimited">Unlimited</option>
                   </select>
