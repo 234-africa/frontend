@@ -214,7 +214,7 @@
           </button>
           <button
             v-if="currentStep < steps.length - 1"
-            :disabled="currentStep === 1 && emailMismatch"
+            :disabled="(currentStep === 1 && emailMismatch) || !contact.phone"
             type="button"
             class="btn btn-primary"
             @click="nextStep"
