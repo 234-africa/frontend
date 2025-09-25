@@ -225,6 +225,7 @@
           <!-- Only show when cartTotal is 0 -->
           <button
             v-else-if="cartTotal === 0"
+            :disabled="emailMismatch || !contact.phone"
             type="submit"
             class="btn btn-primary"
             @click="getTicket()"
