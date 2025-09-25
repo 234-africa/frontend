@@ -325,6 +325,17 @@
                   />
                 </div>
                 <div class="col-md-2">
+                  <label class="form-label">Purchase Limit</label>
+                  <input
+                    v-model.number="ticket.purchaseLimit"
+                    type="number"
+                    class="form-control"
+                    min="1"
+                    placeholder="tickets per order"
+                    required
+                  />
+                </div>
+                <div class="col-md-2">
                   <label class="form-label">Type</label>
                   <select
                     v-model="ticket.type"
@@ -336,18 +347,6 @@
                     <option value="limited">Limited</option>
                     <option value="unlimited">Unlimited</option>
                   </select>
-                </div>
-
-                <div class="col-md-2">
-                  <label class="form-label">Purchase Limit</label>
-                  <input
-                    v-model.number="ticket.purchaseLimit"
-                    type="number"
-                    class="form-control"
-                    min="1"
-                    placeholder="tickets per order"
-                    required
-                  />
                 </div>
 
                 <div class="col-md-1 d-flex align-items-end">
