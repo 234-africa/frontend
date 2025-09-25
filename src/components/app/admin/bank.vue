@@ -30,11 +30,9 @@
         <tbody>
           <tr v-for="bank in filteredBanks" :key="bank._id">
             <template v-if="bank.user">
-              <td>{{ bank.user._id }}</td>
               <td>{{ bank.user.email }}</td>
             </template>
             <template v-else>
-              <td class="text-muted">No user</td>
               <td class="text-muted">No email</td>
             </template>
             <td>{{ bank.accountName }}</td>
