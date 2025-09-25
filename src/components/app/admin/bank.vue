@@ -20,7 +20,6 @@
       <table class="table table-striped custom-table mb-0" v-if="filteredBanks.length">
         <thead class="text-uppercase small text-muted">
           <tr>
-            <th>User</th>
             <th>Email</th>
             <th>Bank Account Name</th>
             <th>Account Number</th>
