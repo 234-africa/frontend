@@ -43,12 +43,8 @@
                   placeholder="Tech Summit, Afro summit"
                   type="text"
                   id="title"
-                  :class="{ 'is-invalid': product.title && !isValidTitle() }"
                   class="form-control"
                 />
-                <div v-if="product.title && !isValidTitle()" class="invalid-feedback">
-                  Title must be at least two words.
-                </div>
               </div>
               <div class="mb-3 col-md-5">
                 <div>

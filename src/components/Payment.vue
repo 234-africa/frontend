@@ -56,21 +56,28 @@
                 </div>
 
                 <!-- Optional: Add a quantity selector if needed -->
-                <select
-                  class="ticket-select mt-2"
-                  v-model.number="ticket.selectedQuantity"
-                >
-                  <option
-                    v-for="n in Math.min(
-                      ticket.purchaseLimit,
-                      ticket.quantity || Infinity
-                    ) + 1"
-                    :key="n"
-                    :value="n - 1"
-                  >
-                    {{ n - 1 }}
-                  </option>
-                </select>
+                <div>
+                  <template v-if="ticket.quantity > 0">
+                    <select
+                      class="ticket-select mt-2"
+                      v-model.number="ticket.selectedQuantity"
+                    >
+                      <option
+                        v-for="n in Math.min(
+                          ticket.purchaseLimit,
+                          ticket.quantity || Infinity
+                        ) + 1"
+                        :key="n"
+                        :value="n - 1"
+                      >
+                        {{ n - 1 }}
+                      </option>
+                    </select>
+                  </template>
+                  <template v-else>
+                    <span class="text-danger fw-bold">Sold Out</span>
+                  </template>
+                </div>
               </div>
             </div>
           </div>
