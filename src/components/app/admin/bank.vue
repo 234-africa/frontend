@@ -16,32 +16,31 @@
     </div>
 
     <!-- 📋 Banks Table -->
-    <div class="table-responsive">
+    <div class="table-responsive" style="overflow-x: auto">
       <table class="table table-striped custom-table mb-0" v-if="filteredBanks.length">
         <thead class="text-uppercase small text-muted">
           <tr>
+            <th>User</th>
+            <th>Email</th>
             <th>Bank Account Name</th>
             <th>Account Number</th>
             <th>Bank Name</th>
-            <th>User</th>
-            <th>email</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="bank in filteredBanks" :key="bank._id">
+            <template v-if="bank.user">
+              <td>{{ bank.user._id }}</td>
+              <td>{{ bank.user.email }}</td>
+            </template>
+            <template v-else>
+              <td class="text-muted">No user</td>
+              <td class="text-muted">No email</td>
+            </template>
             <td>{{ bank.accountName }}</td>
             <td>{{ bank.accountNumber }}</td>
             <td>{{ bank.bankName }}</td>
-            <td>
-              <span v-if="bank.user">
-                {{ bank.user._id }}
-              </span>
-            </td>
-            <td>
-              <span v-if="bank.user">
-                {{ bank.user.email }}
-              </span>
-            </td>
+            <!-- Conditionally render both User ID and Email -->
           </tr>
         </tbody>
       </table>
