@@ -24,6 +24,7 @@
             <th>Account Number</th>
             <th>Bank Name</th>
             <th>User</th>
+            <th>email</th>
           </tr>
         </thead>
         <tbody>
@@ -31,7 +32,16 @@
             <td>{{ bank.accountName }}</td>
             <td>{{ bank.accountNumber }}</td>
             <td>{{ bank.bankName }}</td>
-            <td>{{ bank.user }}</td>
+            <td>
+              <span v-if="bank.user">
+                {{ bank.user._id }}
+              </span>
+            </td>
+            <td>
+              <span v-if="bank.user">
+                {{ bank.user.email }}
+              </span>
+            </td>
           </tr>
         </tbody>
       </table>

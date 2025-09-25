@@ -291,7 +291,7 @@
                 :key="index"
                 class="row g-3 align-items-end mb-2"
               >
-                <div class="col-md-3">
+                <div class="col-md-2">
                   <label class="form-label">Ticket name</label>
                   <input
                     v-model="ticket.name"
@@ -335,7 +335,7 @@
                     required
                   />
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                   <label class="form-label">Type</label>
                   <select
                     v-model="ticket.type"
