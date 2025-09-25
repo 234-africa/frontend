@@ -343,7 +343,7 @@
                   <input
                     v-model.number="ticket.quantity"
                     type="number"
-                    class="form-control"
+                    class="form-control p-3"
                     :disabled="ticket.type === 'unlimited'"
                     :required="ticket.type === 'limited'"
                     min="1"

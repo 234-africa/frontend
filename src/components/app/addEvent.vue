@@ -302,7 +302,7 @@
                   <input
                     v-model.number="ticket.quantity"
                     type="number"
-                    class="form-control"
+                    class="form-control p-3"
                     :disabled="ticket.type === 'unlimited'"
                     :required="ticket.type === 'limited'"
                     min="1"
@@ -341,7 +341,7 @@
                   />
                 </div>
 
-                <div class="col-md-1 d-flex align-items-end">
+                <div class="col-md-1 d-flex pb-2 pt-2 pb-md-0 pt-md-0 align-items-end">
                   <button
                     class="btn btn-outline-danger"
                     title="Delete"
