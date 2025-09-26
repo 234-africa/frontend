@@ -46,6 +46,7 @@
     "vue-google-oauth2": "^1.5.10",
     "vue-google-signin-button": "^1.0.4",
     "vue-gtag": "^3.6.1",
+    "vue-meta": "^3.0.0-alpha.2",
     "vue-paystack": "^2.0.4",
     "vue-qrcode-reader": "^5.7.3",
     "vue-router": "^4.0.3",

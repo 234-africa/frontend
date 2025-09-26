@@ -157,7 +157,7 @@
 <script>
 import axios from "axios";
 import { mapActions } from "vuex";
-import { useHead } from "@vueuse/head";
+import { useMeta } from "vue-meta";
 export default {
   props: {
     props: ["title"],
@@ -191,42 +191,17 @@ export default {
       );
 
       this.product = response.data.product || {};
-      // ✅ Once product is loaded, set meta tags dynamically
-      if (this.product?.title) {
-        useHead({
-          title: `${this.product.title} | 234Tickets`,
-          meta: [
-            {
-              name: "description",
-              content: this.product.description || "Buy tickets on 234Tickets",
-            },
-            { property: "og:title", content: this.product.title },
-            {
-              property: "og:description",
-              content: this.product.description || "Get your ticket now!",
-            },
-            {
-              property: "og:image",
-              content:
-                this.product.photos?.[0] ||
-                "https://via.placeholder.com/600x400?text=234Tickets",
-            },
-            { property: "og:url", content: window.location.href },
-            { name: "twitter:card", content: "summary_large_image" },
-            { name: "twitter:title", content: this.product.title },
-            {
-              name: "twitter:description",
-              content: this.product.description || "Get your ticket now!",
-            },
-            {
-              name: "twitter:image",
-              content:
-                this.product.photos?.[0] ||
-                "https://via.placeholder.com/600x400?text=234Tickets",
-            },
-          ],
-        });
-      }
+      useMeta({
+      title: this.product.title,
+      meta: [
+        { property: 'og:title', content: this.product.title },
+        { property: 'og:description', content: this.product.description || 'Find events on 234 Tickets' },
+        { property: 'og:image', content: this.product.photos?.[0] || 'https://via.placeholder.com/400x300?text=No+Image' },
+        { property: 'og:url', content: `https://www.234tickets.live/event/${slug}` },
+        { property: 'og:type', content: 'website' }
+      ]
+    })
+
       console.log(this.product);
     } catch (error) {
       console.error("Error fetching product details:", error);
