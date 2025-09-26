@@ -40,11 +40,15 @@
                 <label for="title" class="form-label">What is your event name:</label>
                 <input
                   v-model="product.title"
+                  @input="removeSpecialChars"
                   placeholder="Tech Summit, Afro summit"
                   type="text"
                   id="title"
                   class="form-control"
                 />
+              </div>
+              <div v-if="product.title && invalidTitle" class="invalid-feedback">
+                No special characters allowed.
               </div>
               <div class="mb-3 col-md-5">
                 <div>
@@ -454,6 +458,17 @@ export default {
     }
   },
   methods: {
+    removeSpecialChars(event) {
+      const value = event.target.value;
+      // Allow only letters, numbers, spaces, and commas
+      const filtered = value.replace(/[^a-zA-Z0-9 ,]/g, "");
+      this.product.title = filtered;
+    },
+
+    invalidTitle() {
+      // Only allow letters, numbers, spaces, and commas
+      return /[^a-zA-Z0-9 ,]/.test(this.product.title);
+    },
     debouncedCheck() {
       clearTimeout(this.debounceTimer);
       this.debounceTimer = setTimeout(() => {

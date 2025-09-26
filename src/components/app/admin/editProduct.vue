@@ -40,6 +40,7 @@
                 <label for="title" class="form-label">What is your event name:</label>
                 <input
                   v-model="product.title"
+                  @input="removeSpecialChars"
                   placeholder="Tech Summit, Afro summit"
                   type="text"
                   id="title"

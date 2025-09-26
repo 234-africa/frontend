@@ -43,12 +43,12 @@
                   placeholder="Tech Summit, Afro summit"
                   type="text"
                   id="title"
-                  :class="{ 'is-invalid': product.title && !isValidTitle() }"
+                  @input="removeSpecialChars"
                   class="form-control"
                 />
-                <div v-if="product.title && !isValidTitle()" class="invalid-feedback">
-                  Title must be at least two words.
-                </div>
+               <div v-if="product.title && invalidTitle" class="invalid-feedback">
+  No special characters allowed.
+</div>
               </div>
               <div class="mb-3 col-md-5">
                 <div>
@@ -331,6 +331,7 @@
                   <label class="form-label">Ticket name</label>
                   <input
                     v-model="ticket.name"
+                    @input="remove"
                     type="text"
                     class="form-control"
                     placeholder="e.g. General Admission"
@@ -479,6 +480,11 @@ export default {
     };
   },
   computed: {
+    invalidTitle() {
+      // Only allow letters, numbers, spaces, and commas
+      return /[^a-zA-Z0-9 ,]/.test(this.product.title);
+    },
+
     ...mapGetters(["getToken"]),
   },
   async created() {
@@ -493,8 +499,11 @@ export default {
     }
   },
   methods: {
-    isValidTitle() {
-      return this.product.title.trim().split(/\s+/).length >= 2;
+    removeSpecialChars(event) {
+      const value = event.target.value;
+      // Allow only letters, numbers, spaces, and commas
+      const filtered = value.replace(/[^a-zA-Z0-9 ,]/g, "");
+      this.product.title = filtered;
     },
 
     nextStep() {

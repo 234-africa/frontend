@@ -417,7 +417,7 @@ export default {
       }
     },
     async deleteProduct(productId) {
-      if (!confirm("Are you sure you want to delete this order?")) return;
+      if (!confirm("Are you sure you want to delete this event?")) return;
       console.log(productId);
 
       try {
