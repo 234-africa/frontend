@@ -157,7 +157,7 @@
 <script>
 import axios from "axios";
 import { mapActions } from "vuex";
-
+import { useHead } from "@vueuse/head";
 export default {
   props: {
     props: ["title"],
@@ -191,13 +191,51 @@ export default {
       );
 
       this.product = response.data.product || {};
+      // ✅ Once product is loaded, set meta tags dynamically
+      if (this.product?.title) {
+        useHead({
+          title: `${this.product.title} | 234Tickets`,
+          meta: [
+            {
+              name: "description",
+              content: this.product.description || "Buy tickets on 234Tickets",
+            },
+            { property: "og:title", content: this.product.title },
+            {
+              property: "og:description",
+              content: this.product.description || "Get your ticket now!",
+            },
+            {
+              property: "og:image",
+              content:
+                this.product.photos?.[0] ||
+                "https://via.placeholder.com/600x400?text=234Tickets",
+            },
+            { property: "og:url", content: window.location.href },
+            { name: "twitter:card", content: "summary_large_image" },
+            { name: "twitter:title", content: this.product.title },
+            {
+              name: "twitter:description",
+              content: this.product.description || "Get your ticket now!",
+            },
+            {
+              name: "twitter:image",
+              content:
+                this.product.photos?.[0] ||
+                "https://via.placeholder.com/600x400?text=234Tickets",
+            },
+          ],
+        });
+      }
       console.log(this.product);
     } catch (error) {
       console.error("Error fetching product details:", error);
     }
 
     try {
-      const response = await axios.get(`https://event-ticket-backend-yx81.onrender.com/api/products`);
+      const response = await axios.get(
+        `https://event-ticket-backend-yx81.onrender.com/api/products`
+      );
       console.log("API Response:", response.data);
 
       this.products = this.shuffleArray(response.data.products || []).slice(0, 3);
