@@ -15,6 +15,7 @@ import "leaflet/dist/leaflet.css";
 import 'owl.carousel/dist/assets/owl.carousel.css';
 import 'owl.carousel';
 import $ from 'jquery';
+import VueGtag from 'vue-gtag'
 
 
 import vue3GoogleLogin from 'vue3-google-login'
@@ -27,5 +28,7 @@ store.commit('loadCartFromStorage'); // Load cart data from localStorage
 import VueSweetalert2 from "vue-sweetalert2";
 
 
-createApp(App).use(store, 'QuillEditor', QuillEditor, Notifications,VueSweetalert2,vue3GoogleLogin, {
+createApp(App).use(store, VueGtag, {
+  config: { id: 'G-K79WK6WBGH' }
+},'QuillEditor', QuillEditor, Notifications,VueSweetalert2,vue3GoogleLogin, {
      }).use(router).mount('#app')
