@@ -191,40 +191,19 @@ export default {
       );
 
       this.product = response.data.product || {};
-      // Ensure image URL is absolute
-    const imageUrl = this.product.photos?.[0]
-      ? `https://www.234tickets.live${this.product.photos[0]}`
-      : "https://www.234tickets.live/frontend/IMG_0264.png"; // Fixed fallback image
-
-    const pageUrl = `https://www.234tickets.live/event/${productSlug}`;
-    
-    useMeta({
-      title: this.product.title || "234 AFRICA: Event Tickets",
-      meta: [
-        { property: "og:title", content: this.product.title || "234 AFRICA: Event Tickets" },
-        {
-          property: "og:description",
-          content: this.product.description || "Find amazing events on 234 Tickets - Africa's premier event ticketing platform",
-        },
-        {
-          property: "og:image",
-          content: imageUrl,
-        },
-        {
-          property: "og:url",
-          content: pageUrl,
-        },
-        { property: "og:type", content: "event" }, // Changed to 'event' for better context
-        { property: "og:site_name", content: "234 AFRICA" },
-        
-        // Twitter specific tags
-        { name: "twitter:card", content: "summary_large_image" },
-        { name: "twitter:title", content: this.product.title || "234 AFRICA: Event Tickets" },
-        { name: "twitter:description", content: this.product.description || "Find amazing events on 234 Tickets" },
-        { name: "twitter:image", content: imageUrl },
-      ],
-    });
-
+      useMeta({
+        title: product.title,
+        meta: [
+          { property: "og:title", content: product.title },
+          { property: "og:description", content: product.description },
+          {
+            property: "og:image",
+            content: product.photos[0] || "https://via.placeholder.com/400x300",
+          },
+          { property: "og:url", content: window.location.href },
+          { name: "twitter:card", content: "summary_large_image" },
+        ],
+      });
       console.log(this.product);
     } catch (error) {
       console.error("Error fetching product details:", error);
