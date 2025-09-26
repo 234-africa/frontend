@@ -191,27 +191,39 @@ export default {
       );
 
       this.product = response.data.product || {};
-      useMeta({
-        title: this.product.title,
-        meta: [
-          { property: "og:title", content: this.product.title },
-          {
-            property: "og:description",
-            content: this.product.description || "Find events on 234 Tickets",
-          },
-          {
-            property: "og:image",
-            content: this.product.photos?.[0]
-              ? `https://www.234tickets.live${this.product.photos[0]}`
-              : "https://www.234tickets.live/default-image.png",
-          },
-          {
-            property: "og:url",
-            content: `https://www.234tickets.live/event/${productSlug}`,
-          },
-          { property: "og:type", content: "website" },
-        ],
-      });
+      // Ensure image URL is absolute
+    const imageUrl = this.product.photos?.[0]
+      ? `https://www.234tickets.live${this.product.photos[0]}`
+      : "https://www.234tickets.live/frontend/IMG_0264.png"; // Fixed fallback image
+
+    const pageUrl = `https://www.234tickets.live/event/${productSlug}`;
+    
+    useMeta({
+      title: this.product.title || "234 AFRICA: Event Tickets",
+      meta: [
+        { property: "og:title", content: this.product.title || "234 AFRICA: Event Tickets" },
+        {
+          property: "og:description",
+          content: this.product.description || "Find amazing events on 234 Tickets - Africa's premier event ticketing platform",
+        },
+        {
+          property: "og:image",
+          content: imageUrl,
+        },
+        {
+          property: "og:url",
+          content: pageUrl,
+        },
+        { property: "og:type", content: "event" }, // Changed to 'event' for better context
+        { property: "og:site_name", content: "234 AFRICA" },
+        
+        // Twitter specific tags
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: this.product.title || "234 AFRICA: Event Tickets" },
+        { name: "twitter:description", content: this.product.description || "Find amazing events on 234 Tickets" },
+        { name: "twitter:image", content: imageUrl },
+      ],
+    });
 
       console.log(this.product);
     } catch (error) {
