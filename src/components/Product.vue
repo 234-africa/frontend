@@ -192,15 +192,26 @@ export default {
 
       this.product = response.data.product || {};
       useMeta({
-      title: this.product.title,
-      meta: [
-        { property: 'og:title', content: this.product.title },
-        { property: 'og:description', content: this.product.description || 'Find events on 234 Tickets' },
-        { property: 'og:image', content: this.product.photos?.[0] || 'https://via.placeholder.com/400x300?text=No+Image' },
-        { property: 'og:url', content: `https://www.234tickets.live/event/${slug}` },
-        { property: 'og:type', content: 'website' }
-      ]
-    })
+        title: this.product.title,
+        meta: [
+          { property: "og:title", content: this.product.title },
+          {
+            property: "og:description",
+            content: this.product.description || "Find events on 234 Tickets",
+          },
+          {
+            property: "og:image",
+            content: this.product.photos?.[0]
+              ? `https://www.234tickets.live${this.product.photos[0]}`
+              : "https://www.234tickets.live/default-image.png",
+          },
+          {
+            property: "og:url",
+            content: `https://www.234tickets.live/event/${productSlug}`,
+          },
+          { property: "og:type", content: "website" },
+        ],
+      });
 
       console.log(this.product);
     } catch (error) {
