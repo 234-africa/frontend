@@ -214,7 +214,7 @@
           </button>
           <button
             v-if="currentStep < steps.length - 1"
-            :disabled="currentStep === 1 && emailMismatch"
+            :disabled="(currentStep === 1 && emailMismatch) || !hasSelectedTickets"
             type="button"
             class="btn btn-primary"
             @click="nextStep"
@@ -314,6 +314,15 @@ export default {
     };
   },
   computed: {
+    hasSelectedTickets() {
+      return this.getCart.some((product) => {
+        const tickets = product.event?.tickets;
+        return (
+          Array.isArray(tickets) &&
+          tickets.some((ticket) => Number(ticket.selectedQuantity) > 0)
+        );
+      });
+    },
     emailMismatch() {
       return this.contact.email !== this.contact.confirmEmail;
     },
