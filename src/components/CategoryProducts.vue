@@ -3,7 +3,7 @@
     <nav class="navbar navbar-expand-md navbar-light bg-white">
       <div class="container-fluid p-0">
         <a class="navbar-brand text-uppercase fw-800" href="#">
-          <span class="border-red pe-2">Products</span>
+          <span class="border-red pe-2">Events</span>
           {{ products.length }} found
         </a>
 
@@ -87,7 +87,7 @@
         </div>
       </div>
 
-      <p v-else>No products found in this category.</p>
+      <p v-else>No events found in this category.</p>
     </div>
   </div>
 </template>

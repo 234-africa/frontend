@@ -316,7 +316,9 @@ export default {
     },
     async fetchCategories() {
       try {
-        const response = await axios.get("https://event-ticket-backend-yx81.onrender.com/api/categories");
+        const response = await axios.get(
+          "https://event-ticket-backend-yx81.onrender.com/api/categories"
+        );
         if (response.data.status) {
           this.categories = response.data.categories;
         }

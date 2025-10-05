@@ -54,7 +54,7 @@
 
 <script>
 import { mapActions } from "vuex";
-import { googleSdkLoaded } from "vue3-google-login";
+//import { googleSdkLoaded } from "vue3-google-login";
 import Swal from "sweetalert2";
 import jwt_decode from "jwt-decode";
 import axios from "axios";
@@ -75,7 +75,8 @@ export default {
           .initCodeClient({
             client_id: process.env.VUE_APP_CLIENT_ID,
             scope: "email profile openid",
-            redirect_uri: "https://event-ticket-backend-yx81.onrender.com/api/auth/callback",
+            redirect_uri:
+              "https://event-ticket-backend-yx81.onrender.com/api/auth/callback",
             callback: (response) => {
               if (response.code) {
                 this.sendCodeToBackend(response.code);

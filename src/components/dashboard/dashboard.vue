@@ -148,7 +148,7 @@ export default {
             headers: { Authorization: `Bearer ${this.getToken}` },
           }
         );
-
+        console.log(response.data);
         if (response.data.success) {
           alert("✅ Orders sent to your email!");
         } else {

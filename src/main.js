@@ -5,7 +5,7 @@ import router from './router'
 import store from './store'
 import Notifications from '@kyvg/vue3-notification'
 import { QuillEditor } from 'vue3-quill'
-import vue3GoogleLogin from 'vue3-google-login'
+//import vue3GoogleLogin from 'vue3-google-login'
 import VueSweetalert2 from "vue-sweetalert2"
 import VueGtag from 'vue-gtag'
 
@@ -33,7 +33,7 @@ app.use(store)
 app.use(Notifications)
 app.use(VueSweetalert2)
 app.use(VueGtag, { config: { id: 'G-K79WK6WBGH' } })
-app.use(vue3GoogleLogin)
+
 app.component('QuillEditor', QuillEditor)
 
 // ✅ Add vue-meta
