@@ -192,16 +192,17 @@ export default {
 
       this.product = response.data.product || {};
       useMeta({
-        title: product.title,
+        title: this.product.title || '234 Tickets',
         meta: [
-          { property: "og:title", content: product.title },
-          { property: "og:description", content: product.description },
+          { property: "og:title", content: this.product.title || '234 Tickets' },
+          { property: "og:description", content: this.product.description || 'Event tickets' },
           {
             property: "og:image",
-            content: product.photos[0] || "https://via.placeholder.com/400x300",
+            content: this.product.photos?.[0] || "https://via.placeholder.com/400x300",
           },
           { property: "og:url", content: window.location.href },
           { name: "twitter:card", content: "summary_large_image" },
+          { name: "description", content: this.product.description || 'Event tickets' },
         ],
       });
       console.log(this.product);
@@ -257,8 +258,7 @@ export default {
       return new Date(date).toLocaleDateString("en-US", options);
     },
     formatPrice(price) {
-      if (!price || price === 0) return "Free";
-      return `₦${price}`;
+      return this.$store.getters.formatPrice(price);
     },
     slugify(text) {
       return text
