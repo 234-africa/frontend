@@ -77,6 +77,17 @@
             Events
           </router-link>
         </div>
+        
+        <!-- Currency Selector -->
+        <div class="mb-3 px-2">
+          <label class="d-block text-dark small mb-1">Currency</label>
+          <select v-model="selectedCurrency" @change="changeCurrency" class="form-select form-select-sm">
+            <option value="NGN">₦ NGN (Naira)</option>
+            <option value="USD">$ USD (Dollar)</option>
+            <option value="EUR">€ EUR (Euro)</option>
+            <option value="GHS">GH₵ GHS (Cedis)</option>
+          </select>
+        </div>
       </div>
     </transition>
 
@@ -94,6 +105,15 @@
       <div class="nav"></div>
       <div class="">
         <div class="d-flex justify-content-between align-items-center nav-inner">
+          <!-- Currency Selector -->
+          <div class="me-3">
+            <select v-model="selectedCurrency" @change="changeCurrency" class="form-select form-select-sm" style="min-width: 120px;">
+              <option value="NGN">₦ NGN</option>
+              <option value="USD">$ USD</option>
+              <option value="EUR">€ EUR</option>
+              <option value="GHS">GH₵ GHS</option>
+            </select>
+          </div>
           <div>
             <router-link
               to="/login"
@@ -299,12 +319,16 @@ export default {
   data() {
     return {
       show: false,
+      selectedCurrency: this.$store.state.currency || 'NGN',
     };
   },
   computed: {
     ...mapGetters(["currentUser", "isAdmin", "error", "getToken"]),
   },
   methods: {
+    changeCurrency() {
+      this.$store.dispatch('setCurrency', this.selectedCurrency);
+    },
     ...mapActions(["getUser", "getTokenFromStorage", "logout"]),
   },
 
