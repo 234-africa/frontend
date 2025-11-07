@@ -27,13 +27,15 @@ export default createStore({
       NGN: 1,
       USD: 0.0012,
       EUR: 0.0011,
-      GHS: 0.019
+      GHS: 0.019,
+      GBP: 0.0005
     },
     currencySymbols: {
       NGN: '₦',
       USD: '$',
       EUR: '€',
-      GHS: 'GH₵'
+      GHS: 'GH₵',
+      GBP: '£'
     }
   },
 
