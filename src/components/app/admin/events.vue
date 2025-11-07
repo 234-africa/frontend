@@ -254,25 +254,10 @@ export default {
   computed: {
     filteredProducts() {
       const term = this.searchTerm.toLowerCase();
-      const now = new Date();
 
       return this.products.filter((product) => {
         const titleMatch = product.title?.toLowerCase().includes(term);
         const locationMatch = product.event?.location?.name?.toLowerCase().includes(term);
-
-        // ✅ Check if event has expired
-        const eventEndDate = product.event?.end || product.event?.start || product.event?.date;
-        const eventEndTime = product.event?.endTime || "23:59";
-        
-        if (eventEndDate) {
-          const eventEndDateTime = new Date(eventEndDate);
-          const [hours, minutes] = eventEndTime.split(':').map(num => parseInt(num) || 0);
-          eventEndDateTime.setHours(hours, minutes, 0, 0);
-          
-          if (eventEndDateTime < now) {
-            return false;
-          }
-        }
 
         // ✅ Extract min and max ticket prices
         const tickets = product.event?.tickets || [];
@@ -366,7 +351,8 @@ export default {
       return new Date(date).toLocaleDateString("en-US", options);
     },
     formatPrice(price) {
-      return this.$store.getters.formatPrice(price);
+      if (!price || price === 0) return "Free";
+      return `₦${price}`;
     },
     resetSearch() {
       this.searchTerm = "";
@@ -501,4 +487,3 @@ export default {
   cursor: pointer;
 }
 </style>
-            
