@@ -44,7 +44,7 @@ export default {
         const startDate = localStorage.getItem("startDate");
         const startTime = localStorage.getItem("startTime");
         const location = localStorage.getItem("location");
-        const price = Number(localStorage.getItem("discountedTotal") || localStorage.getItem("cartTotal"));
+        const price = Number(localStorage.getItem("finalSubtotal"));
         const payload = {
           startDate,
           startTime,
