@@ -191,26 +191,17 @@ export default {
       );
 
       this.product = response.data.product || {};
-      
-      document.title = this.product.title ? `${this.product.title} - 234 Tickets` : '234 Tickets';
-      
-      this.updateMetaTags();
-      
       useMeta({
-        title: this.product.title || '234 Tickets',
+        title: product.title,
         meta: [
-          { property: "og:title", content: this.product.title || '234 Tickets' },
-          { property: "og:description", content: this.product.description || 'Event tickets' },
+          { property: "og:title", content: product.title },
+          { property: "og:description", content: product.description },
           {
             property: "og:image",
-            content: this.product.photos?.[0] || "https://via.placeholder.com/400x300",
+            content: product.photos[0] || "https://via.placeholder.com/400x300",
           },
           { property: "og:url", content: window.location.href },
           { name: "twitter:card", content: "summary_large_image" },
-          { name: "twitter:title", content: this.product.title || '234 Tickets' },
-          { name: "twitter:description", content: this.product.description || 'Event tickets' },
-          { name: "twitter:image", content: this.product.photos?.[0] || "https://via.placeholder.com/400x300" },
-          { name: "description", content: this.product.description || 'Event tickets' },
         ],
       });
       console.log(this.product);
@@ -243,45 +234,6 @@ export default {
     },
   },
   methods: {
-    updateMetaTags() {
-      const metaTags = [
-        { name: 'description', content: this.product.description || 'Event tickets on 234 Tickets' },
-        { property: 'og:title', content: this.product.title || '234 Tickets' },
-        { property: 'og:description', content: this.product.description || 'Event tickets' },
-        { property: 'og:image', content: this.product.photos?.[0] || 'https://via.placeholder.com/400x300' },
-        { property: 'og:type', content: 'website' },
-        { property: 'og:url', content: window.location.href },
-        { name: 'twitter:card', content: 'summary_large_image' },
-        { name: 'twitter:title', content: this.product.title || '234 Tickets' },
-        { name: 'twitter:description', content: this.product.description || 'Event tickets' },
-        { name: 'twitter:image', content: this.product.photos?.[0] || 'https://via.placeholder.com/400x300' }
-      ];
-
-      metaTags.forEach(tag => {
-        let element;
-        if (tag.property) {
-          element = document.querySelector(`meta[property="${tag.property}"]`);
-          if (element) {
-            element.setAttribute('content', tag.content);
-          } else {
-            element = document.createElement('meta');
-            element.setAttribute('property', tag.property);
-            element.setAttribute('content', tag.content);
-            document.head.appendChild(element);
-          }
-        } else if (tag.name) {
-          element = document.querySelector(`meta[name="${tag.name}"]`);
-          if (element) {
-            element.setAttribute('content', tag.content);
-          } else {
-            element = document.createElement('meta');
-            element.setAttribute('name', tag.name);
-            element.setAttribute('content', tag.content);
-            document.head.appendChild(element);
-          }
-        }
-      });
-    },
     getTicketPriceRange(tickets) {
       if (!tickets || tickets.length === 0) return "";
 
@@ -305,7 +257,8 @@ export default {
       return new Date(date).toLocaleDateString("en-US", options);
     },
     formatPrice(price) {
-      return this.$store.getters.formatPrice(price);
+      if (!price || price === 0) return "Free";
+      return `₦${price}`;
     },
     slugify(text) {
       return text
