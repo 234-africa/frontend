@@ -1,5 +1,5 @@
 <template>
-  <div class="">
+  <div class="dashboard-modern">
     <div>
       <div class="tabs pt-2 px-2">
         <button
@@ -272,6 +272,7 @@
 </template>
 
 <script>
+import "@/components/dashboard/dashboard-modern.css";
 import { mapGetters } from "vuex";
 import axios from "axios";
 import discount from "@/components/dashboard/discount.vue";
