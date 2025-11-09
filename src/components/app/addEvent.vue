@@ -589,17 +589,36 @@ export default {
         );
 
         console.log("Product created:", response.data);
-        alert("Event created successfully!");
+        this.spinner = false;
+        
+        await this.$swal({
+          icon: 'success',
+          title: 'Success!',
+          text: 'Event created successfully!',
+          confirmButtonColor: '#047143',
+          iconColor: '#047143',
+          timer: 2000,
+          timerProgressBar: true
+        });
+        
         this.$router.push("/dashboard?activeTab=event");
       } catch (error) {
+        this.spinner = false;
+        
         if (error.response && error.response.status === 401) {
           localStorage.removeItem("token");
           router.push("/login");
         } else {
-          throw error; // Other errors get thrown normally
+          const errorMessage = error.response?.data?.message || "Failed to create event. Please try again.";
+          this.$swal({
+            icon: 'error',
+            title: 'Error',
+            text: errorMessage,
+            confirmButtonColor: '#f4a213',
+            iconColor: '#f4a213'
+          });
         }
       }
-      this.spinner = false;
     },
   },
 };
