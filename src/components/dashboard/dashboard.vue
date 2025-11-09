@@ -54,9 +54,6 @@
                 <i class="bi bi-list-ul"></i> My Orders
               </h4>
               <div class="d-flex gap-2">
-                <button class="btn btn-success btn-download" @click="downloadAndSendOrders">
-                  <i class="bi bi-file-pdf"></i> Email PDF
-                </button>
                 <button class="btn btn-primary btn-download" @click="downloadAndSendOrdersExcel">
                   <i class="bi bi-file-excel"></i> Email Excel
                 </button>
@@ -231,49 +228,6 @@ export default {
   methods: {
     formatPrice,
     getCurrencySymbol,
-    async downloadAndSendOrders() {
-      try {
-        const response = await axios.get(
-          "https://event-ticket-backend-yx81.onrender.com/api/orders/download-and-email",
-          {
-            headers: { Authorization: `Bearer ${this.getToken}` },
-          }
-        );
-        console.log(response.data);
-        if (response.data.success) {
-          this.$swal({
-            icon: 'success',
-            title: 'Success!',
-            text: 'Orders sent to your email!',
-            confirmButtonColor: '#047143',
-            iconColor: '#047143',
-            showClass: {
-              popup: 'animate__animated animate__fadeInDown'
-            },
-            hideClass: {
-              popup: 'animate__animated animate__fadeOutUp'
-            }
-          });
-        } else {
-          this.$swal({
-            icon: 'warning',
-            title: 'Notice',
-            text: response.data.message,
-            confirmButtonColor: '#f4a213',
-            iconColor: '#f4a213'
-          });
-        }
-      } catch (err) {
-        console.error(err);
-        this.$swal({
-          icon: 'error',
-          title: 'Error',
-          text: 'Failed to send orders.',
-          confirmButtonColor: '#f4a213',
-          iconColor: '#f4a213'
-        });
-      }
-    },
     async downloadAndSendOrdersExcel() {
       try {
         const response = await axios.get(
