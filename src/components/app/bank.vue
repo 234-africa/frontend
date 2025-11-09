@@ -1,48 +1,55 @@
 <template>
-  <div class="container mt-4">
-    <!-- ✅ Create or Edit Form -->
-    <div class="row">
-      <div class="col-md-8">
-        <form
-          @submit.prevent="isEditing ? updateBank() : createBank()"
-          class="shadow p-4 w-md-75 mx-auto w-100"
-        >
-          <h5>{{ isEditing ? "✏️ Edit Bank Info" : "➕ Add Bank Info" }}</h5>
-
-          <div class="mb-3">
-            <label>Account Name</label>
-            <input v-model="form.accountName" type="text" class="form-control" required />
-          </div>
-
-          <div class="mb-3">
-            <label>Account Number</label>
-            <input
-              v-model="form.accountNumber"
-              type="text"
-              class="form-control"
-              required
-            />
-          </div>
-
-          <div class="mb-3">
-            <label>Bank Name</label>
-            <input v-model="form.bankName" type="text" class="form-control" required />
-          </div>
-
-          <button type="submit" class="btn btn-success">
-            {{ isEditing ? "Update" : "Create" }}
-          </button>
-          <button
-            v-if="isEditing"
-            type="button"
-            class="btn btn-secondary ms-2"
-            @click="cancelEdit"
-          >
-            Cancel
-          </button>
-        </form>
+  <div class="dashboard-modern">
+    <div class="container-fluid px-4 py-4">
+      <div class="dashboard-header mb-4">
+        <h1 class="dashboard-title"><i class="bi bi-bank"></i> Bank Management</h1>
+        <p class="dashboard-subtitle">Manage your bank account information</p>
       </div>
-      <div class="text-start col-md-4" v-if="banks && banks.length">
+
+      <div class="row">
+        <div class="col-md-8">
+          <div class="modern-card">
+            <div class="card-header">
+              <h4 class="card-title mb-0">{{ isEditing ? "✏️ Edit Bank Info" : "➕ Add Bank Info" }}</h4>
+            </div>
+            <div class="card-body">
+              <form @submit.prevent="isEditing ? updateBank() : createBank()">
+                <div class="mb-3">
+                  <label>Account Name</label>
+                  <input v-model="form.accountName" type="text" class="modern-form-control" required />
+                </div>
+
+                <div class="mb-3">
+                  <label>Account Number</label>
+                  <input
+                    v-model="form.accountNumber"
+                    type="text"
+                    class="modern-form-control"
+                    required
+                  />
+                </div>
+
+                <div class="mb-3">
+                  <label>Bank Name</label>
+                  <input v-model="form.bankName" type="text" class="modern-form-control" required />
+                </div>
+
+                <button type="submit" class="modern-btn-primary">
+                  {{ isEditing ? "Update" : "Create" }}
+                </button>
+                <button
+                  v-if="isEditing"
+                  type="button"
+                  class="modern-btn-secondary ms-2"
+                  @click="cancelEdit"
+                >
+                  Cancel
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="text-start col-md-4" v-if="banks && banks.length">
         <ul class="list-group shadow-sm">
           <li v-for="bank in banks" :key="bank._id" class="list-group-item">
             <div class="mb-2">
@@ -60,6 +67,7 @@
             </div>
           </li>
         </ul>
+        </div>
       </div>
     </div>
   </div>
@@ -120,10 +128,27 @@ export default {
         } else {
           await this.fetchBanks();
         }
+        
+        this.$swal({
+          icon: 'success',
+          title: 'Success!',
+          text: 'Bank account created successfully!',
+          confirmButtonColor: '#047143',
+          iconColor: '#047143',
+          timer: 2000,
+          timerProgressBar: true
+        });
+        
         this.resetForm();
       } catch (err) {
         console.error("Error creating bank:", err);
-        alert("❌ Failed to create.");
+        this.$swal({
+          icon: 'error',
+          title: 'Error',
+          text: err.response?.data?.message || 'Failed to create bank account.',
+          confirmButtonColor: '#f4a213',
+          iconColor: '#f4a213'
+        });
       }
     },
     editBank(bank) {
@@ -155,14 +180,45 @@ export default {
       }
     },
     async deleteBank(id) {
-      if (!confirm("Delete this bank info?")) return;
+      const result = await this.$swal({
+        icon: 'warning',
+        title: 'Are you sure?',
+        text: 'Do you want to delete this bank info?',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#f4a213',
+        cancelButtonColor: '#047143',
+        iconColor: '#f4a213',
+        reverseButtons: true
+      });
+      
+      if (!result.isConfirmed) return;
+      
       try {
         await axios.delete(`https://event-ticket-backend-yx81.onrender.com/api/bank/${id}`, {
           headers: { Authorization: `Bearer ${this.getToken}` },
         });
         this.banks = this.banks.filter((b) => b._id !== id);
+        
+        this.$swal({
+          icon: 'success',
+          title: 'Deleted!',
+          text: 'Bank account deleted successfully',
+          confirmButtonColor: '#047143',
+          iconColor: '#047143',
+          timer: 2000,
+          timerProgressBar: true
+        });
       } catch (err) {
         console.error("Error deleting bank:", err);
+        this.$swal({
+          icon: 'error',
+          title: 'Error',
+          text: err.response?.data?.message || 'Failed to delete bank account',
+          confirmButtonColor: '#f4a213',
+          iconColor: '#f4a213'
+        });
       }
     },
 
@@ -177,4 +233,6 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+@import '../dashboard/dashboard-modern.css';
+</style>
