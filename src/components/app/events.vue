@@ -173,6 +173,68 @@
       </div>
     </div>
 
+    <!-- Orders Modal -->
+    <div v-if="showOrdersModal" class="modal" @click.self="showOrdersModal = false">
+      <div class="modal-content" style="max-width: 90%; max-height: 90vh; overflow-y: auto">
+        <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-success text-white">
+          <h5 class="m-0 fw-bold">Orders for {{ selectedEventTitle }}</h5>
+          <button class="btn-icon text-white" @click="showOrdersModal = false">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        <div class="p-3">
+          <div v-if="ordersLoading" class="text-center py-5">
+            <div class="spinner-border text-success" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2 text-muted">Loading orders...</p>
+          </div>
+
+          <div v-else-if="eventOrders.length === 0" class="alert alert-info">
+            No orders found for this event yet.
+          </div>
+
+          <div v-else class="table-responsive">
+            <table class="table table-striped table-hover">
+              <thead class="table-success">
+                <tr>
+                  <th>Order ID</th>
+                  <th>Reference</th>
+                  <th>Date</th>
+                  <th>Customer Email</th>
+                  <th>Phone</th>
+                  <th>Amount</th>
+                  <th>Tickets</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="order in eventOrders" :key="order._id">
+                  <td class="small">{{ order._id.slice(-8) }}</td>
+                  <td class="tes">{{ order.reference }}</td>
+                  <td>{{ new Date(order.createdAt).toLocaleDateString() }}</td>
+                  <td>{{ order.contact?.email || "N/A" }}</td>
+                  <td>{{ order.contact?.phone || "N/A" }}</td>
+                  <td>
+                    <strong>{{ getCurrencySymbol(order.currency) }}{{ order.price?.toLocaleString() }}</strong>
+                  </td>
+                  <td>
+                    <div v-for="ticket in order.tickets" :key="ticket._id" class="small">
+                      {{ ticket.name }} x {{ ticket.quantity }}
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="alert alert-success mt-3">
+              <strong>Total Orders:</strong> {{ eventOrders.length }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- 🗂 Event List -->
     <div class="container-fluid">
       <div class="section_discover pt-4">
@@ -216,7 +278,7 @@
                     {{ getTicketPriceRange(product.event.tickets) }}
                   </p>
 
-                  <div class="d-flex">
+                  <div class="d-flex flex-wrap gap-2">
                     <button
                       class="btn btn-outline-primary btn-sm"
                       @click="goToProduct(product.title)"
@@ -225,21 +287,28 @@
                     </button>
                     <!-- Edit Button -->
                     <button
-                      class="btn btn-primary btn-sm ms-2"
+                      class="btn btn-primary btn-sm"
                       @click="goToEditProduct(product._id)"
                     >
                       <i class="bi bi-pencil-fill me-1"></i>
                       Edit
                     </button>
                     <button
-                      class="btn btn-primary btn-sm ms-2"
+                      class="btn btn-success btn-sm"
+                      @click="viewEventOrders(product._id, product.title)"
+                    >
+                      <i class="bi bi-list-check me-1"></i>
+                      Orders
+                    </button>
+                    <button
+                      class="btn btn-primary btn-sm"
                       @click="showUserPopup(product._id)"
                     >
                       <i class="bi bi-pencil-fill me-1"></i>
                       Assign User
                     </button>
                     <button
-                      class="btn btn-outline-primary btn-sm ms-2"
+                      class="btn btn-outline-primary btn-sm"
                       @click="copyFullEventUrl(product.customizeUrl)"
                     >
                       <i class="bi bi-clipboard me-1"></i>
@@ -247,7 +316,7 @@
 
                     <!-- Delete Button -->
                     <button
-                      class="btn btn-danger btn-sm ms-2"
+                      class="btn btn-danger btn-sm"
                       @click="deleteProduct(product._id)"
                     >
                       <i class="bi bi-trash-fill me-1"></i>
@@ -280,6 +349,7 @@ export default {
     return {
       showEditProduct: false,
       selectedProductId: null,
+      selectedEventTitle: "",
 
       products: [],
       reference: "",
@@ -301,6 +371,9 @@ export default {
       showDateModal: false,
       showEditModal: false,
       showUserModal: false,
+      showOrdersModal: false,
+      eventOrders: [],
+      ordersLoading: false,
     };
   },
   computed: {
@@ -386,6 +459,38 @@ export default {
       this.showEditModal = true;
       this.showEditProduct = true;
     },
+    viewEventOrders(productId, eventTitle) {
+      this.selectedProductId = productId;
+      this.selectedEventTitle = eventTitle;
+      this.showOrdersModal = true;
+      this.fetchEventOrders(productId);
+    },
+    async fetchEventOrders(productId) {
+      this.ordersLoading = true;
+      try {
+        const response = await axios.get(
+          `https://event-ticket-backend-yx81.onrender.com/api/orders/by-event/${productId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${this.getToken}`,
+            },
+          }
+        );
+        this.eventOrders = response.data.orders || [];
+      } catch (error) {
+        console.error("Error fetching event orders:", error);
+        this.$swal({
+          icon: "error",
+          title: "Error",
+          text: error.response?.data?.message || "Failed to fetch orders for this event",
+          confirmButtonColor: "#DC143C",
+          iconColor: "#DC143C",
+        });
+        this.eventOrders = [];
+      } finally {
+        this.ordersLoading = false;
+      }
+    },
     showUserPopup(productId) {
       this.selectedProductId = productId;
       this.showUserModal = true;
@@ -454,6 +559,16 @@ export default {
     formatPrice(price) {
       if (!price || price === 0) return "Free";
       return `₦${price}`;
+    },
+    getCurrencySymbol(currency) {
+      const symbols = {
+        NGN: "₦",
+        USD: "$",
+        GBP: "£",
+        EUR: "€",
+        GHS: "GH₵",
+      };
+      return symbols[currency] || "₦";
     },
     resetSearch() {
       this.searchTerm = "";
