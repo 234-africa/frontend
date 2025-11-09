@@ -2,8 +2,8 @@
   <div class="container my-5">
     <div class="ticket-footer d-block d-md-none p-2">
       <div class="text-white p-3 rounded-3 text-center" style="background-color: #047143">
-        <small>subTotal: {{ subTotal }}</small>
-        <div class="fw-bold fs-5 mb-1">Total: ₦{{ cartTotal }}</div>
+        <small>subTotal: {{ formatPrice(subTotal, cartCurrency) }}</small>
+        <div class="fw-bold fs-5 mb-1">Total: {{ formatPrice(cartTotal, cartCurrency) }}</div>
       </div>
     </div>
 
@@ -52,7 +52,7 @@
               <div class="ticket-content d-flex justify-content-between">
                 <div>
                   <h5>{{ ticket.name }}</h5>
-                  <p class="price">₦{{ ticket.price || 0 }}</p>
+                  <p class="price">{{ formatPrice(ticket.price, ticket.currency) }}</p>
                 </div>
 
                 <!-- Optional: Add a quantity selector if needed -->
@@ -210,7 +210,7 @@
             :disabled="!termsAccepted"
             class="btn btn-success"
           >
-            Pay Now ₦{{ cartTotal.toLocaleString() }}
+            Pay Now {{ formatPrice(cartTotal, cartCurrency) }}
           </button>
           <button
             v-if="currentStep < steps.length - 1"
@@ -249,10 +249,10 @@
             </ul>
           </div>
 
-          <small>subTotal: {{ subTotal }}</small>
-          <div class="fw-semibold fs-6">Service Charge (7.5%): ₦{{ serviceCharge }}</div>
+          <small>subTotal: {{ formatPrice(subTotal, cartCurrency) }}</small>
+          <div class="fw-semibold fs-6">Service Charge (7.5%): {{ formatPrice(serviceCharge, cartCurrency) }}</div>
 
-          <div class="fw-bold fs-5">Total: ₦{{ cartTotal }}</div>
+          <div class="fw-bold fs-5">Total: {{ formatPrice(cartTotal, cartCurrency) }}</div>
         </div>
         <div class="">
           <input
@@ -280,6 +280,8 @@ import QrcodeVue from "qrcode.vue";
 import spinner from "./spinner.vue";
 import { ref } from "vue";
 import { startOfDay } from "@fullcalendar/core/internal";
+import { formatPrice, getCurrencySymbol, getPaymentGateway } from "@/helpers/currency";
+
 export default {
   components: {
     paystack,
@@ -416,6 +418,21 @@ export default {
     canCheckout() {
       return this.paymentMethod && this.termsAccepted;
     },
+    // Get the currency from the first ticket in the cart
+    cartCurrency() {
+      for (const product of this.getCart) {
+        for (const ticket of product.event?.tickets || []) {
+          if (ticket.selectedQuantity > 0 && ticket.currency) {
+            return ticket.currency;
+          }
+        }
+      }
+      return "NGN"; // Default to NGN if no ticket found
+    },
+    // Determine payment gateway based on currency
+    paymentGateway() {
+      return getPaymentGateway(this.cartCurrency);
+    },
   },
   watch: {
     currentStep() {
@@ -440,6 +457,9 @@ export default {
     },
   },
   methods: {
+    formatPrice,
+    getCurrencySymbol,
+    getPaymentGateway,
     formatDate(date) {
       if (!date) return "No date";
       const options = {
