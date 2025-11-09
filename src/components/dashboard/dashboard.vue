@@ -27,7 +27,7 @@
               <i class="bi bi-currency-exchange"></i>
             </div>
             <div class="stats-card-content">
-              <h3 class="stats-number">₦{{ totalPrice.toLocaleString() }}</h3>
+              <h3 class="stats-number">{{ revenueDisplay }}</h3>
               <p class="stats-label">Total Revenue</p>
             </div>
           </div>
@@ -96,7 +96,7 @@
                     <td class="event-name">{{ order.title }}</td>
                     <td>{{ order.contact?.email || "N/A" }}</td>
                     <td>{{ order.contact?.phone || "N/A" }}</td>
-                    <td class="amount">₦{{ order.price.toLocaleString() }}</td>
+                    <td class="amount">{{ formatPrice(order.price, order.currency) }}</td>
                     <td>
                       <div v-for="ticket in order.tickets" :key="ticket._id" class="ticket-badge">
                         {{ ticket.name }} x {{ ticket.quantity }}
@@ -150,6 +150,7 @@
 <script>
 import { mapGetters } from "vuex";
 import axios from "axios";
+import { formatPrice, getCurrencySymbol } from "@/helpers/currency";
 
 export default {
   components: {},
@@ -169,6 +170,33 @@ export default {
 
     productsByUser() {
       return this.getProductsByUser;
+    },
+    totalRevenueByCurrency() {
+      const revenueByCurrency = {};
+      this.orders.forEach((order) => {
+        const currency = order.currency || "NGN";
+        if (!revenueByCurrency[currency]) {
+          revenueByCurrency[currency] = 0;
+        }
+        revenueByCurrency[currency] += order.price || 0;
+      });
+      return revenueByCurrency;
+    },
+    totalRevenueCurrency() {
+      const currencies = Object.keys(this.totalRevenueByCurrency);
+      return currencies.length === 1 ? currencies[0] : null;
+    },
+    revenueDisplay() {
+      if (this.totalRevenueCurrency) {
+        // Single currency - show total
+        const total = this.totalRevenueByCurrency[this.totalRevenueCurrency];
+        return formatPrice(total, this.totalRevenueCurrency);
+      } else {
+        // Multiple currencies - show breakdown
+        return Object.entries(this.totalRevenueByCurrency)
+          .map(([currency, amount]) => formatPrice(amount, currency))
+          .join(" · ");
+      }
     },
     filteredOrders() {
       if (!this.searchQuery) return this.orders;
@@ -201,6 +229,8 @@ export default {
     },
   },
   methods: {
+    formatPrice,
+    getCurrencySymbol,
     async downloadAndSendOrders() {
       try {
         const response = await axios.get(
