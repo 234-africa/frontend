@@ -206,13 +206,37 @@ export default {
         );
         console.log(response.data);
         if (response.data.success) {
-          alert("Orders sent to your email!");
+          this.$swal({
+            icon: 'success',
+            title: 'Success!',
+            text: 'Orders sent to your email!',
+            confirmButtonColor: '#047143',
+            iconColor: '#047143',
+            showClass: {
+              popup: 'animate__animated animate__fadeInDown'
+            },
+            hideClass: {
+              popup: 'animate__animated animate__fadeOutUp'
+            }
+          });
         } else {
-          alert(response.data.message);
+          this.$swal({
+            icon: 'warning',
+            title: 'Notice',
+            text: response.data.message,
+            confirmButtonColor: '#f4a213',
+            iconColor: '#f4a213'
+          });
         }
       } catch (err) {
         console.error(err);
-        alert("Failed to send orders.");
+        this.$swal({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to send orders.',
+          confirmButtonColor: '#f4a213',
+          iconColor: '#f4a213'
+        });
       }
     },
     prevPage() {
@@ -311,17 +335,17 @@ export default {
 }
 
 .stats-card-primary .stats-card-icon {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #f4a213 0%, #d68910 100%);
   color: white;
 }
 
 .stats-card-success .stats-card-icon {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: linear-gradient(135deg, #047143 0%, #035a36 100%);
   color: white;
 }
 
 .stats-card-info .stats-card-icon {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  background: linear-gradient(135deg, #f4a213 0%, #047143 100%);
   color: white;
 }
 
@@ -357,7 +381,7 @@ export default {
 }
 
 .modern-card .card-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #f4a213 0%, #047143 100%);
   padding: 1.5rem 2rem;
   border: none;
 }
@@ -374,7 +398,7 @@ export default {
 
 .btn-download {
   background: white !important;
-  color: #667eea !important;
+  color: #f4a213 !important;
   border: none !important;
   padding: 0.6rem 1.5rem;
   border-radius: 8px;
@@ -415,8 +439,8 @@ export default {
 }
 
 .search-input:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+  border-color: #f4a213;
+  box-shadow: 0 0 0 0.2rem rgba(244, 162, 19, 0.15);
 }
 
 .modern-table {
@@ -439,7 +463,7 @@ export default {
 
 .modern-table thead th i {
   margin-right: 0.5rem;
-  color: #667eea;
+  color: #f4a213;
 }
 
 .modern-table tbody tr {
@@ -474,7 +498,7 @@ export default {
 .tes {
   text-transform: none !important;
   font-family: 'Courier New', monospace;
-  color: #667eea;
+  color: #f4a213;
   font-weight: 600;
 }
 
@@ -485,13 +509,13 @@ export default {
 
 .amount {
   font-weight: 700;
-  color: #28a745;
+  color: #047143;
   font-size: 1.05rem;
 }
 
 .ticket-badge {
   display: inline-block;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #f4a213 0%, #047143 100%);
   color: white;
   padding: 0.4rem 0.8rem;
   border-radius: 8px;
@@ -524,9 +548,9 @@ export default {
 }
 
 .pagination-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #f4a213 0%, #047143 100%);
   color: white;
-  border-color: #667eea;
+  border-color: #f4a213;
   transform: translateY(-2px);
 }
 
@@ -553,14 +577,14 @@ export default {
 }
 
 .page-btn:hover {
-  border-color: #667eea;
-  color: #667eea;
+  border-color: #f4a213;
+  color: #f4a213;
 }
 
 .page-btn.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #f4a213 0%, #047143 100%);
   color: white;
-  border-color: #667eea;
+  border-color: #f4a213;
 }
 
 @media (max-width: 768px) {
