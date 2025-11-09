@@ -1,741 +1,658 @@
 <template>
-  <div class="form-container">
-    <!-- Stepper -->
-    <div class="stepper pt-2 mx-auto">
-      <div
-        v-for="(step, index) in steps"
-        :key="index"
-        class="step"
-        :class="{
-          'step-active': currentStep === index,
-          'step-completed': index < currentStep,
-        }"
-      >
-        <div class="circle">
-          <span v-if="index < currentStep">✔</span>
-          <span v-else>{{ index + 1 }}</span>
+  <div class="dashboard-modern">
+    <!-- 🔍 Search & Filters -->
+    <div class="container-fluid">
+      <div class="section_discover">
+        <div class="container-large">
+          <div class="row pt-2 pb-2">
+            <!-- 🔍 Search Input -->
+            <div class="col-12 pt-2 pb-md-0 pb-1 col-md-6">
+              <input
+                v-model="searchTerm"
+                type="text"
+                class="form-control"
+                placeholder="Search events by title"
+              />
+            </div>
+
+            <!-- 🧩 Filter Buttons -->
+            <div class="col-12 col-md-6 pt-1">
+              <div
+                class="d-flex flex-column flex-md-row align-items-center justify-content-md-end gap-2"
+              >
+                <button
+                  class="btn btn-outline-dark w-100 w-md-auto"
+                  @click="showPriceModal = true"
+                >
+                  Price
+                </button>
+                <button
+                  class="btn btn-outline-dark w-100 w-md-auto"
+                  @click="showDateModal = true"
+                >
+                  Date
+                </button>
+                <a
+                  href="#"
+                  class="text-muted text-decoration-none"
+                  @click.prevent="resetSearch"
+                >
+                  Reset Filters
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="label">{{ step }}</div>
       </div>
-      <div class="progress-line">
-        <div
-          class="progress-fill"
-          :style="{ width: (currentStep / (steps.length - 1)) * 100 + '%' }"
-        ></div>
+    </div>
+    <!-- 💰 Price Modal -->
+    <div v-if="showPriceModal" class="modal w-100" @click.self="showPriceModal = false">
+      <div class="modal-content h-25">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="m-0 fw-bold">Price</h5>
+          <button class="btn-icon" @click="showPriceModal = false">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        <div class="row">
+          <div class="col-6">
+            <label>Minimum amount</label>
+            <input
+              v-model.number="tempFilters.minPrice"
+              type="number"
+              class="form-control"
+            />
+          </div>
+          <div class="col-6">
+            <label>Maximum amount</label>
+            <input
+              v-model.number="tempFilters.maxPrice"
+              type="number"
+              class="form-control"
+            />
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+          <button class="btn btn-outline-secondary" @click="clearPriceFilters">
+            Clear
+          </button>
+          <button class="btn btn-primary" @click="applyPriceFilters">Apply</button>
+        </div>
       </div>
     </div>
 
-    <!-- Form -->
-    <div class="row text-start">
-      <div class="col-12">
-        <form
-          @submit.prevent="submitProduct"
-          enctype="multipart/form-data"
-          class="shadow p-4"
-        >
-          <!-- STEP 1: Basic Info -->
-          <div class="" v-if="currentStep === 0">
-            <div class="row">
-              <div class="mb-3 col-md-7">
-                <label for="title" class="form-label">What is your event name:</label>
-                <input
-                  v-model="product.title"
-                  @input="removeSpecialChars"
-                  placeholder="Tech Summit, Afro summit"
-                  type="text"
-                  id="title"
-                  class="form-control"
+    <!-- 📅 Date Modal -->
+    <div v-if="showDateModal" class="modal" @click.self="showDateModal = false">
+      <div class="modal-content h-25">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="m-0 fw-bold">Date</h5>
+          <button class="btn-icon" @click="showDateModal = false">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        <div class="d-flex justify-content-center gap-3 mb-3">
+          <button class="btn btn-outline-dark" @click="setToday">Today</button>
+          <button class="btn btn-outline-dark" @click="setTomorrow">Tomorrow</button>
+          <button class="btn btn-outline-dark" @click="setThisWeekend">
+            This weekend
+          </button>
+        </div>
+
+        <div class="row">
+          <div class="col-6">
+            <input v-model="tempFilters.startDate" type="date" class="form-control" />
+          </div>
+          <div class="col-6">
+            <input v-model="tempFilters.endDate" type="date" class="form-control" />
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+          <button class="btn btn-outline-secondary" @click="clearDateFilters">
+            Clear
+          </button>
+          <button class="btn btn-primary" @click="applyDateFilters">Apply</button>
+        </div>
+      </div>
+    </div>
+    <div v-if="showEditModal" class="modal" @click.self="showEditModal = false">
+      <div class=" ">
+        <div class="modal-content w-100 h-75" style="max-height: 90vh; overflow-y: auto">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="m-0 fw-bold">Edit</h5>
+            <button class="btn-icon" @click="showEditModal = false">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+          <editProduct
+            v-if="showEditProduct"
+            :product-id="selectedProductId"
+            @refresh="fetchProducts"
+            @close="showEditModal = false"
+          ></editProduct>
+        </div>
+      </div>
+    </div>
+    <div v-if="showUserModal" class="" @click.self="showUserModal = false">
+      <div class="modal">
+        <div class="modal-content w-100 h-50" style="overflow-y: auto">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="m-0 fw-bold">Assign</h5>
+            <button class="btn-icon" @click="showUserModal = false">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+          <h3>Assign Staff to Event</h3>
+          <p>
+            Event ID: <strong>{{ selectedProductId }}</strong>
+          </p>
+
+          <label class="mt-3">Staff Name:</label>
+          <input
+            type="text"
+            v-model="staffName"
+            placeholder="Enter staff name"
+            class="form-control mb-3"
+          />
+
+          <label>
+            <input type="checkbox" v-model="checkInPermission" />
+            Check in tickets
+          </label>
+
+          <div class="mt-3">
+            <button class="btn btn-success btn-sm" @click="assignStaff">Add staff</button>
+            <button class="btn btn-secondary btn-sm ms-2" @click="closePopup">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🗂 Event List -->
+    <div class="container-fluid">
+      <div class="section_discover pt-4">
+        <div class="container-large">
+          <h3 class="mb-3">Explore {{ filteredProducts.length }} Events</h3>
+
+          <div v-if="filteredProducts.length === 0" class="alert alert-warning">
+            No events match your search.
+          </div>
+
+          <div class="row">
+            <div
+              class="col-md-4 pt-3 mb-3"
+              v-for="product in filteredProducts"
+              :key="product._id"
+            >
+              <div class="modern-event-card">
+                <img
+                  :src="
+                    product.photos[0] ||
+                    'https://via.placeholder.com/400x300?text=No+Image'
+                  "
+                  class="img-fluid w-100"
+                  style="height: 200px; object-fit: cover"
+                  alt="Event Image"
                 />
-              </div>
-              <div class="mb-3 col-md-5">
-                <div>
-                  <div>
-                    <label for="title" class="form-label">Tag:</label>
-                    <input
-                      v-model="product.tag"
-                      type="text"
-                      placeholder="Tags (comma-separated)"
-                      id="title"
-                      class="form-control"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="row mb-3">
-              <div class="col-md-7">
-                <label class="form-label">Event Category</label>
-                <div>
-                  <select
-                    class="form-select"
-                    v-if="categories.length > 0"
-                    v-model="categoryID"
-                  >
-                    <option value="" disabled>Select a category</option>
-                    <option
-                      v-for="category in categories"
-                      :key="category._id"
-                      :value="category._id"
-                    >
-                      {{ category.type }}
-                    </option>
-                    <!-- Add more as needed -->
-                  </select>
-                </div>
-              </div>
-              <div class="col-md-5">
-                <div class="">
-                  <label for="customUrl" class="form-label">Use custom URL</label>
-                  <div class="input-group pt-2">
-                    <span class="input-group-text">234tickets.live/event/</span>
-                    <input
-                      type="text"
-                      v-model="product.customizeUrl"
-                      class="form-control pt-md-2"
-                      id="customUrl"
-                      placeholder="Enter your custom link"
-                      readonly
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">What's your event about:</label>
-              <div>
-                <textarea class="w-100 h-50" v-model="product.description" />
-              </div>
-            </div>
-          </div>
-
-          <!-- STEP 2: Description -->
-          <div v-if="currentStep === 1">
-            <div class="mt-4 text-start">
-              <h4><strong>When is your event?</strong></h4>
-              <p class="text-muted">Select all the dates of your event</p>
-
-              <!-- Toggle Buttons -->
-              <div class="btn-group mb-3" role="group">
-                <button
-                  type="button"
-                  class="btn"
-                  :class="
-                    eventType === 'single'
-                      ? 'btn-primary active'
-                      : 'btn-outline-secondary'
-                  "
-                  @click="eventType = 'single'"
-                >
-                  Single Event
-                </button>
-                <button
-                  type="button"
-                  class="btn"
-                  :class="
-                    eventType === 'recurring'
-                      ? 'btn-primary active'
-                      : 'btn-outline-secondary'
-                  "
-                  @click="eventType = 'recurring'"
-                >
-                  Recurring Event
-                </button>
-              </div>
-
-              <!-- Time Zone -->
-              <div class="row mb-3">
-                <div class="">
-                  <div class="mb-3">
-                    <label for="address" class="form-label">Enter Address:</label>
-                    <input
-                      v-model="address"
-                      type="text"
-                      class="form-control"
-                      id="address"
-                      placeholder="e.g. 1600 Amphitheatre Parkway, CA"
-                      required
-                    />
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <label class="form-label">* Select time zone</label>
-                <select class="form-select" v-model="product.event.timezone">
-                  <option value="">Select Time Zone</option>
-                  <option value="UTC+01:00">(UTC+01:00) West Central Africa</option>
-                  <option value="UTC+00:00">(UTC+00:00) GMT</option>
-                  <option value="UTC-05:00">
-                    (UTC-05:00) Eastern Time (US & Canada)
-                  </option>
-                  <!-- Add more as needed -->
-                </select>
-              </div>
-
-              <!-- Start/End Date and Time -->
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">* Start date</label>
-                  <input
-                    type="date"
-                    class="form-control"
-                    v-model="product.event.startDate"
-                  />
-                </div>
-                <div class="col-md-6 mb-3" v-if="eventType === 'recurring'">
-                  <label class="form-label">* End date</label>
-                  <input
-                    type="date"
-                    class="form-control"
-                    v-model="product.event.endDate"
-                  />
-                </div>
-              </div>
-
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">Start time</label>
-                  <div class="d-flex justify-content-between">
-                    <div class="mt-2">
-                      <input
-                        type="time"
-                        class="form-control"
-                        v-model="product.event.startTime"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Recurring Options -->
-                <div class="col-md-4 mb-3" v-if="eventType === 'recurring'">
-                  <label class="form-label">* Event frequency</label>
-                  <select class="form-select" v-model="eventFrequency">
-                    <option>Every day</option>
-                    <option>Weekdays</option>
-                    <option>Weekends</option>
-                    <option>Every week</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- STEP 3: Media Upload -->
-          <div v-if="currentStep === 2">
-            <div class="container py-5 text-start">
-              <div class="row">
-                <!-- Left Column: Event Image -->
-                <div class="col-md-6">
-                  <h5><strong>Event Image</strong></h5>
-                  <p class="text-muted">Upload a JPEG or PNG file</p>
-
-                  <div
-                    class="alert alert-light border text-muted py-2 small d-flex align-items-start"
-                  >
-                    <i class="bi bi-info-circle-fill me-2 text-danger"></i>
-                    Images with a 1:1 ratio (a square) work best on all event themes
-                  </div>
-
-                  <div>
-                    <!-- Upload box -->
-                    <label
-                      for="imageUpload"
-                      class="border rounded bg-light d-flex flex-column justify-content-center align-items-center text-center py-5 mb-2"
-                      style="cursor: pointer"
-                    >
-                      <i class="bi bi-image fs-1 mb-2"></i>
-                      <span>
-                        Drag an image here or
-                        <span class="text-danger fw-bold">click to upload</span>
-                      </span>
-                      <input
-                        type="file"
-                        multiple
-                        @change="handleFiles"
-                        accept="image/*"
-                        id="imageUpload"
-                        class="d-none"
-                      />
-                      <p v-if="photos.length">Selected: {{ photos.length }} image(s)</p>
-                    </label>
-
-                    <!-- Preview -->
-                    <div
-                      v-if="previewUrl || (product.photos && product.photos.length)"
-                      class="text-center mt-3"
-                    >
-                      <img
-                        :src="previewUrl || product.photos[0]"
-                        alt="Preview"
-                        class="img-fluid rounded shadow"
-                        style="max-height: 250px"
-                      />
-                    </div>
-                  </div>
-                  <p class="text-muted small">
-                    Upload an image with a size less than 2mb
+                <div class="p-3">
+                  <h5>{{ product.title }}</h5>
+                  <p class="mb-1">
+                    <i class="bi bi-calendar-event me-2"></i>
+                    {{ formatDate(product.event.start) }}
+                    <span v-if="product.event.end"
+                      >- {{ formatDate(product.event.end) }}
+                    </span>
                   </p>
-                </div>
+                  <p class="mb-1">
+                    <i class="bi bi-geo-alt me-2"></i>
+                    {{ product.event.location.name || "No location" }}
+                  </p>
+                  <p>
+                    {{ getTicketPriceRange(product.event.tickets) }}
+                  </p>
 
-                <!-- Right Column: Event Theme -->
+                  <div class="d-flex">
+                    <button
+                      class="btn btn-outline-primary btn-sm"
+                      @click="goToProduct(product.title)"
+                    >
+                      View Event
+                    </button>
+                    <!-- Edit Button -->
+                    <button
+                      class="btn btn-primary btn-sm ms-2"
+                      @click="goToEditProduct(product._id)"
+                    >
+                      <i class="bi bi-pencil-fill me-1"></i>
+                      Edit
+                    </button>
+                    <button
+                      class="btn btn-primary btn-sm ms-2"
+                      @click="showUserPopup(product._id)"
+                    >
+                      <i class="bi bi-pencil-fill me-1"></i>
+                      Assign User
+                    </button>
+                    <button
+                      class="btn btn-outline-primary btn-sm ms-2"
+                      @click="copyFullEventUrl(product.customizeUrl)"
+                    >
+                      <i class="bi bi-clipboard me-1"></i>
+                    </button>
+
+                    <!-- Delete Button -->
+                    <button
+                      class="btn btn-danger btn-sm ms-2"
+                      @click="deleteProduct(product._id)"
+                    >
+                      <i class="bi bi-trash-fill me-1"></i>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- STEP 4: Location -->
-          <div v-if="currentStep === 3">
-            <div class="my-4 text-start">
-              <h5><strong>Create your ticket types</strong></h5>
-
-              <!-- Ticket Rows -->
-              <div
-                v-for="(ticket, index) in tickets"
-                :key="index"
-                class="row g-3 align-items-end mb-2"
-              >
-                <div class="col-md-2">
-                  <label class="form-label">Ticket name</label>
-                  <input
-                    v-model="ticket.name"
-                    type="text"
-                    class="form-control"
-                    placeholder="e.g. General Admission"
-                    required
-                  />
-                </div>
-
-                <div class="col-md-2">
-                  <label class="form-label">Quantity</label>
-                  <input
-                    v-model.number="ticket.quantity"
-                    type="number"
-                    class="form-control p-3"
-                    :disabled="ticket.type === 'unlimited'"
-                    :required="ticket.type === 'limited'"
-                    min="1"
-                    placeholder="e.g. 100"
-                  />
-                </div>
-
-                <div class="col-md-2">
-                  <label class="form-label">Price</label>
-                  <input
-                    v-model.number="ticket.price"
-                    type="number"
-                    class="form-control"
-                    placeholder="Blank for free event"
-                  />
-                </div>
-                <div class="col-md-2">
-                  <label class="form-label">Purchase Limit</label>
-                  <input
-                    v-model.number="ticket.purchaseLimit"
-                    type="number"
-                    class="form-control"
-                    min="1"
-                    placeholder="tickets per order"
-                    required
-                  />
-                </div>
-                <div class="col-md-3">
-                  <label class="form-label">Type</label>
-                  <select
-                    v-model="ticket.type"
-                    class="form-select p-2"
-                    style="color: #212529"
-                    required
-                  >
-                    <option disabled value="">Select Type</option>
-                    <option value="limited">Limited</option>
-                    <option value="unlimited">Unlimited</option>
-                  </select>
-                </div>
-
-                <div class="col-md-1 d-flex align-items-end">
-                  <button
-                    class="btn btn-outline-danger"
-                    title="Delete"
-                    @click="removeTicket(index)"
-                    type="button"
-                  >
-                    <i class="bi bi-trash"></i>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Timeslot Capacity -->
-
-              <!-- Add Ticket Buttons -->
-              <div class="d-flex gap-3">
-                <button
-                  class="btn btn-primary btn-primary:hover"
-                  type="button"
-                  @click="addTicket('Paid')"
-                >
-                  + ticket
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Buttons -->
-          <div class="text-center mt-4 d-flex justify-content-between">
-            <button
-              type="button"
-              class="btn btn-danger"
-              @click="prevStep"
-              :disabled="currentStep === 0"
-            >
-              Back
-            </button>
-            <button
-              v-if="currentStep < steps.length - 1"
-              type="button"
-              class="btn btn-primary btn-primary:hover"
-              @click="nextStep"
-            >
-              Next
-            </button>
-            <button v-else type="submit" class="btn btn-primary btn-primary:hover">
-              Update Event
-            </button>
-          </div>
-          <spinner v-if="spinner" />
-        </form>
+          <div class="row g-4"><div class="col-md-6"></div></div>
+        </div>
       </div>
     </div>
   </div>
 </template>
+
 <script>
 import axios from "axios";
+import editProduct from "@/components/app/admin/editProduct.vue";
 import { mapGetters } from "vuex";
-import { QuillEditor } from "@vueup/vue-quill";
-import spinner from "../../spinner.vue";
-import "@vueup/vue-quill/dist/vue-quill.snow.css";
+import { ref } from "vue";
 
 export default {
-  props: {
-    productId: {
-      type: String,
-      required: true,
-    },
-  },
-
   components: {
-    QuillEditor,
-    spinner,
+    editProduct,
   },
+  name: "ProductList",
   data() {
     return {
-      currentStep: 0,
-      steps: ["Basic Info", "Event Details", "Media Upload", "Tickets"],
-      categories: [],
-      spinner: false,
-      categoryID: "",
-      product: {
-        title: "",
-        description: "",
-        tag: "",
-        price: "",
-        event: {
-          startDate: "",
-          endDate: "",
-          startTime: "",
-          endTime: "",
-          timezone: "UTC",
-          location: "",
-        },
-      },
-      address: "",
+      showEditProduct: false,
+      selectedProductId: null,
 
-      startAmPm: "AM",
-      endAmPm: "PM",
-      eventType: "single", // or "recurring"
-      eventFrequency: "",
-      photos: [],
-      previewUrl: null,
-      tickets: [{ name: "", price: null, quantity: null }],
+      products: [],
+      reference: "",
+      loading: true,
+      searchTerm: "",
+      filters: {
+        minPrice: 0,
+        maxPrice: Infinity,
+        startDate: null,
+        endDate: null,
+      },
+      tempFilters: {
+        minPrice: 0,
+        maxPrice: 100000,
+        startDate: null,
+        endDate: null,
+      },
+      showPriceModal: false,
+      showDateModal: false,
+      showEditModal: false,
+      showUserModal: false,
     };
   },
   computed: {
     ...mapGetters(["getToken"]),
-    mapUrl() {
-      if (!this.coordinates) return "";
-      const { lat, lng } = this.coordinates;
-      return `https://www.google.com/maps/embed/v1/view?key=${this.API_KEY}&center=${lat},${lng}&zoom=15`;
-    },
-  },
-  async created() {
-    try {
-      const res = await axios.get(
-        "https://event-ticket-backend-yx81.onrender.com/api/categories"
-      );
-      this.categories = res.data.categories || res.data;
-      console.log("Categories fetched:", this.categories);
-      if (this.productId) {
-        await this.fetchProduct(); // fetch product if editing
-      }
-    } catch (error) {
-      console.error("Failed to fetch categories:", error);
-    }
-  },
-  watch: {
-    productId(newVal) {
-      if (newVal) {
-        this.fetchProduct();
-      }
-    },
-  },
+    filteredProducts() {
+      const term = this.searchTerm.toLowerCase();
 
+      return this.products.filter((product) => {
+        const titleMatch = product.title?.toLowerCase().includes(term);
+        const locationMatch = product.event?.location?.name?.toLowerCase().includes(term);
+
+        // ✅ Extract min and max ticket prices
+        const tickets = product.event?.tickets || [];
+        const sortedTickets = [...tickets].sort((a, b) => a.price - b.price);
+        const minTicketPrice = sortedTickets[0]?.price || 0;
+        const maxTicketPrice = sortedTickets[sortedTickets.length - 1]?.price || 0;
+
+        // ✅ Adjusted price filter logic
+        const priceMatch =
+          (!this.filters.minPrice || maxTicketPrice >= this.filters.minPrice) &&
+          (!this.filters.maxPrice || minTicketPrice <= this.filters.maxPrice);
+
+        // ✅ Date filters
+        const eventDate = new Date(product.event?.date);
+        const startDate = this.filters.startDate
+          ? new Date(this.filters.startDate)
+          : null;
+        const endDate = this.filters.endDate ? new Date(this.filters.endDate) : null;
+
+        const eventDateOnly = new Date(eventDate.toDateString());
+        const startDateOnly = startDate ? new Date(startDate.toDateString()) : null;
+        const endDateOnly = endDate ? new Date(endDate.toDateString()) : null;
+
+        const dateMatch =
+          (!startDateOnly || eventDateOnly >= startDateOnly) &&
+          (!endDateOnly || eventDateOnly <= endDateOnly);
+
+        return (titleMatch || locationMatch) && priceMatch && dateMatch;
+      });
+    },
+  },
   methods: {
-    async fetchProduct() {
+    getTicketPriceRange(tickets) {
+      if (!tickets || tickets.length === 0) return "";
+
+      const sorted = [...tickets].sort((a, b) => a.price - b.price);
+      const lowest = sorted[0].price;
+      const highest = sorted[sorted.length - 1].price;
+
+      if (lowest === 0 && highest === 0) return "Free";
+      if (lowest === highest) return this.formatPrice(lowest);
+      return `${this.formatPrice(lowest)} - ${this.formatPrice(highest)}`;
+    },
+    async copyFullEventUrl(customizeUrl) {
+      const fullUrl = `https://234tickets.live/event/${customizeUrl}`;
       try {
-        const response = await axios.get(
-          `https://event-ticket-backend-yx81.onrender.com/api/product/${this.productId}`
-        );
-        console.log("Product data:", response.data);
-
-        const data = response.data.product;
-
-        // Basic fields
-        this.product.title = data.title;
-        this.product.description = data.description;
-        this.product.tag = data.tag?.join(", ") || "";
-        //this.product.price = data.price;
-
-        this.categoryID = data.category;
-
-        // Photos (for preview)
-        this.product.photos = data.photos || [];
-        this.product.customizeUrl = data.customizeUrl || "";
-
-        // Event mapping
-        if (data.event) {
-          const start = data.event.start;
-          const end = data.event.end;
-
-          this.product.event.startDate = start?.split("T")[0] || "";
-          this.product.event.startTime = (data.event.startTime || "").trim();
-
-          this.product.event.endDate = end?.split("T")[0] || "";
-          this.product.event.endTime = (data.event.endTime || "").trim();
-
-          this.product.event.timezone = data.event.timezone || "";
-          this.address = data.event.location?.name || "";
-          this.tickets = data.event.tickets || [];
-        }
-
-        console.log("Product loaded:", data);
+        await navigator.clipboard.writeText(fullUrl);
+        this.$swal({
+          icon: 'success',
+          title: 'Copied!',
+          text: 'Event URL copied to clipboard!',
+          confirmButtonColor: '#047143',
+          iconColor: '#047143',
+          timer: 2000,
+          timerProgressBar: true
+        });
       } catch (error) {
-        if (error.response && error.response.status === 401) {
-          localStorage.removeItem("token");
-          router.push("/login");
-        } else {
-          throw error;
-        }
+        this.$swal({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to copy the URL.',
+          confirmButtonColor: '#f4a213',
+          iconColor: '#f4a213'
+        });
+        console.error(error);
       }
     },
-
-    getAmPm(timeString) {
-      if (!timeString) return "AM";
-      const hour = parseInt(timeString.split(":")[0], 10);
-      return hour >= 12 ? "PM" : "AM";
-    },
-
-    nextStep() {
-      if (this.currentStep < this.steps.length - 1) {
-        this.currentStep++;
-      }
-    },
-    prevStep() {
-      if (this.currentStep > 0) {
-        this.currentStep--;
-      }
-    },
-    handleFiles(event) {
-      const files = Array.from(event.target.files);
-      this.photos = files;
-      if (files.length > 0) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.previewUrl = e.target.result;
-        };
-        reader.readAsDataURL(files[0]);
-      }
-    },
-    addTicket(type) {
-      const defaultPrice =
-        type === "Paid" ? "Cost" : type === "Donation" ? "Any" : "Free";
-      this.tickets.push({
-        name: "",
-        quantity: "Unlimited",
-        price: null,
-      });
-    },
-    removeTicket(index) {
-      this.tickets.splice(index, 1);
-    },
-    duplicateTicket(index) {
-      const ticket = this.tickets[index];
-      this.tickets.splice(index + 1, 0, { ...ticket });
-    },
-    async submitProduct() {
-      this.spinner = true;
-      const formData = new FormData();
-
-      formData.append("categoryID", this.categoryID);
-      formData.append("title", this.product.title);
-      formData.append("description", this.product.description);
-      formData.append("tag", this.product.tag);
-      formData.append("price", this.product.price);
-
-      formData.append("eventDate", new Date(this.product.event.startDate).toISOString());
-      if (this.product.event.endDate) {
-        formData.append("endDate", new Date(this.product.event.endDate).toISOString());
-      }
-      formData.append("startTime", this.product.event.startTime);
-      formData.append("endTime", this.product.event.endTime);
-      formData.append("timezone", this.product.event.timezone);
-      formData.append("locationName", this.address);
-
-      if (this.eventType === "recurring") {
-        formData.append("eventFrequency", this.eventFrequency);
-      }
-
-      formData.append("tickets", JSON.stringify(this.tickets));
-
-      this.photos.forEach((photo) => {
-        formData.append("photos", photo);
-      });
-
+    async fetchProducts() {
       try {
-        const response = await axios.put(
-          `https://event-ticket-backend-yx81.onrender.com/api/product/${this.productId}`, // 👈 PUT endpoint with ID
-          formData,
+        const res = await axios.get(
+          "https://event-ticket-backend-yx81.onrender.com/api/user/products",
           {
             headers: {
               Authorization: `Bearer ${this.getToken}`,
-              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        console.log(res.data);
+        this.products = res.data.products;
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    },
+    goToEditProduct(productId) {
+      console.log(productId);
+      this.selectedProductId = productId;
+      this.showEditModal = true;
+      this.showEditProduct = true;
+    },
+    showUserPopup(productId) {
+      this.selectedProductId = productId;
+      this.showUserModal = true;
+    },
+    async assignStaff() {
+      if (!this.staffName) {
+        this.$swal({
+          icon: 'warning',
+          title: 'Missing Information',
+          text: 'Please enter a staff name',
+          confirmButtonColor: '#f4a213',
+          iconColor: '#f4a213'
+        });
+        return;
+      }
+
+      try {
+        const res = await axios.post(
+          "https://event-ticket-backend-yx81.onrender.com/api/staff",
+          {
+            staffName: this.staffName,
+            productId: this.selectedProductId,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${this.getToken}`,
             },
           }
         );
 
-        console.log("Product updated:", response.data);
-
-        alert("Event updated successfully!");
-        this.$emit("close"); // To close the modal
-        this.$emit("refresh");
+        this.$swal({
+          icon: 'success',
+          title: 'Success!',
+          text: `Staff assigned successfully! Passcode: ${res.data.passcode}`,
+          confirmButtonColor: '#047143',
+          iconColor: '#047143',
+          timer: 2000,
+          timerProgressBar: true
+        });
+        this.closePopup();
       } catch (error) {
-        if (error.response && error.response.status === 401) {
-          localStorage.removeItem("token");
-          router.push("/login");
-        } else {
-          throw error; // Other errors get thrown normally
-        }
+        console.error(error.response?.data || error.message);
+        this.$swal({
+          icon: 'error',
+          title: 'Error',
+          text: error.response?.data?.message || 'Failed to assign staff',
+          confirmButtonColor: '#f4a213',
+          iconColor: '#f4a213'
+        });
       }
-      this.spinner = false;
     },
+    async deleteProduct(productId) {
+      const result = await this.$swal({
+        icon: 'warning',
+        title: 'Are you sure?',
+        text: 'Do you want to delete this event?',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#f4a213',
+        cancelButtonColor: '#047143',
+        iconColor: '#f4a213',
+        reverseButtons: true
+      });
+      
+      if (!result.isConfirmed) return;
+      
+      console.log(productId);
+
+      try {
+        await axios.delete(
+          `https://event-ticket-backend-yx81.onrender.com/api/product/${productId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${this.getToken}`,
+            },
+          }
+        );
+        
+        this.$swal({
+          icon: 'success',
+          title: 'Deleted!',
+          text: 'Event deleted successfully',
+          confirmButtonColor: '#047143',
+          iconColor: '#047143',
+          timer: 2000,
+          timerProgressBar: true
+        });
+        
+        this.fetchProducts(); // Refresh the list
+      } catch (error) {
+        console.error("Delete failed:", error);
+        this.$swal({
+          icon: 'error',
+          title: 'Error',
+          text: error.response?.data?.message || 'Failed to delete event',
+          confirmButtonColor: '#f4a213',
+          iconColor: '#f4a213'
+        });
+      }
+    },
+    goToProduct(productTitle) {
+      const normalizedProductTitle = productTitle.replace(/\s+/g, "-").toLowerCase();
+
+      // Open in new tab
+      window.open(`/event/${normalizedProductTitle}`, "_blank");
+    },
+    formatDate(date) {
+      if (!date) return "No date";
+      const options = {
+        weekday: "short",
+        // year: "numeric",
+        month: "short",
+        day: "numeric",
+      };
+      return new Date(date).toLocaleDateString("en-US", options);
+    },
+    formatPrice(price) {
+      if (!price || price === 0) return "Free";
+      return `₦${price}`;
+    },
+    resetSearch() {
+      this.searchTerm = "";
+      this.filters = {
+        minPrice: 0,
+        maxPrice: Infinity,
+        startDate: null,
+        endDate: null,
+      };
+    },
+    applyPriceFilters() {
+      this.filters.minPrice = this.tempFilters.minPrice;
+      this.filters.maxPrice = this.tempFilters.maxPrice;
+      this.showPriceModal = false;
+    },
+    clearPriceFilters() {
+      this.tempFilters.minPrice = 0;
+      this.tempFilters.maxPrice = 100000;
+      this.applyPriceFilters();
+    },
+    applyDateFilters() {
+      this.filters.startDate = this.tempFilters.startDate;
+      this.filters.endDate = this.tempFilters.endDate;
+      this.showDateModal = false;
+    },
+    clearDateFilters() {
+      this.tempFilters.startDate = null;
+      this.tempFilters.endDate = null;
+      this.applyDateFilters();
+    },
+    setToday() {
+      const today = new Date().toISOString().split("T")[0];
+      this.tempFilters.startDate = today;
+      this.tempFilters.endDate = today;
+    },
+    setTomorrow() {
+      const tomorrow = new Date(Date.now() + 86400000).toISOString().split("T")[0];
+      this.tempFilters.startDate = tomorrow;
+      this.tempFilters.endDate = tomorrow;
+    },
+    setThisWeekend() {
+      const today = new Date();
+      const day = today.getDay();
+      const saturday = new Date(today);
+      saturday.setDate(today.getDate() + (6 - day));
+      const sunday = new Date(saturday);
+      sunday.setDate(saturday.getDate() + 1);
+      this.tempFilters.startDate = saturday.toISOString().split("T")[0];
+      this.tempFilters.endDate = sunday.toISOString().split("T")[0];
+    },
+  },
+  mounted() {
+    this.fetchProducts();
   },
 };
 </script>
+
 <style scoped>
-/* Container for the form or content */
-.form-container {
-  width: 95%;
-  margin: auto;
-  margin-top: 30px;
+@import '../dashboard/dashboard-modern.css';
+
+.search-bar {
+  padding: 12px 20px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  transition: all 0.3s ease;
+}
+.search-bar:focus {
+  outline: none;
+  border-color: #ffa726;
+  box-shadow: 0 0 8px rgba(255, 167, 38, 0.6);
+}
+.search-bar::placeholder {
+  color: #aaa;
+  font-style: italic;
 }
 
-/* Stepper layout */
-.stepper {
-  position: relative;
-  display: flex;
-  justify-content: space-between;
-  padding-bottom: 20px;
-  margin-bottom: 30px;
-}
-
-/* Each step container */
-.step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-  z-index: 1;
-  color: #999;
-  text-align: center;
-}
-
-/* Step circle */
-.step .circle {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background-color: #ccc;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 5px;
-  font-weight: bold;
-  font-size: 14px;
-  transition: background-color 0.3s, border-color 0.3s;
-}
-
-/* Step label below the circle */
-.step .label {
-  font-size: 13px;
-  font-weight: 500;
-  margin-top: 2px;
-}
-
-/* ACTIVE step */
-.step.step-active .circle {
-  background-color: #f4a213;
-  border: 2px solid #f4a213;
-  color: white;
-}
-
-/* COMPLETED step (with checkmark) */
-.step.step-completed .circle {
-  background-color: #f4a213;
-  border: 2px solid #f4a213;
-  color: white;
-}
-
-.step.step-active .label,
-.step.step-completed .label {
-  color: #f4a213;
-}
-
-/* Progress line background */
-.progress-line {
-  position: absolute;
-  bottom: 14px;
+.modal {
+  position: fixed;
+  top: 0;
   left: 0;
-  right: 0;
-  height: 4px;
-  background-color: #e0e0e0;
-  z-index: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+  padding: 1rem;
+  box-sizing: border-box;
 }
 
-/* Progress fill based on currentStep */
-.progress-fill {
-  height: 4px;
-  background-color: #f4a213;
-  transition: width 0.3s ease-in-out;
-  width: 0%;
+.modal-content {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.3s ease-in-out;
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
-/* Optional: Responsive tweaks */
+/* Mobile adjustments */
 @media (max-width: 576px) {
-  .step .label {
-    font-size: 11px;
+  .modal-content {
+    padding: 1rem;
+    border-radius: 8px;
+    height: 100vh;
+    max-height: 100vh;
+    width: 100%;
   }
+}
 
-  .step .circle {
-    width: 24px;
-    height: 24px;
-    font-size: 12px;
+/* Optional fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 </style>
