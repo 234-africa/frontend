@@ -3,8 +3,10 @@ services:
     name: 234tickets-frontend
     env: node
     plan: free
-    buildCommand: npm run build
-    startCommand: npx serve -s dist
+    buildCommand: npm install && npm run build
+    startCommand: npm start
     envVars:
       - key: NODE_VERSION
         value: 18
+      - key: BACKEND_URL
+        value: https://event-ticket-backend-yx81.onrender.com
