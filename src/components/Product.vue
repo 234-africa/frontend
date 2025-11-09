@@ -157,7 +157,7 @@
 <script>
 import axios from "axios";
 import { mapActions } from "vuex";
-import { useMeta } from "vue-meta";
+
 export default {
   props: {
     props: ["title"],
@@ -191,19 +191,6 @@ export default {
       );
 
       this.product = response.data.product || {};
-      useMeta({
-        title: product.title,
-        meta: [
-          { property: "og:title", content: product.title },
-          { property: "og:description", content: product.description },
-          {
-            property: "og:image",
-            content: product.photos[0] || "https://via.placeholder.com/400x300",
-          },
-          { property: "og:url", content: window.location.href },
-          { name: "twitter:card", content: "summary_large_image" },
-        ],
-      });
       console.log(this.product);
     } catch (error) {
       console.error("Error fetching product details:", error);
@@ -219,6 +206,58 @@ export default {
     } catch (error) {
       console.error("Error fetching products:", error);
     }
+  },
+  metaInfo() {
+    if (!this.product || !this.product.title) {
+      return {
+        title: "234africa - Event Ticketing Platform",
+        meta: [
+          { property: "og:title", content: "234africa - Event Ticketing Platform" },
+          { property: "og:description", content: "Discover and book amazing events across Africa" },
+          { property: "og:type", content: "website" },
+          { property: "og:site_name", content: "234africa" },
+        ],
+      };
+    }
+
+    const eventTitle = this.product.title || "Event";
+    const eventDescription = this.product.description || "Join us for this amazing event!";
+    const eventImage = this.product.photos && this.product.photos[0] 
+      ? this.product.photos[0] 
+      : "https://via.placeholder.com/1200x630?text=234africa+Event";
+    const eventUrl = `https://234tickets.live/event/${this.$route.params.title}`;
+    
+    const eventDate = this.product.event && this.product.event.start 
+      ? this.formatDate(this.product.event.start) 
+      : "";
+    const eventLocation = this.product.event && this.product.event.location 
+      ? this.product.event.location.name 
+      : "";
+    const priceRange = this.product.event && this.product.event.tickets 
+      ? this.getTicketPriceRange(this.product.event.tickets) 
+      : "";
+
+    return {
+      title: `${eventTitle} | 234africa`,
+      meta: [
+        { property: "og:title", content: eventTitle },
+        { property: "og:description", content: eventDescription },
+        { property: "og:image", content: eventImage },
+        { property: "og:url", content: eventUrl },
+        { property: "og:type", content: "event" },
+        { property: "og:site_name", content: "234africa" },
+        
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: eventTitle },
+        { name: "twitter:description", content: eventDescription },
+        { name: "twitter:image", content: eventImage },
+        
+        { name: "description", content: eventDescription },
+        
+        ...(eventDate ? [{ property: "event:start_time", content: this.product.event.start }] : []),
+        ...(eventLocation ? [{ property: "event:location", content: eventLocation }] : []),
+      ],
+    };
   },
   computed: {
     mapUrl() {
