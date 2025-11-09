@@ -50,12 +50,44 @@
               to="/dashboard"
               class="d-block text-decoration-none text-dark px-2 py-1"
             >
-              Dashboard
+              <i class="bi bi-speedometer2"></i> Dashboard
+            </router-link>
+          </div>
+          <div class="mb-3">
+            <router-link
+              to="/dashboard?activeTab=bank"
+              class="d-block text-decoration-none text-dark px-2 py-1"
+            >
+              <i class="bi bi-bank"></i> Bank Info
+            </router-link>
+          </div>
+          <div class="mb-3">
+            <router-link
+              to="/dashboard?activeTab=event"
+              class="d-block text-decoration-none text-dark px-2 py-1"
+            >
+              <i class="bi bi-calendar-event"></i> My Events
+            </router-link>
+          </div>
+          <div class="mb-3">
+            <router-link
+              to="/dashboard?activeTab=add-event"
+              class="d-block text-decoration-none text-dark px-2 py-1"
+            >
+              <i class="bi bi-plus-circle"></i> Add Event
+            </router-link>
+          </div>
+          <div class="mb-3">
+            <router-link
+              to="/dashboard?activeTab=user-management"
+              class="d-block text-decoration-none text-dark px-2 py-1"
+            >
+              <i class="bi bi-people"></i> User Management
             </router-link>
           </div>
           <div class="mb-3">
             <a class="d-block text-decoration-none text-dark px-2 py-1" @click="logout">
-              Logout
+              <i class="bi bi-box-arrow-right"></i> Logout
             </a>
           </div>
         </div>
@@ -185,14 +217,13 @@
             style="
               color: #047143;
               text-decoration: none;
-
               border-radius: 0;
               transition: all 0.3s;
             "
             @mouseover="
               (e) => {
-                e.target.style.backgroundColor = '#d4edda'; // Light green background on hover
-                e.target.style.borderRadius = '20px'; // Rounded border on hover
+                e.target.style.backgroundColor = '#d4edda';
+                e.target.style.borderRadius = '20px';
               }
             "
             @mouseout="
@@ -202,8 +233,113 @@
               }
             "
             :to="`/dashboard`"
-            >Dashboard</router-link
           >
+            <i class="bi bi-speedometer2"></i> Dashboard
+          </router-link>
+
+          <router-link
+            v-if="getToken"
+            class="p-2"
+            style="
+              color: #047143;
+              text-decoration: none;
+              border-radius: 0;
+              transition: all 0.3s;
+            "
+            @mouseover="
+              (e) => {
+                e.target.style.backgroundColor = '#d4edda';
+                e.target.style.borderRadius = '20px';
+              }
+            "
+            @mouseout="
+              (e) => {
+                e.target.style.backgroundColor = 'transparent';
+                e.target.style.borderRadius = '0';
+              }
+            "
+            to="/dashboard?activeTab=bank"
+          >
+            <i class="bi bi-bank"></i> Bank Info
+          </router-link>
+
+          <router-link
+            v-if="getToken"
+            class="p-2"
+            style="
+              color: #047143;
+              text-decoration: none;
+              border-radius: 0;
+              transition: all 0.3s;
+            "
+            @mouseover="
+              (e) => {
+                e.target.style.backgroundColor = '#d4edda';
+                e.target.style.borderRadius = '20px';
+              }
+            "
+            @mouseout="
+              (e) => {
+                e.target.style.backgroundColor = 'transparent';
+                e.target.style.borderRadius = '0';
+              }
+            "
+            to="/dashboard?activeTab=event"
+          >
+            <i class="bi bi-calendar-event"></i> My Events
+          </router-link>
+
+          <router-link
+            v-if="getToken"
+            class="p-2"
+            style="
+              color: #047143;
+              text-decoration: none;
+              border-radius: 0;
+              transition: all 0.3s;
+            "
+            @mouseover="
+              (e) => {
+                e.target.style.backgroundColor = '#d4edda';
+                e.target.style.borderRadius = '20px';
+              }
+            "
+            @mouseout="
+              (e) => {
+                e.target.style.backgroundColor = 'transparent';
+                e.target.style.borderRadius = '0';
+              }
+            "
+            to="/dashboard?activeTab=add-event"
+          >
+            <i class="bi bi-plus-circle"></i> Add Event
+          </router-link>
+
+          <router-link
+            v-if="getToken"
+            class="p-2"
+            style="
+              color: #047143;
+              text-decoration: none;
+              border-radius: 0;
+              transition: all 0.3s;
+            "
+            @mouseover="
+              (e) => {
+                e.target.style.backgroundColor = '#d4edda';
+                e.target.style.borderRadius = '20px';
+              }
+            "
+            @mouseout="
+              (e) => {
+                e.target.style.backgroundColor = 'transparent';
+                e.target.style.borderRadius = '0';
+              }
+            "
+            to="/dashboard?activeTab=user-management"
+          >
+            <i class="bi bi-people"></i> User Management
+          </router-link>
 
           <div>
             <router-link
@@ -212,14 +348,13 @@
               style="
                 color: #047143;
                 text-decoration: none;
-
                 border-radius: 0;
                 transition: all 0.3s;
               "
               @mouseover="
                 (e) => {
-                  e.target.style.backgroundColor = '#d4edda'; // Light green background on hover
-                  e.target.style.borderRadius = '20px'; // Rounded border on hover
+                  e.target.style.backgroundColor = '#d4edda';
+                  e.target.style.borderRadius = '20px';
                 }
               "
               @mouseout="
@@ -238,14 +373,13 @@
               style="
                 color: #047143;
                 text-decoration: none;
-
                 border-radius: 0;
                 transition: all 0.3s;
               "
               @mouseover="
                 (e) => {
-                  e.target.style.backgroundColor = '#d4edda'; // Light green background on hover
-                  e.target.style.borderRadius = '20px'; // Rounded border on hover
+                  e.target.style.backgroundColor = '#d4edda';
+                  e.target.style.borderRadius = '20px';
                 }
               "
               @mouseout="
@@ -257,7 +391,7 @@
               @click="logout"
               v-if="getToken"
             >
-              Logout
+              <i class="bi bi-box-arrow-right"></i> Logout
             </button>
           </div>
 
