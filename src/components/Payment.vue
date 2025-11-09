@@ -159,7 +159,8 @@
             {{ timer }} to secure your tickets.
           </p>
 
-          <div class="form-check mb-2">
+          <!-- Paystack Payment (NGN, GHS) -->
+          <div v-if="paymentGateway === 'paystack'" class="form-check mb-2">
             <input
               class="form-check-input"
               type="radio"
@@ -179,6 +180,27 @@
                 />
               </div>
             </form>
+          </div>
+
+          <!-- Stripe Payment (USD, GBP, EUR) -->
+          <div v-if="paymentGateway === 'stripe'" class="mb-3">
+            <div class="form-check mb-2">
+              <input
+                class="form-check-input"
+                type="radio"
+                v-model="paymentMethod"
+                value="card"
+                id="payStripe"
+              />
+              <label class="form-check-label" for="payStripe">Pay with Stripe</label>
+            </div>
+            
+            <div v-if="paymentMethod === 'card'" class="mt-3">
+              <div id="stripe-payment-element" class="p-3 border rounded"></div>
+              <div v-if="stripeErrorMessage" class="alert alert-danger mt-2">
+                {{ stripeErrorMessage }}
+              </div>
+            </div>
           </div>
 
           <div class="form-check mb-2">
@@ -281,6 +303,7 @@ import spinner from "./spinner.vue";
 import { ref } from "vue";
 import { startOfDay } from "@fullcalendar/core/internal";
 import { formatPrice, getCurrencySymbol, getPaymentGateway } from "@/helpers/currency";
+import { loadStripe } from "@stripe/stripe-js";
 
 export default {
   components: {
@@ -299,6 +322,7 @@ export default {
       countdown: null,
       full_name: "",
       publicKey: process.env.VUE_APP_PUBLIC_KEY,
+      stripePublicKey: process.env.VUE_APP_STRIPE_PUBLIC_KEY,
       steps: ["Tickets", "Contact", "Payment"],
       tickets: [],
       promoCode: "",
@@ -313,6 +337,12 @@ export default {
       paymentMethod: "",
       termsAccepted: false,
       subscribe: false,
+      stripe: null,
+      stripeElements: null,
+      stripePaymentElement: null,
+      stripeClientSecret: "",
+      stripeReady: false,
+      stripeErrorMessage: "",
     };
   },
   computed: {
@@ -435,8 +465,14 @@ export default {
     },
   },
   watch: {
-    currentStep() {
+    currentStep(newVal) {
       this.updateProgressLine();
+      
+      if (newVal === 2 && this.paymentGateway === 'stripe') {
+        this.$nextTick(() => {
+          this.mountStripeElements();
+        });
+      }
     },
     getCart: {
       handler() {
@@ -454,6 +490,13 @@ export default {
     },
     subTotal(newVal) {
       localStorage.setItem("finalSubtotal", newVal);
+    },
+    paymentMethod(newVal) {
+      if (newVal === 'card' && this.paymentGateway === 'stripe' && !this.stripeReady) {
+        this.$nextTick(() => {
+          this.mountStripeElements();
+        });
+      }
     },
   },
   methods: {
@@ -495,8 +538,15 @@ export default {
       this.setSelectedTickets(selected);
     },
     async initializePayment() {
+      if (this.paymentGateway === 'stripe') {
+        await this.initializeStripePayment();
+      } else {
+        await this.initializePaystackPayment();
+      }
+    },
+    async initializePaystackPayment() {
       try {
-        this.spinner = true; // Show spinner while processing
+        this.spinner = true;
         const affiliate = localStorage.getItem("affiliateCode");
         const promoCode = localStorage.getItem("promoCode");
         
@@ -505,6 +555,7 @@ export default {
           {
             email: this.email,
             amount: this.amount,
+            currency: this.cartCurrency,
             metadata: {
               orderData: {
                 startDate: this.getCart[0]?.event?.start,
@@ -520,6 +571,7 @@ export default {
                 },
                 tickets: this.getSelectedTickets,
                 price: this.amount,
+                currency: this.cartCurrency,
                 affiliate,
                 promoCode,
               }
@@ -529,20 +581,115 @@ export default {
         console.log(response.data);
 
         const { authorization_url, reference } = response.data.data;
-        // Save reference for verification later (optional)
         localStorage.setItem("paystack_reference", reference);
         localStorage.setItem("cartTotal", this.amount);
         localStorage.setItem("startDate", this.getCart[0]?.event?.start);
         localStorage.setItem("startTime", this.getCart[0]?.event?.startTime);
         localStorage.setItem("location", this.getCart[0]?.event?.location?.name);
 
-        this.spinner = false; // Hide spinner after processing
-
-        // Redirect to Paystack payment page
+        this.spinner = false;
         window.location.href = authorization_url;
       } catch (error) {
+        this.spinner = false;
         alert("Payment initialization failed");
         console.error(error);
+      }
+    },
+    async mountStripeElements() {
+      if (this.stripeReady || !this.stripePublicKey) {
+        return;
+      }
+
+      try {
+        this.spinner = true;
+        
+        if (!this.stripe) {
+          this.stripe = await loadStripe(this.stripePublicKey);
+        }
+
+        const affiliate = localStorage.getItem("affiliateCode");
+        const promoCode = localStorage.getItem("promoCode");
+        
+        const response = await axios.post(
+          "https://event-ticket-backend-yx81.onrender.com/api/stripe/create-payment-intent",
+          {
+            email: this.email,
+            amount: this.amount,
+            currency: this.cartCurrency,
+            metadata: {
+              orderData: JSON.stringify({
+                startDate: this.getCart[0]?.event?.start,
+                startTime: this.getCart[0]?.event?.startTime,
+                location: this.getCart[0]?.event?.location?.name,
+                userId: this.getCart[0]?.user,
+                productId: this.getCart[0]?._id,
+                title: this.getCart[0]?.title,
+                contact: {
+                  name: `${this.getContactInfo.firstName} ${this.getContactInfo.lastName}`,
+                  email: this.getContactInfo.email,
+                  phone: this.getContactInfo.phone,
+                },
+                tickets: this.getSelectedTickets,
+                price: this.amount,
+                currency: this.cartCurrency,
+                affiliate,
+                promoCode,
+              }),
+            },
+          }
+        );
+
+        this.stripeClientSecret = response.data.clientSecret;
+        
+        const options = {
+          clientSecret: this.stripeClientSecret,
+          appearance: {
+            theme: 'stripe',
+            variables: {
+              colorPrimary: '#047143',
+              colorBackground: '#ffffff',
+              colorText: '#30313d',
+            },
+          },
+        };
+
+        this.stripeElements = this.stripe.elements(options);
+        this.stripePaymentElement = this.stripeElements.create('payment');
+        this.stripePaymentElement.mount('#stripe-payment-element');
+        
+        this.stripeReady = true;
+        this.spinner = false;
+      } catch (error) {
+        this.spinner = false;
+        console.error("Stripe initialization error:", error);
+        this.stripeErrorMessage = "Failed to initialize payment. Please try again.";
+      }
+    },
+    async initializeStripePayment() {
+      if (!this.stripe || !this.stripeElements) {
+        this.stripeErrorMessage = "Payment system not ready. Please refresh the page.";
+        return;
+      }
+
+      try {
+        this.spinner = true;
+        this.stripeErrorMessage = "";
+
+        const { error } = await this.stripe.confirmPayment({
+          elements: this.stripeElements,
+          confirmParams: {
+            return_url: `${window.location.origin}/payment-success`,
+          },
+        });
+
+        if (error) {
+          this.stripeErrorMessage = error.message;
+          this.spinner = false;
+        }
+      } catch (error) {
+        this.spinner = false;
+        this.stripeErrorMessage = "Payment failed. Please try again.";
+        console.error("Stripe payment error:", error);
       }
     },
     async getTicket() {
