@@ -477,11 +477,33 @@ export default {
     async initializePayment() {
       try {
         this.spinner = true; // Show spinner while processing
+        const affiliate = localStorage.getItem("affiliateCode");
+        const promoCode = localStorage.getItem("promoCode");
+        
         const response = await axios.post(
           "https://event-ticket-backend-yx81.onrender.com/api/initialize",
           {
             email: this.email,
             amount: this.amount,
+            metadata: {
+              orderData: {
+                startDate: this.getCart[0]?.event?.start,
+                startTime: this.getCart[0]?.event?.startTime,
+                location: this.getCart[0]?.event?.location?.name,
+                userId: this.getCart[0]?.user,
+                productId: this.getCart[0]?._id,
+                title: this.getCart[0]?.title,
+                contact: {
+                  name: `${this.getContactInfo.firstName} ${this.getContactInfo.lastName}`,
+                  email: this.getContactInfo.email,
+                  phone: this.getContactInfo.phone,
+                },
+                tickets: this.getSelectedTickets,
+                price: this.amount,
+                affiliate,
+                promoCode,
+              }
+            }
           }
         );
         console.log(response.data);
@@ -516,6 +538,7 @@ export default {
           location: this.getCart[0]?.event?.location.name,
           reference: this.reference,
           userId: this.getCart[0]?.user,
+          productId: this.getCart[0]?._id,
           title: this.getCart[0]?.title,
           contact: {
             name: `${this.getContactInfo.firstName} ${this.getContactInfo.lastName}`,
