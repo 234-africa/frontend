@@ -216,7 +216,7 @@
                   <td>{{ order.contact?.email || "N/A" }}</td>
                   <td>{{ order.contact?.phone || "N/A" }}</td>
                   <td>
-                    <strong>{{ getCurrencySymbol(order.currency) }}{{ order.price?.toLocaleString() }}</strong>
+                    <strong>{{ formatPrice(order.price, order.currency) }}</strong>
                   </td>
                   <td>
                     <div v-for="ticket in order.tickets" :key="ticket._id" class="small">
@@ -339,6 +339,7 @@ import axios from "axios";
 import editProduct from "@/components/app/admin/editProduct.vue";
 import { mapGetters } from "vuex";
 import { ref } from "vue";
+import { formatPrice, getCurrencySymbol, getTicketPriceRange } from "@/helpers/currency";
 
 export default {
   components: {
@@ -416,17 +417,9 @@ export default {
     },
   },
   methods: {
-    getTicketPriceRange(tickets) {
-      if (!tickets || tickets.length === 0) return "";
-
-      const sorted = [...tickets].sort((a, b) => a.price - b.price);
-      const lowest = sorted[0].price;
-      const highest = sorted[sorted.length - 1].price;
-
-      if (lowest === 0 && highest === 0) return "Free";
-      if (lowest === highest) return this.formatPrice(lowest);
-      return `${this.formatPrice(lowest)} - ${this.formatPrice(highest)}`;
-    },
+    formatPrice,
+    getCurrencySymbol,
+    getTicketPriceRange,
     async copyFullEventUrl(customizeUrl) {
       const fullUrl = `https://234tickets.live/event/${customizeUrl}`;
       try {
@@ -555,20 +548,6 @@ export default {
         day: "numeric",
       };
       return new Date(date).toLocaleDateString("en-US", options);
-    },
-    formatPrice(price) {
-      if (!price || price === 0) return "Free";
-      return `₦${price}`;
-    },
-    getCurrencySymbol(currency) {
-      const symbols = {
-        NGN: "₦",
-        USD: "$",
-        GBP: "£",
-        EUR: "€",
-        GHS: "GH₵",
-      };
-      return symbols[currency] || "₦";
     },
     resetSearch() {
       this.searchTerm = "";
