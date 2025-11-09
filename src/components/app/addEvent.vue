@@ -1,5 +1,5 @@
 <template>
-  <div class=" ">
+  <div class="dashboard-modern">
     <!-- Stepper -->
     <div class="stepper pt-2 mx-auto">
       <div
@@ -625,6 +625,7 @@ export default {
 </script>
 
 <style scoped>
+@import '../dashboard/dashboard-modern.css';
 .step.step-active .circle {
   background: black;
 }
