@@ -341,7 +341,21 @@ export default {
       }
     },
     async deleteStaff(id) {
-      if (!confirm("Delete this staff info?")) return;
+      const result = await this.$swal({
+        icon: 'warning',
+        title: 'Are you sure?',
+        text: 'Do you want to delete this staff info?',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#f4a213',
+        cancelButtonColor: '#047143',
+        iconColor: '#f4a213',
+        reverseButtons: true
+      });
+      
+      if (!result.isConfirmed) return;
+      
       try {
         await axios.delete(
           `https://event-ticket-backend-yx81.onrender.com/api/staff/${id}`,
@@ -350,17 +364,45 @@ export default {
           }
         );
         this.staff = this.staff.filter((b) => b._id !== id);
+        this.$swal({
+          icon: 'success',
+          title: 'Deleted!',
+          text: 'Staff info has been deleted.',
+          confirmButtonColor: '#047143',
+          iconColor: '#047143',
+          timer: 2000,
+          timerProgressBar: true
+        });
       } catch (err) {
         console.error("Error deleting staff:", err);
+        this.$swal({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to delete staff info.',
+          confirmButtonColor: '#f4a213',
+          iconColor: '#f4a213'
+        });
       }
     },
     async createAffiliate() {
       if (!this.selectedProductId) {
-        alert("Please select a product!");
+        this.$swal({
+          icon: 'warning',
+          title: 'Missing Information',
+          text: 'Please select a product!',
+          confirmButtonColor: '#f4a213',
+          iconColor: '#f4a213'
+        });
         return;
       }
       if (!this.affiliateName || !this.affiliateCode) {
-        alert("Please fill in both name and code!");
+        this.$swal({
+          icon: 'warning',
+          title: 'Missing Information',
+          text: 'Please fill in both name and code!',
+          confirmButtonColor: '#f4a213',
+          iconColor: '#f4a213'
+        });
         return;
       }
 
@@ -382,10 +424,24 @@ export default {
         console.log("Affiliate created:", res.data);
         this.fetchAffiliates();
         this.affiliateLink = res.data.link;
-        alert("Affiliate link created!");
+        this.$swal({
+          icon: 'success',
+          title: 'Success!',
+          text: 'Affiliate link created!',
+          confirmButtonColor: '#047143',
+          iconColor: '#047143',
+          timer: 2000,
+          timerProgressBar: true
+        });
       } catch (error) {
         console.error("Error creating affiliate:", error);
-        alert("Failed to create affiliate link!");
+        this.$swal({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to create affiliate link!',
+          confirmButtonColor: '#f4a213',
+          iconColor: '#f4a213'
+        });
       }
     },
     fetchAffiliates() {
