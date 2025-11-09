@@ -52,6 +52,7 @@ export default {
           promoCode,
           affiliate,
           reference, // Paystack reference
+          productId: this.getCart[0]?._id,
           title: this.getCart[0]?.title, // Get name from first cart item
           contact: {
             name: `${this.getContactInfo.firstName} ${this.getContactInfo.lastName}`,
