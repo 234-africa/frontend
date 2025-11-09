@@ -60,19 +60,7 @@
                   {{ product.event.location.name || "No location" }}
                 </p>
                 <p>
-                  {{
-                    product.event.tickets[0].price === 0 &&
-                    product.event.tickets[product.event.tickets.length - 1].price === 0
-                      ? "Free"
-                      : product.event.tickets[0].price ===
-                        product.event.tickets[product.event.tickets.length - 1].price
-                      ? formatPrice(product.event.tickets[0].price)
-                      : `From ${formatPrice(
-                          product.event.tickets[0].price
-                        )} - ${formatPrice(
-                          product.event.tickets[product.event.tickets.length - 1].price
-                        )}`
-                  }}
+                  {{ getTicketPriceRange(product.event.tickets) }}
                 </p>
 
                 <button
@@ -132,6 +120,36 @@ export default {
   },
 
   methods: {
+    getTicketPriceRange(tickets) {
+      if (!tickets || tickets.length === 0) return "";
+
+      const sorted = [...tickets].sort((a, b) => a.price - b.price);
+      const lowest = sorted[0];
+      const highest = sorted[sorted.length - 1];
+
+      if (lowest.price === 0 && highest.price === 0) return "Free";
+      if (lowest.price === highest.price) return this.formatPrice(lowest.price, lowest.currency);
+      
+      // If all tickets have the same currency, show range with one currency symbol
+      const allSameCurrency = tickets.every(t => t.currency === lowest.currency);
+      if (allSameCurrency) {
+        return `From ${this.formatPrice(lowest.price, lowest.currency)} - ${this.formatPrice(highest.price, highest.currency)}`;
+      }
+      
+      // Different currencies: show each with its symbol
+      return `From ${this.formatPrice(lowest.price, lowest.currency)} - ${this.formatPrice(highest.price, highest.currency)}`;
+    },
+    getCurrencySymbol(currency) {
+      const symbols = {
+        NGN: "₦",
+        USD: "$",
+        GBP: "£",
+        EUR: "€",
+        GHS: "GH₵",
+      };
+      const normalizedCurrency = currency ? currency.toUpperCase() : "NGN";
+      return symbols[normalizedCurrency] || "₦";
+    },
     goToProduct(productTitle) {
       const normalizedProductTitle = productTitle.replace(/\s+/g, "-").toLowerCase();
 
@@ -148,9 +166,9 @@ export default {
       };
       return new Date(date).toLocaleDateString("en-US", options);
     },
-    formatPrice(price) {
+    formatPrice(price, currency = "NGN") {
       if (!price || price === 0) return "Free";
-      return `₦${price}`;
+      return `${this.getCurrencySymbol(currency)}${price}`;
     },
   },
 };
