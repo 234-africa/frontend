@@ -300,12 +300,31 @@ export default {
       if (!tickets || tickets.length === 0) return "";
 
       const sorted = [...tickets].sort((a, b) => a.price - b.price);
-      const lowest = sorted[0].price;
-      const highest = sorted[sorted.length - 1].price;
+      const lowest = sorted[0];
+      const highest = sorted[sorted.length - 1];
 
-      if (lowest === 0 && highest === 0) return "Free";
-      if (lowest === highest) return this.formatPrice(lowest);
-      return `${this.formatPrice(lowest)} - ${this.formatPrice(highest)}`;
+      if (lowest.price === 0 && highest.price === 0) return "Free";
+      if (lowest.price === highest.price) return this.formatPrice(lowest.price, lowest.currency);
+      
+      // If all tickets have the same currency, show range with one currency symbol
+      const allSameCurrency = tickets.every(t => t.currency === lowest.currency);
+      if (allSameCurrency) {
+        return `${this.formatPrice(lowest.price, lowest.currency)} - ${this.formatPrice(highest.price, highest.currency)}`;
+      }
+      
+      // Different currencies: show each with its symbol
+      return `${this.formatPrice(lowest.price, lowest.currency)} - ${this.formatPrice(highest.price, highest.currency)}`;
+    },
+    getCurrencySymbol(currency) {
+      const symbols = {
+        NGN: "₦",
+        USD: "$",
+        GBP: "£",
+        EUR: "€",
+        GHS: "GH₵",
+      };
+      const normalizedCurrency = currency ? currency.toUpperCase() : "NGN";
+      return symbols[normalizedCurrency] || "₦";
     },
     goToCategory(categoryType) {
       // Replace spaces with hyphens and trim any leading/trailing spaces
@@ -358,9 +377,9 @@ export default {
       };
       return new Date(date).toLocaleDateString("en-US", options);
     },
-    formatPrice(price) {
+    formatPrice(price, currency = "NGN") {
       if (!price || price === 0) return "Free";
-      return `₦${price}`;
+      return `${this.getCurrencySymbol(currency)}${price}`;
     },
   },
 };
