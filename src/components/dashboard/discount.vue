@@ -202,9 +202,23 @@ export default {
             headers: { Authorization: `Bearer ${this.getToken}` },
           }
         );
-        alert("Promo created successfully!");
+        this.$swal({
+          icon: 'success',
+          title: 'Success!',
+          text: 'Promo created successfully!',
+          confirmButtonColor: '#047143',
+          iconColor: '#047143',
+          timer: 2000,
+          timerProgressBar: true
+        });
       } catch (err) {
-        alert(JSON.stringify(err.response?.data.message));
+        this.$swal({
+          icon: 'error',
+          title: 'Error',
+          text: err.response?.data.message || 'Failed to create promo',
+          confirmButtonColor: '#f4a213',
+          iconColor: '#f4a213'
+        });
       }
       this.fetchMyPromos();
     },
