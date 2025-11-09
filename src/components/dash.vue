@@ -164,7 +164,7 @@ export default {
   overflow-x: auto;
   padding-bottom: 0.5rem;
   scrollbar-width: thin;
-  scrollbar-color: #667eea #f1f3f5;
+  scrollbar-color: #f4a213 #f1f3f5;
 }
 
 .nav-tabs-wrapper::-webkit-scrollbar {
@@ -177,7 +177,7 @@ export default {
 }
 
 .nav-tabs-wrapper::-webkit-scrollbar-thumb {
-  background: #667eea;
+  background: #f4a213;
   border-radius: 10px;
 }
 
@@ -203,21 +203,21 @@ export default {
 
 .tab-button:hover {
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border-color: #667eea;
-  color: #667eea;
+  border-color: #f4a213;
+  color: #f4a213;
   transform: translateY(-2px);
 }
 
 .tab-button.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-color: #667eea;
+  background: linear-gradient(135deg, #f4a213 0%, #047143 100%);
+  border-color: #f4a213;
   color: white;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 15px rgba(244, 162, 19, 0.3);
 }
 
 .tab-button.active:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 6px 20px rgba(244, 162, 19, 0.4);
 }
 
 .dashboard-content {
