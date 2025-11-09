@@ -5,14 +5,27 @@
       <h5 class="mb-0">Orders</h5>
     </div>
 
-    <!-- 🔍 Search Input -->
-    <div class="p-3">
+    <!-- 🔍 Search Input & Export Button -->
+    <div class="p-3 d-flex justify-content-between align-items-center">
       <input
         v-model="searchQuery"
         type="text"
         class="form-control w-50"
         placeholder="Search by Email or Reference"
       />
+      <button
+        @click="exportToExcel"
+        class="btn btn-success"
+        :disabled="exportLoading"
+      >
+        <span v-if="exportLoading">
+          <span class="spinner-border spinner-border-sm me-1"></span>
+          Exporting...
+        </span>
+        <span v-else>
+          📊 Export to Excel
+        </span>
+      </button>
     </div>
 
     <!-- 📋 Orders Table -->
@@ -56,6 +69,7 @@
 
 <script>
 import axios from "axios";
+import { mapGetters } from "vuex";
 
 export default {
   name: "Orders",
@@ -66,9 +80,11 @@ export default {
       searchQuery: "",
       loading: true,
       error: null,
+      exportLoading: false,
     };
   },
   computed: {
+    ...mapGetters(["getToken"]),
     filteredOrders() {
       return this.orders.filter((order) => {
         const statusMatch = !this.selectedStatus || order.status === this.selectedStatus;
@@ -98,6 +114,50 @@ export default {
         console.error(err);
       } finally {
         this.loading = false;
+      }
+    },
+    async exportToExcel() {
+      this.exportLoading = true;
+      try {
+        const response = await axios.get(
+          "https://event-ticket-backend-yx81.onrender.com/api/orders/export-excel",
+          {
+            headers: {
+              Authorization: `Bearer ${this.getToken}`,
+            },
+            responseType: "blob",
+          }
+        );
+
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `orders_${Date.now()}.xlsx`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+
+        this.$swal({
+          icon: "success",
+          title: "Success!",
+          text: "Orders exported to Excel successfully!",
+          confirmButtonColor: "#228B22",
+          iconColor: "#228B22",
+          timer: 2000,
+          timerProgressBar: true,
+        });
+      } catch (err) {
+        console.error("Export error:", err);
+        this.$swal({
+          icon: "error",
+          title: "Export Failed",
+          text: err.response?.data?.message || "Failed to export orders to Excel",
+          confirmButtonColor: "#DC143C",
+          iconColor: "#DC143C",
+        });
+      } finally {
+        this.exportLoading = false;
       }
     },
   },
