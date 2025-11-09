@@ -316,15 +316,27 @@
                   />
                 </div>
 
-                <div class="col-md-2">
+                <div class="col-md-1">
                   <label class="form-label">Price</label>
                   <input
                     v-model.number="ticket.price"
                     type="number"
                     class="form-control"
-                    placeholder="Blank for free event"
+                    placeholder="0"
                   />
                 </div>
+
+                <div class="col-md-2">
+                  <label class="form-label">Currency</label>
+                  <select v-model="ticket.currency" class="form-select" required>
+                    <option value="NGN">NGN (₦)</option>
+                    <option value="USD">USD ($)</option>
+                    <option value="GBP">GBP (£)</option>
+                    <option value="EUR">EUR (€)</option>
+                    <option value="GHS">GHS (GH₵)</option>
+                  </select>
+                </div>
+
                 <div class="col-md-2">
                   <label class="form-label">Purchase Limit</label>
                   <input
@@ -453,7 +465,7 @@ export default {
       eventFrequency: "",
       photos: [],
       previewUrl: null,
-      tickets: [{ name: "", price: null, quantity: null }],
+      tickets: [{ name: "", price: null, quantity: null, currency: "NGN" }],
     };
   },
   computed: {
@@ -569,6 +581,7 @@ export default {
         name: "",
         quantity: "Unlimited",
         price: null,
+        currency: "NGN",
       });
     },
     removeTicket(index) {
