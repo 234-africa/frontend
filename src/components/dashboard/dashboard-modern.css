@@ -395,8 +395,12 @@
   }
 
   .btn-download, .modern-btn-download {
-    width: 100%;
-    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    margin: 1rem auto 0;
+    display: block;
+    width: auto;
+    max-width: 160px;
   }
 
   .pagination-modern {
