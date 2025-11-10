@@ -1077,25 +1077,34 @@ export default {
 </script>
 
 <style scoped>
+/* Modern Checkout Design */
+.container {
+  background: #f8f9fa;
+  min-height: 100vh;
+  padding: 2rem 1rem;
+}
+
 .qr-modal {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1050;
+  backdrop-filter: blur(4px);
 }
+
 .modal-content {
   background: #fff;
   padding: 30px;
-  border-radius: 16px;
+  border-radius: 20px;
   width: 90%;
   max-width: 500px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   animation: fadeIn 0.3s ease-in-out;
 }
 
@@ -1104,30 +1113,46 @@ export default {
   bottom: 0;
   left: 0;
   width: 100%;
-  background: white;
-  padding: 10px 20px;
-  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  background: #047143;
+  padding: 15px 20px;
+  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.1);
   text-align: center;
   z-index: 9999;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
 }
+
 .ticket-section {
   max-width: 800px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 30px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
 }
 
 h3 {
-  font-size: 1.5rem;
-  margin-bottom: 20px;
+  font-size: 1.75rem;
+  margin-bottom: 25px;
   color: #2c3e50;
+  font-weight: 700;
+  letter-spacing: -0.5px;
 }
 
 .ticket-card {
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  padding: 20px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  padding: 25px;
   margin-bottom: 20px;
+  border: 1px solid #e9ecef;
+  transition: all 0.3s ease;
+}
+
+.ticket-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  border-color: #f4a213;
 }
 
 .ticket-content {
@@ -1137,29 +1162,45 @@ h3 {
 }
 
 .ticket-info h5 {
-  font-size: 1.1rem;
-  margin: 0 0 5px;
+  font-size: 1.2rem;
+  margin: 0 0 8px;
   color: #2c3e50;
+  font-weight: 600;
 }
 
 .price {
-  font-weight: bold;
-  color: #e74c3c;
+  font-weight: 700;
+  color: #f4a213;
+  font-size: 1.15rem;
   margin: 0 0 5px;
 }
 
 .access {
   font-size: 0.9rem;
-  color: #7f8c8d;
+  color: #6c757d;
   margin: 0;
 }
 
 .ticket-select {
-  padding: 8px 10px;
+  padding: 10px 14px;
   font-size: 1rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+  border-radius: 10px;
+  border: 2px solid #e9ecef;
   outline: none;
+  background: white;
+  font-weight: 600;
+  color: #2c3e50;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.ticket-select:hover {
+  border-color: #f4a213;
+}
+
+.ticket-select:focus {
+  border-color: #f4a213;
+  box-shadow: 0 0 0 3px rgba(244, 162, 19, 0.1);
 }
 
 .stepper-wrapper {
@@ -1172,6 +1213,10 @@ h3 {
   position: relative;
   align-items: center;
   display: flex;
+  background: white;
+  padding: 30px 20px;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
 }
 
 .currentStep {
@@ -1181,75 +1226,109 @@ h3 {
 }
 
 .circle {
-  width: 30px;
-  height: 30px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
-  border: 2px solid #adb5bd;
+  border: 3px solid #dee2e6;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 8px;
+  margin: 0 auto 10px;
   background-color: white;
   color: #adb5bd;
-  font-weight: bold;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .currentStep.step-active .circle {
   border-color: #f4a213;
-  background-color: #f4a213;
+  background: #f4a213;
   color: white;
-  transition: background-color 0.3s, border-color 0.3s;
+  box-shadow: 0 4px 15px rgba(244, 162, 19, 0.3);
+  transform: scale(1.1);
 }
 
-.currentStep.completed .circle {
-  background-color: #f4a213;
+.currentStep.step-completed .circle {
+  background: #047143;
   color: white;
-  border-color: #f4a213;
+  border-color: #047143;
+  box-shadow: 0 2px 10px rgba(4, 113, 67, 0.2);
 }
 
 .label {
-  font-size: 14px;
+  font-size: 0.9rem;
   color: #6c757d;
+  font-weight: 500;
 }
 
-.currentStep.step-active .label,
-.currentStep.step-completed .label {
+.currentStep.step-active .label {
   color: #f4a213;
+  font-weight: 700;
 }
 
-/* Progress line behind steps */
+.currentStep.step-completed .label {
+  color: #047143;
+  font-weight: 600;
+}
+
 .progress-line {
   position: absolute;
-  top: 15px;
+  top: 22px;
   left: 0;
   right: 0;
-  height: 2px;
-  background-color: #dee2e6;
+  height: 3px;
+  background-color: #e9ecef;
   z-index: 1;
+  border-radius: 10px;
 }
 
 .progress-fill {
   height: 100%;
-  background-color: #f4a213;
+  background: #f4a213;
   width: 0%;
-  transition: width 0.4s ease-in-out;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 10px;
 }
 
-/* Country Code Dropdown Styling */
+.form-label {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.form-control {
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.form-control:focus {
+  border-color: #f4a213;
+  box-shadow: 0 0 0 4px rgba(244, 162, 19, 0.1);
+  outline: none;
+}
+
 .country-code-select {
   max-width: 110px;
   min-width: 95px;
   border-right: none;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
-  border-top-left-radius: 0.375rem;
-  border-bottom-left-radius: 0.375rem;
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
   font-size: 0.95rem;
-  padding: 0.375rem 0.4rem;
-  background-color: #fff;
-  border: 1px solid #ced4da;
+  padding: 12px 10px;
+  background-color: #f8f9fa;
+  border: 2px solid #e9ecef;
   transition: all 0.3s ease;
-  height: calc(1.5em + 0.75rem + 2px);
+  height: calc(1.5em + 0.75rem + 26px);
+  font-weight: 600;
 }
 
 .country-code-select:focus {
@@ -1260,7 +1339,7 @@ h3 {
 }
 
 .country-code-select option {
-  padding: 8px;
+  padding: 10px;
   font-size: 0.9rem;
 }
 
@@ -1272,10 +1351,10 @@ h3 {
 .input-group .form-control {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
-  border-top-right-radius: 0.375rem;
-  border-bottom-right-radius: 0.375rem;
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
   border-left: none;
-  height: calc(1.5em + 0.75rem + 2px);
+  height: calc(1.5em + 0.75rem + 26px);
 }
 
 .input-group .form-control:focus {
@@ -1286,9 +1365,113 @@ h3 {
 
 .input-group:focus-within .country-code-select {
   border-color: #f4a213;
+  background-color: white;
 }
 
 .input-group:focus-within .form-control {
   border-color: #f4a213;
+}
+
+.btn {
+  padding: 12px 30px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  border: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-primary {
+  background: #f4a213;
+  color: white;
+  box-shadow: 0 4px 15px rgba(244, 162, 19, 0.3);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #d68910;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(244, 162, 19, 0.4);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-success {
+  background: #047143;
+  color: white;
+  box-shadow: 0 4px 15px rgba(4, 113, 67, 0.3);
+}
+
+.btn-success:hover:not(:disabled) {
+  background: #035a36;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(4, 113, 67, 0.4);
+}
+
+.btn-danger {
+  background: #dc3545;
+  color: white;
+  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #c82333;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+}
+
+.col-md-4 .bg-light {
+  background: white !important;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e9ecef;
+  border-left: 4px solid #f4a213 !important;
+}
+
+.alert-warning {
+  background: #fff3cd;
+  border: 2px solid #ffc107;
+  border-radius: 12px;
+  color: #856404;
+  font-weight: 600;
+  padding: 15px 20px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem 0.5rem;
+  }
+
+  h3 {
+    font-size: 1.4rem;
+  }
+
+  .ticket-section {
+    padding: 20px 15px;
+  }
+
+  .stepper {
+    padding: 20px 10px;
+  }
+
+  .circle {
+    width: 35px;
+    height: 35px;
+    font-size: 0.9rem;
+  }
+
+  .label {
+    font-size: 0.75rem;
+  }
+
+  .btn {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
 }
 </style>
