@@ -1,5 +1,5 @@
 <template>
-  <div class="text-start my-5">
+  <div class="product-page text-start my-5">
     <div class="background-wrapper container">
       <img
         class="img-fluid"
@@ -369,40 +369,331 @@ export default {
 </script>
 
 <style scoped>
-.content-wrapper {
-  position: relative;
-  z-index: 1;
-  padding: 2rem;
+.product-page {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  min-height: 100vh;
+  padding-bottom: 3rem;
 }
 
-.content-wrapper {
+.background-wrapper {
   position: relative;
-  z-index: 1;
-  padding: 2rem;
+  margin-bottom: 2rem;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  animation: fadeIn 0.6s ease-out;
 }
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.background-wrapper img {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.background-wrapper:hover img {
+  transform: scale(1.03);
+}
+
+.container {
+  max-width: 1200px;
+}
+
+h2.fw-bold {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.mt-3 p {
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  transition: color 0.3s ease;
+}
+
+.mt-3 p:hover {
+  color: #228B22;
+}
+
+.mt-3 p i {
+  color: #228B22;
+  font-size: 1.3rem;
+  margin-right: 0.75rem;
+  min-width: 24px;
+}
+
+hr {
+  border: none;
+  height: 2px;
+  background: linear-gradient(90deg, #228B22 0%, transparent 100%);
+  margin: 2rem 0;
+}
+
+.tag-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #228B22 0%, #047143 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(34, 139, 34, 0.2);
+}
+
+.tag-badge:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(34, 139, 34, 0.3);
+}
+
+h5.fw-bold {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.custom-card,
+.custom-card-mobile {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.4s ease;
+}
+
 .custom-card {
   position: sticky;
-  top: 0;
-  z-index: 1020; /* Similar to Bootstrap sticky-top z-index */
-  width: 75%;
-  padding: 1rem;
+  top: 20px;
+  z-index: 1020;
+  width: 85%;
   height: fit-content;
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); /* shadow-sm */
-  background-color: #fff;
-  border-radius: 0.25rem;
-  display: none; /* Hide by default */
 }
+
 .custom-card-mobile {
   position: sticky;
   top: 0;
-  z-index: 1020; /* Similar to Bootstrap sticky-top z-index */
+  z-index: 1020;
   width: 100%;
-  padding: 1rem;
-  padding-top: 20px;
-  height: 15%;
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); /* shadow-sm */
-  background-color: #fff;
-  border-radius: 0.25rem;
-  display: none; /* Hide by default */
+  padding: 1.5rem;
+}
+
+.custom-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+}
+
+.text-muted.fw-medium {
+  color: #666 !important;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.fw-bold.fs-5 {
+  color: #228B22;
+  font-size: 1.75rem !important;
+  font-weight: 800;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #228B22 0%, #047143 100%);
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 20px rgba(34, 139, 34, 0.3);
+  color: white !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(34, 139, 34, 0.4);
+  background: linear-gradient(135deg, #047143 0%, #228B22 100%);
+}
+
+.btn-outline-primary {
+  border: 2px solid #228B22;
+  color: #228B22;
+  background: white;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+  background: linear-gradient(135deg, #228B22 0%, #047143 100%);
+  color: white;
+  border-color: #228B22;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(34, 139, 34, 0.3);
+}
+
+h1.fw-bold {
+  font-size: 2rem;
+  color: #333;
+  margin-top: 3rem;
+  margin-bottom: 2rem;
+  font-weight: 800;
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+h1.fw-bold::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #228B22 0%, #DC143C 100%);
+  border-radius: 2px;
+}
+
+.col-md-4 {
+  margin-bottom: 2rem;
+}
+
+.img-fluid.rounded {
+  border-radius: 16px !important;
+  transition: all 0.4s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.img-fluid.rounded:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+.pt-2 h5 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #333;
+  margin-top: 1rem;
+  margin-bottom: 0.75rem;
+  transition: color 0.3s ease;
+}
+
+.pt-2 h5:hover {
+  color: #228B22;
+}
+
+.pt-2 p {
+  color: #666;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.pt-2 p i {
+  color: #228B22;
+  margin-right: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.d-flex.flex-wrap.gap-2 {
+  gap: 0.75rem !important;
+}
+
+.bi-person-circle {
+  color: #DC143C;
+  font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .background-wrapper img {
+    height: 250px;
+  }
+
+  h2.fw-bold {
+    font-size: 1.8rem;
+  }
+
+  .mt-3 p {
+    font-size: 1rem;
+  }
+
+  .custom-card {
+    width: 100%;
+    position: relative;
+    top: 0;
+  }
+
+  .custom-card-mobile {
+    padding: 1.25rem;
+  }
+
+  h1.fw-bold {
+    font-size: 1.5rem;
+  }
+
+  .pt-2 h5 {
+    font-size: 1.1rem;
+  }
+
+  .btn-primary {
+    font-size: 1rem;
+    padding: 0.875rem 1.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .background-wrapper img {
+    height: 200px;
+  }
+
+  h2.fw-bold {
+    font-size: 1.5rem;
+  }
+
+  .tag-badge {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .custom-card,
+  .custom-card-mobile {
+    padding: 1rem;
+  }
+
+  .fw-bold.fs-5 {
+    font-size: 1.4rem !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .custom-card {
+    display: block !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .custom-card-mobile {
+    display: block !important;
+  }
 }
 </style>
