@@ -145,7 +145,7 @@
               <div class="input-group">
                 <select v-model="contact.countryCode" class="form-select country-code-select">
                   <option v-for="(country, index) in processedCountryCodes" :key="`${country.code}-${country.name}-${index}`" :value="country.dialCode">
-                    {{ country.flag }} {{ country.code }} {{ country.name }}
+                    {{ country.flag }} {{ country.dialCode }}
                   </option>
                 </select>
                 <input v-model="contact.phone" type="tel" class="form-control" required />
@@ -1237,13 +1237,14 @@ h3 {
 
 /* Country Code Dropdown Styling */
 .country-code-select {
-  max-width: 250px;
+  max-width: 120px;
+  min-width: 100px;
   border-right: none;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
   font-size: 0.95rem;
-  padding: 0.375rem 0.75rem;
-  background-color: #f8f9fa;
+  padding: 0.375rem 0.5rem;
+  background-color: #fff;
   border-color: #ced4da;
   transition: all 0.3s ease;
 }
