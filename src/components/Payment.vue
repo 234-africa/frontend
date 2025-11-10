@@ -1237,30 +1237,58 @@ h3 {
 
 /* Country Code Dropdown Styling */
 .country-code-select {
-  max-width: 120px;
-  min-width: 100px;
+  max-width: 110px;
+  min-width: 95px;
   border-right: none;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
+  border-top-left-radius: 0.375rem;
+  border-bottom-left-radius: 0.375rem;
   font-size: 0.95rem;
-  padding: 0.375rem 0.5rem;
+  padding: 0.375rem 0.4rem;
   background-color: #fff;
-  border-color: #ced4da;
+  border: 1px solid #ced4da;
   transition: all 0.3s ease;
+  height: calc(1.5em + 0.75rem + 2px);
 }
 
 .country-code-select:focus {
   background-color: white;
   border-color: #f4a213;
   box-shadow: none;
+  outline: none;
 }
 
 .country-code-select option {
   padding: 8px;
+  font-size: 0.9rem;
+}
+
+.input-group {
+  display: flex;
+  align-items: stretch;
 }
 
 .input-group .form-control {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
+  border-top-right-radius: 0.375rem;
+  border-bottom-right-radius: 0.375rem;
+  border-left: none;
+  height: calc(1.5em + 0.75rem + 2px);
+}
+
+.input-group .form-control:focus {
+  border-color: #f4a213;
+  box-shadow: none;
+  outline: none;
+}
+
+.input-group:focus-within .country-code-select {
+  border-color: #f4a213;
+}
+
+.input-group:focus-within .form-control {
+  border-color: #f4a213;
 }
 </style>
