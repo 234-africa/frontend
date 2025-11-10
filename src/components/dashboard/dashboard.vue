@@ -39,8 +39,8 @@
               <i class="bi bi-receipt"></i>
             </div>
             <div class="stats-card-content">
-              <h3 class="stats-number">{{ orders.length }}</h3>
-              <p class="stats-label">Total Orders</p>
+              <h3 class="stats-number">{{ filteredOrders.length }}</h3>
+              <p class="stats-label">{{ selectedEvent ? 'Filtered Orders' : 'Total Orders' }}</p>
             </div>
           </div>
         </div>
@@ -61,14 +61,27 @@
             </div>
           </div>
           <div class="card-body">
-            <div class="search-box mb-4">
-              <i class="bi bi-search search-icon"></i>
-              <input
-                type="text"
-                class="form-control search-input"
-                v-model="searchQuery"
-                placeholder="Search by Order ID..."
-              />
+            <div class="filters-row mb-4">
+              <div class="event-filter">
+                <label class="filter-label">
+                  <i class="bi bi-funnel"></i> Filter by Event
+                </label>
+                <select v-model="selectedEvent" @change="applyFilters" class="form-select event-select">
+                  <option value="">All Events</option>
+                  <option v-for="event in uniqueEvents" :key="event" :value="event">
+                    {{ event }}
+                  </option>
+                </select>
+              </div>
+              <div class="search-box">
+                <i class="bi bi-search search-icon"></i>
+                <input
+                  type="text"
+                  class="form-control search-input"
+                  v-model="searchQuery"
+                  placeholder="Search by Order ID..."
+                />
+              </div>
             </div>
 
             <div class="table-responsive">
@@ -155,6 +168,7 @@ export default {
     return {
       selectedStatus: "",
       searchQuery: "",
+      selectedEvent: "",
       currentPage: 1,
       rowsPerPage: 10,
       totalPrice: 0,
@@ -168,9 +182,13 @@ export default {
     productsByUser() {
       return this.getProductsByUser;
     },
+    uniqueEvents() {
+      const events = [...new Set(this.orders.map(order => order.title))];
+      return events.filter(Boolean).sort();
+    },
     totalRevenueByCurrency() {
       const revenueByCurrency = {};
-      this.orders.forEach((order) => {
+      this.filteredOrders.forEach((order) => {
         const currency = order.currency || "NGN";
         if (!revenueByCurrency[currency]) {
           revenueByCurrency[currency] = 0;
@@ -196,10 +214,19 @@ export default {
       }
     },
     filteredOrders() {
-      if (!this.searchQuery) return this.orders;
-      return this.orders.filter((order) =>
-        order._id.toLowerCase().includes(this.searchQuery.toLowerCase())
-      );
+      let filtered = this.orders;
+      
+      if (this.selectedEvent) {
+        filtered = filtered.filter(order => order.title === this.selectedEvent);
+      }
+      
+      if (this.searchQuery) {
+        filtered = filtered.filter((order) =>
+          order._id.toLowerCase().includes(this.searchQuery.toLowerCase())
+        );
+      }
+      
+      return filtered;
     },
     paginatedOrders() {
       const start = (this.currentPage - 1) * this.rowsPerPage;
