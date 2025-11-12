@@ -137,13 +137,13 @@
                 required
               />
             </div>
-            <div v-if="emailMismatch" class="text-danger mt-1">
+            <div v-if="emailMismatch" class="text-danger mt-1 mb-2">
               Email address does not match
             </div>
-            <div class="mb-3">
+            <div class="mb-3 mt-3">
               <label class="form-label">Phone Number *</label>
               <div class="input-group">
-                <select v-model="contact.countryCode" class="form-select country-code-select">
+                <select v-model="contact.countryCode" class="form-select country-code-select" style="max-width: 140px; flex: 0 0 auto;">
                   <option v-for="(country, index) in processedCountryCodes" :key="`${country.code}-${country.name}-${index}`" :value="country.dialCode">
                     {{ country.flag }} {{ country.dialCode }}
                   </option>
