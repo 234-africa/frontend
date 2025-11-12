@@ -364,8 +364,8 @@ export default {
       // Normalize the product title for the URL: Replace spaces with hyphens
       const normalizedProductTitle = productTitle.replace(/\s+/g, "-").toLowerCase();
 
-      // Open in new tab
-      window.open(`/event/${normalizedProductTitle}`, "_blank");
+      // Navigate in same tab
+      this.$router.push(`/event/${normalizedProductTitle}`);
     },
     formatDate(date) {
       if (!date) return "No date";
