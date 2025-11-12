@@ -68,16 +68,16 @@ export function getTicketPriceRange(tickets) {
 
 /**
  * Determine payment gateway based on currency
- * NGN, GHS → Paystack (for Nigerian and Ghanaian payments)
- * USD, GBP, EUR → Stripe (for international payments)
- * KES, UGX, ZMW, ZAR → Fincra (for East and Southern African payments)
+ * NGN, GHS → Paystack
+ * USD, GBP, EUR, KES, UGX, ZMW, ZAR → Fincra
+ * Other currencies → Stripe (fallback)
  * @param {string} currency - Currency code
  * @returns {string} Payment gateway name ('paystack', 'stripe', or 'fincra')
  */
 export function getPaymentGateway(currency) {
   const normalizedCurrency = currency ? currency.toUpperCase() : "NGN";
   const paystackCurrencies = ["NGN", "GHS"];
-  const fincraCurrencies = ["KES", "UGX", "ZMW", "ZAR"];
+  const fincraCurrencies = ["USD", "GBP", "EUR", "KES", "UGX", "ZMW", "ZAR"];
   
   if (paystackCurrencies.includes(normalizedCurrency)) {
     return "paystack";
