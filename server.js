@@ -38,7 +38,7 @@ app.get("/event/:title", async (req, res) => {
         : "Join us for this amazing event on 234 AFRICA.";
       const eventImage = product.photos && product.photos.length > 0
         ? escapeHtml(product.photos[0])
-        : "https://234tickets.live/default-event-image.png";
+        : "https://234tickets.live/IMG_0264.PNG";
       const eventUrl = `https://234tickets.live/event/${titleParam}`;
 
       const eventDate = product.event && product.event.start
@@ -61,14 +61,15 @@ app.get("/event/:title", async (req, res) => {
       const metaTags = `
   <meta name="description" content="${fullDescription}" />
   
-  <!-- Open Graph / Facebook -->
+  <!-- Open Graph / Facebook / WhatsApp -->
   <meta property="og:type" content="event" />
   <meta property="og:url" content="${eventUrl}" />
   <meta property="og:title" content="${eventTitle}" />
   <meta property="og:description" content="${fullDescription}" />
-  <meta property="og:image" content="${eventImage}" />
+  <meta property="og:image" itemprop="image" content="${eventImage}" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="${eventTitle}" />
   <meta property="og:site_name" content="234 AFRICA" />
   
   <!-- Twitter -->
@@ -76,10 +77,7 @@ app.get("/event/:title", async (req, res) => {
   <meta name="twitter:url" content="${eventUrl}" />
   <meta name="twitter:title" content="${eventTitle}" />
   <meta name="twitter:description" content="${fullDescription}" />
-  <meta name="twitter:image" content="${eventImage}" />
-  
-  <!-- WhatsApp (uses Open Graph) -->
-  <meta property="og:image:alt" content="${eventTitle}" />`;
+  <meta name="twitter:image" content="${eventImage}" />`;
 
       html = html.replace(/<title>.*?<\/title>/i, `<title>${eventTitle}</title>`);
 
