@@ -137,13 +137,13 @@
                 required
               />
             </div>
-            <div v-if="emailMismatch" class="text-danger mt-1 mb-2">
+            <div v-if="emailMismatch" class="text-danger mt-1 mb-3">
               Email address does not match
             </div>
-            <div class="mb-3 mt-3">
+            <div class="mb-3 phone-field-wrapper">
               <label class="form-label">Phone Number *</label>
               <div class="input-group">
-                <select v-model="contact.countryCode" class="form-select country-code-select" style="max-width: 140px; flex: 0 0 auto;">
+                <select v-model="contact.countryCode" class="form-select country-code-select">
                   <option v-for="(country, index) in processedCountryCodes" :key="`${country.code}-${country.name}-${index}`" :value="country.dialCode">
                     {{ country.flag }} {{ country.dialCode }}
                   </option>
@@ -1516,6 +1516,30 @@ h3 {
   color: #856404;
   font-weight: 600;
   padding: 15px 20px;
+}
+
+.phone-field-wrapper {
+  margin-top: 1.5rem !important;
+}
+
+.phone-field-wrapper .input-group {
+  display: flex;
+  align-items: stretch;
+}
+
+.phone-field-wrapper .country-code-select {
+  max-width: 140px;
+  min-width: 120px;
+  flex: 0 0 auto !important;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.phone-field-wrapper .form-control[type="tel"] {
+  flex: 1 1 auto !important;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left: 0;
 }
 
 @media (max-width: 768px) {
