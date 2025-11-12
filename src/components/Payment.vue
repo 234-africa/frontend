@@ -207,6 +207,29 @@
             </div>
           </div>
 
+          <!-- Fincra Payment (KES, UGX, ZMW, ZAR) -->
+          <div v-if="paymentGateway === 'fincra'" class="form-check mb-2">
+            <input
+              class="form-check-input"
+              type="radio"
+              v-model="paymentMethod"
+              value="card"
+              id="payFincra"
+            />
+            <label class="form-check-label" for="payFincra">Pay with Fincra</label>
+            <form>
+              <div class="mb-3">
+                <label>Email</label>
+                <input
+                  :value="getContactInfo.email"
+                  type="email"
+                  class="form-control"
+                  readonly
+                />
+              </div>
+            </form>
+          </div>
+
           <div class="form-check mb-2">
             <input
               class="form-check-input"
@@ -797,6 +820,8 @@ export default {
     async initializePayment() {
       if (this.paymentGateway === 'stripe') {
         await this.initializeStripePayment();
+      } else if (this.paymentGateway === 'fincra') {
+        await this.initializeFincraPayment();
       } else {
         await this.initializePaystackPayment();
       }
@@ -846,6 +871,57 @@ export default {
 
         this.spinner = false;
         window.location.href = authorization_url;
+      } catch (error) {
+        this.spinner = false;
+        alert("Payment initialization failed");
+        console.error(error);
+      }
+    },
+    async initializeFincraPayment() {
+      try {
+        this.spinner = true;
+        const affiliate = localStorage.getItem("affiliateCode");
+        const promoCode = localStorage.getItem("promoCode");
+        
+        const response = await axios.post(
+          "https://event-ticket-backend-yx81.onrender.com/api/fincra/create-checkout",
+          {
+            email: this.email,
+            amount: this.amount,
+            currency: this.cartCurrency,
+            metadata: {
+              orderData: {
+                startDate: this.getCart[0]?.event?.start,
+                startTime: this.getCart[0]?.event?.startTime,
+                location: this.getCart[0]?.event?.location?.name,
+                userId: this.getCart[0]?.user,
+                productId: this.getCart[0]?._id,
+                title: this.getCart[0]?.title,
+                contact: {
+                  name: `${this.getContactInfo.firstName} ${this.getContactInfo.lastName}`,
+                  email: this.getContactInfo.email,
+                  phone: `${this.getContactInfo.countryCode}${this.getContactInfo.phone}`,
+                },
+                tickets: this.getSelectedTickets,
+                price: this.amount,
+                currency: this.cartCurrency,
+                affiliate,
+                promoCode,
+              }
+            }
+          }
+        );
+        console.log(response.data);
+
+        const { checkout_url, reference } = response.data.data;
+        localStorage.setItem("fincra_reference", reference);
+        localStorage.setItem("cartTotal", this.amount);
+        localStorage.setItem("startDate", this.getCart[0]?.event?.start);
+        localStorage.setItem("startTime", this.getCart[0]?.event?.startTime);
+        localStorage.setItem("location", this.getCart[0]?.event?.location?.name);
+
+        this.spinner = false;
+        window.location.href = checkout_url;
       } catch (error) {
         this.spinner = false;
         alert("Payment initialization failed");
