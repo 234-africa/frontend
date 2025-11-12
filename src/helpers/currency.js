@@ -8,6 +8,10 @@ const CURRENCY_SYMBOLS = {
   GBP: "£",
   EUR: "€",
   GHS: "GH₵",
+  KES: "KSh",
+  UGX: "USh",
+  ZMW: "ZK",
+  ZAR: "R",
 };
 
 /**
@@ -66,11 +70,20 @@ export function getTicketPriceRange(tickets) {
  * Determine payment gateway based on currency
  * NGN, GHS → Paystack (for Nigerian and Ghanaian payments)
  * USD, GBP, EUR → Stripe (for international payments)
+ * KES, UGX, ZMW, ZAR → Fincra (for East and Southern African payments)
  * @param {string} currency - Currency code
- * @returns {string} Payment gateway name ('paystack' or 'stripe')
+ * @returns {string} Payment gateway name ('paystack', 'stripe', or 'fincra')
  */
 export function getPaymentGateway(currency) {
   const normalizedCurrency = currency ? currency.toUpperCase() : "NGN";
   const paystackCurrencies = ["NGN", "GHS"];
-  return paystackCurrencies.includes(normalizedCurrency) ? "paystack" : "stripe";
+  const fincraCurrencies = ["KES", "UGX", "ZMW", "ZAR"];
+  
+  if (paystackCurrencies.includes(normalizedCurrency)) {
+    return "paystack";
+  } else if (fincraCurrencies.includes(normalizedCurrency)) {
+    return "fincra";
+  } else {
+    return "stripe";
+  }
 }
