@@ -206,25 +206,6 @@
               </form>
             </div>
 
-            <!-- Stripe Payment -->
-            <div v-if="paymentGateway === 'stripe'" class="payment-option">
-              <input
-                class="payment-radio"
-                type="radio"
-                v-model="paymentMethod"
-                value="card"
-                id="payStripe"
-              />
-              <label class="payment-label" for="payStripe">Pay with Stripe</label>
-              
-              <div v-if="paymentMethod === 'card'" class="stripe-container">
-                <div id="stripe-payment-element" class="stripe-element"></div>
-                <div v-if="stripeErrorMessage" class="error-message">
-                  {{ stripeErrorMessage }}
-                </div>
-              </div>
-            </div>
-
             <!-- Fincra Payment -->
             <div v-if="paymentGateway === 'fincra'" class="payment-option">
               <input
@@ -364,7 +345,6 @@ import spinner from "./spinner.vue";
 import { ref } from "vue";
 import { startOfDay } from "@fullcalendar/core/internal";
 import { formatPrice, getCurrencySymbol, getPaymentGateway } from "@/helpers/currency";
-import { loadStripe } from "@stripe/stripe-js";
 
 export default {
   components: {
@@ -382,7 +362,6 @@ export default {
       countdown: null,
       full_name: "",
       publicKey: process.env.VUE_APP_PUBLIC_KEY,
-      stripePublicKey: process.env.VUE_APP_STRIPE_PUBLIC_KEY,
       steps: ["Tickets", "Contact", "Payment"],
       tickets: [],
       promoCode: "",
@@ -639,16 +618,10 @@ export default {
       ],
       paymentMethod: "card",
       termsAccepted: false,
-      stripe: null,
-      elements: null,
-      stripeErrorMessage: "",
     };
   },
   async mounted() {
     this.startCountdown();
-    if (this.paymentGateway === "stripe") {
-      await this.initializeStripe();
-    }
   },
   computed: {
     ...mapGetters({
@@ -759,20 +732,6 @@ export default {
         this.contact.confirmEmail !== "" &&
         this.contact.email !== this.contact.confirmEmail;
     },
-    currentStep(newStep) {
-      if (newStep === 2 && this.paymentGateway === "stripe") {
-        this.$nextTick(() => {
-          this.mountStripeElements();
-        });
-      }
-    },
-    paymentGateway(newGateway) {
-      if (this.currentStep === 2 && newGateway === "stripe") {
-        this.$nextTick(() => {
-          this.mountStripeElements();
-        });
-      }
-    },
   },
   beforeDestroy() {
     if (this.countdown) {
@@ -838,71 +797,10 @@ export default {
         };
       }
     },
-    async initializeStripe() {
-      try {
-        this.stripe = await loadStripe(this.stripePublicKey);
-      } catch (error) {
-        console.error("Error loading Stripe:", error);
-      }
-    },
-    async mountStripeElements() {
-      if (!this.stripe) return;
-      try {
-        const selectedTickets = this.getCart.flatMap((product) =>
-          product.event.tickets
-            .filter((ticket) => ticket.selectedQuantity > 0)
-            .map((ticket) => ({
-              name: ticket.name,
-              quantity: ticket.selectedQuantity,
-            }))
-        );
-
-        const affiliate = localStorage.getItem("affiliateCode");
-
-        const orderData = {
-          startDate: this.getCart[0]?.event?.start,
-          startTime: this.getCart[0]?.event?.startTime,
-          location: this.getCart[0]?.event?.location?.name,
-          userId: this.getCart[0]?.user,
-          productId: this.getCart[0]?.id,
-          title: this.getCart[0]?.title,
-          contact: {
-            name: `${this.contact.firstName} ${this.contact.lastName}`,
-            email: this.contact.email,
-            phone: `${this.contact.countryCode}${this.contact.phone}`,
-          },
-          tickets: selectedTickets,
-          price: this.cartTotal,
-          currency: this.cartCurrency,
-          affiliate,
-          promoCode: this.promoCode,
-        };
-
-        const response = await axios.post(
-          `${process.env.VUE_APP_BASE_URL}/api/stripe/create-payment-intent`,
-          {
-            amount: this.cartTotal,
-            currency: this.cartCurrency.toLowerCase(),
-            email: this.contact.email,
-            metadata: { orderData: JSON.stringify(orderData) },
-          }
-        );
-        const { clientSecret } = response.data;
-        const appearance = { theme: "stripe" };
-        this.elements = this.stripe.elements({ clientSecret, appearance });
-        const paymentElement = this.elements.create("payment");
-        paymentElement.mount("#stripe-payment-element");
-      } catch (error) {
-        console.error("Error creating Stripe Payment Intent:", error);
-        this.stripeErrorMessage = "Failed to initialize payment. Please try again.";
-      }
-    },
     async initializePayment() {
       this.spinner = true;
       try {
-        if (this.paymentGateway === "stripe") {
-          await this.handleStripePayment();
-        } else if (this.paymentGateway === "paystack") {
+        if (this.paymentGateway === "paystack") {
           this.handlePaystackPayment();
         } else if (this.paymentGateway === "fincra") {
           await this.handleFincraPayment();
@@ -914,23 +812,6 @@ export default {
       } catch (error) {
         console.error("Payment initialization error:", error);
         alert("Payment initialization failed. Please try again or contact support.");
-        this.spinner = false;
-      }
-    },
-    async handleStripePayment() {
-      if (!this.stripe || !this.elements) {
-        this.stripeErrorMessage = "Stripe not initialized";
-        this.spinner = false;
-        return;
-      }
-      const { error } = await this.stripe.confirmPayment({
-        elements: this.elements,
-        confirmParams: {
-          return_url: `${window.location.origin}/success`,
-        },
-      });
-      if (error) {
-        this.stripeErrorMessage = error.message;
         this.spinner = false;
       }
     },
@@ -1748,17 +1629,6 @@ export default {
 
 .payment-form {
   margin-top: 1rem;
-}
-
-.stripe-container {
-  margin-top: 1rem;
-}
-
-.stripe-element {
-  padding: 1.25rem;
-  border: 2px solid #e9ecef;
-  border-radius: 12px;
-  background: white;
 }
 
 .terms-wrapper {
