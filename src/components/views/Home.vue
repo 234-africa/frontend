@@ -66,7 +66,14 @@
               style="width: 80px; height: 80px"
               @click="goToCategory(category.type)"
             >
-              <img :src="category.photo" alt="Category SVG" width="40" height="40" />
+              <img 
+                :src="category.photo" 
+                :alt="category.type + ' category icon'" 
+                width="40" 
+                height="40"
+                loading="lazy"
+                decoding="async"
+              />
             </div>
             <p class="mt-2 mb-0">{{ category.type }}</p>
           </div>
@@ -104,7 +111,11 @@
               "
               class="img-fluid rounded w-100"
               style="height: 200px; object-fit: cover"
-              alt="Event Image"
+              width="400"
+              height="200"
+              :alt="product.title + ' event image'"
+              loading="lazy"
+              decoding="async"
             />
 
             <div class="pt-2">
@@ -169,8 +180,12 @@
         <div class="col-lg-6 text-center">
           <img
             src="WhatsApp Image 2025-08-26 at 16.50.53_abdf8872.jpg"
-            alt="People enjoying an event"
+            alt="People enjoying an event at 234africa"
             class="img-fluid rounded"
+            width="600"
+            height="400"
+            loading="lazy"
+            decoding="async"
           />
         </div>
       </div>
@@ -181,7 +196,11 @@
           <img
             src="/WhatsApp Image 2025-08-25 at 15.27.25_f8d06780.jpg"
             class="img-fluid"
-            alt="Manage Events Illustration"
+            alt="Manage Events Illustration at 234africa"
+            width="600"
+            height="400"
+            loading="lazy"
+            decoding="async"
           />
         </div>
         <!-- Text Content -->
@@ -255,7 +274,11 @@
                 <img
                   src="/WhatsApp Image 2025-08-25 at 15.27.25_58bc1d25.jpg"
                   class="img-fluid"
-                  alt="Live Support"
+                  alt="24/7 Live Support at 234africa"
+                  width="600"
+                  height="400"
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
             </div>
