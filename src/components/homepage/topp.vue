@@ -4,7 +4,15 @@
     <div class="d-flex justify-content-between align-items-center d-md-none px-4 pe-4">
       <div>
         <router-link class="text-white text-decoration-none d-block d-md-none" to="/">
-          <img src="/IMG_0264.PNG" style="height: 50px; width: 70px" alt="Logo" />
+          <img 
+            src="/IMG_0264.PNG" 
+            style="height: 50px; width: 70px" 
+            width="70" 
+            height="50"
+            alt="234africa Logo" 
+            fetchpriority="high"
+            decoding="async"
+          />
         </router-link>
       </div>
       <button class="toggle-btn bg-none" @click="show = !show">☰</button>
@@ -118,7 +126,15 @@
     >
       <div class="text-white fw-bold" style="">
         <router-link class="text-white text-decoration-none" to="/">
-          <img src="/IMG_0264.PNG" alt="Logo" style="width: 100px; height: 65px" />
+          <img 
+            src="/IMG_0264.PNG" 
+            alt="234africa Logo" 
+            style="width: 100px; height: 65px" 
+            width="100" 
+            height="65"
+            fetchpriority="high"
+            decoding="async"
+          />
         </router-link>
       </div>
 
@@ -412,10 +428,12 @@
               <img
                 v-if="currentUser"
                 :src="currentUser.picture"
-                alt=""
+                alt="User profile picture"
                 width="32"
                 height="32"
                 class="rounded-circle"
+                loading="lazy"
+                decoding="async"
               />
             </button>
           </div>
