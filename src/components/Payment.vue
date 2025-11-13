@@ -906,7 +906,7 @@ export default {
     async handlePaystackPayment() {
       try {
         const response = await axios.post(
-          `${process.env.VUE_APP_BASE_URL}/initialize`,
+          `${process.env.VUE_APP_BASE_URL}/api/initialize`,
           {
             email: this.contact.email,
             amount: this.cartTotal,
@@ -968,23 +968,61 @@ export default {
         this.spinner = false;
       }
     },
+    generateReference() {
+      let text = "";
+      const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      for (let i = 0; i < 10; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+      }
+      return text;
+    },
     async getTicket() {
-      this.spinner = true;
       try {
-        const response = await axios.post(
-          `${process.env.VUE_APP_BASE_URL}/tickets/free`,
-          {
-            contact: this.contact,
-            cart: this.getCart,
-          }
+        this.reference = this.generateReference();
+        localStorage.setItem("paystack_reference", this.reference);
+        this.spinner = true;
+        const affiliate = localStorage.getItem("affiliateCode");
+
+        const selectedTickets = this.getCart.flatMap((product) =>
+          product.event.tickets
+            .filter((ticket) => ticket.selectedQuantity > 0)
+            .map((ticket) => ({
+              name: ticket.name,
+              quantity: ticket.selectedQuantity,
+            }))
         );
-        if (response.data.success) {
-          this.$router.push("/success");
-        }
-      } catch (error) {
-        console.error("Free ticket error:", error);
+
+        const payload = {
+          startDate: this.getCart[0]?.event?.start,
+          startTime: this.getCart[0]?.event?.startTime,
+          location: this.getCart[0]?.event?.location?.name,
+          reference: this.reference,
+          userId: this.getCart[0]?.user,
+          productId: this.getCart[0]?.id,
+          title: this.getCart[0]?.title,
+          contact: {
+            name: `${this.contact.firstName} ${this.contact.lastName}`,
+            email: this.contact.email,
+            phone: this.contact.phone,
+          },
+          tickets: selectedTickets,
+          price: this.cartTotal,
+          currency: this.cartCurrency,
+          affiliate,
+        };
+
+        console.log("Sending free ticket order:", payload);
+        const res = await axios.post(
+          `${process.env.VUE_APP_BASE_URL}/api/order`,
+          payload
+        );
+        this.spinner = false;
+        alert("Your ticket has been confirmed, check your email inbox & spam for booking confirmation");
+        this.$router.push({ name: "home" });
+        console.log("Order confirmed:", res.data);
+      } catch (err) {
+        console.error("Failed to get free ticket:", err);
         alert("Failed to get free tickets. Please try again.");
-      } finally {
         this.spinner = false;
       }
     },
