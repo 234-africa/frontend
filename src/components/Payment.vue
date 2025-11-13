@@ -848,12 +848,43 @@ export default {
     async mountStripeElements() {
       if (!this.stripe) return;
       try {
+        const selectedTickets = this.getCart.flatMap((product) =>
+          product.event.tickets
+            .filter((ticket) => ticket.selectedQuantity > 0)
+            .map((ticket) => ({
+              name: ticket.name,
+              quantity: ticket.selectedQuantity,
+            }))
+        );
+
+        const affiliate = localStorage.getItem("affiliateCode");
+
+        const orderData = {
+          startDate: this.getCart[0]?.event?.start,
+          startTime: this.getCart[0]?.event?.startTime,
+          location: this.getCart[0]?.event?.location?.name,
+          userId: this.getCart[0]?.user,
+          productId: this.getCart[0]?.id,
+          title: this.getCart[0]?.title,
+          contact: {
+            name: `${this.contact.firstName} ${this.contact.lastName}`,
+            email: this.contact.email,
+            phone: `${this.contact.countryCode}${this.contact.phone}`,
+          },
+          tickets: selectedTickets,
+          price: this.cartTotal,
+          currency: this.cartCurrency,
+          affiliate,
+          promoCode: this.promoCode,
+        };
+
         const response = await axios.post(
-          `${process.env.VUE_APP_BASE_URL}/payment/stripe/create-payment-intent`,
+          `${process.env.VUE_APP_BASE_URL}/api/stripe/create-payment-intent`,
           {
-            amount: Math.round(this.cartTotal * 100),
+            amount: this.cartTotal,
             currency: this.cartCurrency.toLowerCase(),
             email: this.contact.email,
+            metadata: { orderData: JSON.stringify(orderData) },
           }
         );
         const { clientSecret } = response.data;
@@ -905,12 +936,43 @@ export default {
     },
     async handlePaystackPayment() {
       try {
+        const selectedTickets = this.getCart.flatMap((product) =>
+          product.event.tickets
+            .filter((ticket) => ticket.selectedQuantity > 0)
+            .map((ticket) => ({
+              name: ticket.name,
+              quantity: ticket.selectedQuantity,
+            }))
+        );
+
+        const affiliate = localStorage.getItem("affiliateCode");
+
+        const orderData = {
+          startDate: this.getCart[0]?.event?.start,
+          startTime: this.getCart[0]?.event?.startTime,
+          location: this.getCart[0]?.event?.location?.name,
+          userId: this.getCart[0]?.user,
+          productId: this.getCart[0]?.id,
+          title: this.getCart[0]?.title,
+          contact: {
+            name: `${this.contact.firstName} ${this.contact.lastName}`,
+            email: this.contact.email,
+            phone: `${this.contact.countryCode}${this.contact.phone}`,
+          },
+          tickets: selectedTickets,
+          price: this.cartTotal,
+          currency: this.cartCurrency,
+          affiliate,
+          promoCode: this.promoCode,
+        };
+
         const response = await axios.post(
           `${process.env.VUE_APP_BASE_URL}/api/initialize`,
           {
             email: this.contact.email,
             amount: this.cartTotal,
             currency: this.cartCurrency,
+            metadata: { orderData },
           }
         );
 
@@ -931,24 +993,57 @@ export default {
     },
     async handleFincraPayment() {
       try {
+        const selectedTickets = this.getCart.flatMap((product) =>
+          product.event.tickets
+            .filter((ticket) => ticket.selectedQuantity > 0)
+            .map((ticket) => ({
+              name: ticket.name,
+              quantity: ticket.selectedQuantity,
+            }))
+        );
+
+        const affiliate = localStorage.getItem("affiliateCode");
+
+        const orderData = {
+          startDate: this.getCart[0]?.event?.start,
+          startTime: this.getCart[0]?.event?.startTime,
+          location: this.getCart[0]?.event?.location?.name,
+          userId: this.getCart[0]?.user,
+          productId: this.getCart[0]?.id,
+          title: this.getCart[0]?.title,
+          contact: {
+            name: `${this.contact.firstName} ${this.contact.lastName}`,
+            email: this.contact.email,
+            phone: `${this.contact.countryCode}${this.contact.phone}`,
+          },
+          tickets: selectedTickets,
+          price: this.cartTotal,
+          currency: this.cartCurrency,
+          affiliate,
+          promoCode: this.promoCode,
+        };
+
         const response = await axios.post(
-          `${process.env.VUE_APP_BASE_URL}/payment/fincra/initiate`,
+          `${process.env.VUE_APP_BASE_URL}/api/fincra/create-checkout`,
           {
             amount: this.cartTotal,
             currency: this.cartCurrency,
-            customer: {
-              name: `${this.contact.firstName} ${this.contact.lastName}`,
-              email: this.contact.email,
-              phoneNumber: `${this.contact.countryCode}${this.contact.phone}`,
-            },
-            cart: this.getCart,
+            email: this.contact.email,
+            metadata: { orderData },
           }
         );
-        if (response.data && response.data.link) {
-          window.location.href = response.data.link;
+        
+        if (response.data && response.data.data && response.data.data.checkout_url) {
+          this.spinner = false;
+          window.location.href = response.data.data.checkout_url;
+        } else {
+          console.error("Invalid Fincra response:", response.data);
+          alert("Failed to initialize Fincra payment. Please try again.");
+          this.spinner = false;
         }
       } catch (error) {
         console.error("Fincra payment error:", error);
+        alert("Failed to initialize Fincra payment. Please try again.");
         this.spinner = false;
       }
     },
@@ -1003,12 +1098,13 @@ export default {
           contact: {
             name: `${this.contact.firstName} ${this.contact.lastName}`,
             email: this.contact.email,
-            phone: this.contact.phone,
+            phone: `${this.contact.countryCode}${this.contact.phone}`,
           },
           tickets: selectedTickets,
           price: this.cartTotal,
           currency: this.cartCurrency,
           affiliate,
+          promoCode: this.promoCode,
         };
 
         console.log("Sending free ticket order:", payload);
