@@ -971,6 +971,13 @@ export default {
   padding: 2rem 0;
 }
 
+@media (max-width: 768px) {
+  .checkout-container {
+    padding: 0;
+    background: #f8f9fa;
+  }
+}
+
 .checkout-wrapper {
   max-width: 1200px;
   margin: 0 auto;
@@ -983,6 +990,7 @@ export default {
 @media (max-width: 991px) {
   .checkout-wrapper {
     grid-template-columns: 1fr;
+    padding: 0;
   }
 }
 
@@ -992,7 +1000,7 @@ export default {
   bottom: 0;
   left: 0;
   right: 0;
-  background: #047143;
+  background: #047143 !important;
   padding: 1rem;
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
   z-index: 1000;
@@ -1002,7 +1010,7 @@ export default {
 
 .mobile-price-content {
   text-align: center;
-  color: white;
+  color: white !important;
 }
 
 .mobile-price-content small {
@@ -1014,6 +1022,7 @@ export default {
   font-size: 1.25rem;
   font-weight: 700;
   margin-top: 0.25rem;
+  color: white !important;
 }
 
 /* Main Checkout Area */
@@ -1026,8 +1035,10 @@ export default {
 
 @media (max-width: 768px) {
   .checkout-main {
-    padding: 1.5rem;
+    padding: 1.25rem 1rem;
     margin-bottom: 100px;
+    border-radius: 0;
+    box-shadow: none;
   }
 }
 
@@ -1036,16 +1047,23 @@ export default {
   position: relative;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 3rem;
-  padding: 0 1rem;
+  margin-bottom: 2.5rem;
+  padding: 0 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .progress-stepper {
+    margin-bottom: 1.5rem;
+    padding: 0 0.25rem;
+  }
 }
 
 .stepper-track {
   position: absolute;
-  top: 28px;
+  top: 24px;
   left: 15%;
   right: 15%;
-  height: 4px;
+  height: 3px;
   background: #e9ecef;
   border-radius: 10px;
   z-index: 1;
@@ -1053,13 +1071,21 @@ export default {
 
 .stepper-progress {
   position: absolute;
-  top: 28px;
+  top: 24px;
   left: 15%;
-  height: 4px;
+  height: 3px;
   background: linear-gradient(90deg, #047143 0%, #f4a213 100%);
   border-radius: 10px;
   transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 2;
+}
+
+@media (max-width: 768px) {
+  .stepper-track,
+  .stepper-progress {
+    top: 18px;
+    height: 2px;
+  }
 }
 
 .step-item {
@@ -1072,102 +1098,128 @@ export default {
 }
 
 .step-indicator {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: white;
-  border: 4px solid #dee2e6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 45px;
+  height: 45px;
+  min-width: 45px;
+  min-height: 45px;
+  border-radius: 50% !important;
+  background: white !important;
+  border: 3px solid #dee2e6 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   font-weight: 700;
-  font-size: 1.1rem;
-  color: #adb5bd;
-  margin-bottom: 0.75rem;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  font-size: 0.95rem;
+  color: #adb5bd !important;
+  margin: 0 auto 0.5rem !important;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+}
+
+@media (max-width: 768px) {
+  .step-indicator {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    font-size: 0.8rem;
+    border-width: 2px !important;
+    margin-bottom: 0.4rem !important;
+  }
 }
 
 .step-item.active .step-indicator {
-  background: #f4a213;
-  border-color: #f4a213;
-  color: white;
-  transform: scale(1.15);
-  box-shadow: 0 6px 24px rgba(244, 162, 19, 0.35);
+  background: #f4a213 !important;
+  border-color: #f4a213 !important;
+  color: white !important;
+  transform: none !important;
+  box-shadow: 0 4px 16px rgba(244, 162, 19, 0.3) !important;
 }
 
 .step-item.completed .step-indicator {
-  background: #047143;
-  border-color: #047143;
-  color: white;
-  box-shadow: 0 4px 16px rgba(4, 113, 67, 0.25);
+  background: #047143 !important;
+  border-color: #047143 !important;
+  color: white !important;
+  transform: none !important;
+  box-shadow: 0 3px 12px rgba(4, 113, 67, 0.25) !important;
 }
 
 .checkmark {
-  font-size: 1.3rem;
+  font-size: 1rem;
+  line-height: 1 !important;
+  display: block !important;
+}
+
+@media (max-width: 768px) {
+  .checkmark {
+    font-size: 0.85rem;
+  }
 }
 
 .step-number {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
+  line-height: 1 !important;
+  display: block !important;
+}
+
+@media (max-width: 768px) {
+  .step-number {
+    font-size: 0.8rem;
+  }
 }
 
 .step-label {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   font-weight: 500;
   color: #6c757d;
   text-align: center;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
   transition: all 0.3s ease;
 }
 
+@media (max-width: 768px) {
+  .step-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.2px;
+  }
+}
+
 .step-item.active .step-label {
-  color: #f4a213;
+  color: #f4a213 !important;
   font-weight: 700;
 }
 
 .step-item.completed .step-label {
-  color: #047143;
+  color: #047143 !important;
   font-weight: 600;
-}
-
-@media (max-width: 768px) {
-  .progress-stepper {
-    padding: 0 0.5rem;
-  }
-
-  .step-indicator {
-    width: 44px;
-    height: 44px;
-    font-size: 0.95rem;
-  }
-
-  .step-label {
-    font-size: 0.75rem;
-  }
-
-  .stepper-track,
-  .stepper-progress {
-    top: 22px;
-  }
 }
 
 /* Content Section */
 .content-section {
-  margin-top: 1.5rem;
+  margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .content-section {
+    margin-top: 0.75rem;
+  }
 }
 
 .section-title {
   font-size: 1.75rem;
   font-weight: 700;
   color: #2c3e50;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   letter-spacing: -0.5px;
 }
 
 @media (max-width: 768px) {
   .section-title {
-    font-size: 1.5rem;
+    font-size: 1.35rem;
+    margin-bottom: 1.25rem;
   }
 }
 
@@ -1175,18 +1227,31 @@ export default {
 .tickets-list {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .tickets-list {
+    gap: 0.75rem;
+  }
 }
 
 .ticket-item {
   background: white;
   border: 2px solid #e9ecef;
-  border-radius: 16px;
-  padding: 1.75rem;
+  border-radius: 12px;
+  padding: 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .ticket-item {
+    padding: 1rem;
+    border-radius: 10px;
+  }
 }
 
 .ticket-item:hover {
@@ -1253,18 +1318,25 @@ export default {
 .contact-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
+}
+
+@media (max-width: 768px) {
+  .contact-form {
+    gap: 1rem;
+  }
 }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
 @media (max-width: 768px) {
   .form-row {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 }
 
@@ -1277,23 +1349,38 @@ export default {
   font-weight: 600;
   color: #495057;
   margin-bottom: 0.5rem;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .input-label {
+    font-size: 0.85rem;
+    margin-bottom: 0.4rem;
+  }
 }
 
 .form-input {
-  padding: 0.875rem 1.125rem;
-  font-size: 1rem;
+  padding: 0.85rem 1rem;
+  font-size: 0.95rem;
   border: 2px solid #e9ecef;
-  border-radius: 12px;
+  border-radius: 10px;
   background: white;
   color: #2c3e50;
   transition: all 0.3s ease;
 }
 
+@media (max-width: 768px) {
+  .form-input {
+    padding: 0.75rem 0.9rem;
+    font-size: 0.9rem;
+    border-radius: 8px;
+  }
+}
+
 .form-input:focus {
   outline: none;
-  border-color: #f4a213;
-  box-shadow: 0 0 0 4px rgba(244, 162, 19, 0.1);
+  border-color: #f4a213 !important;
+  box-shadow: 0 0 0 3px rgba(244, 162, 19, 0.1) !important;
 }
 
 .form-input::placeholder {
@@ -1313,14 +1400,14 @@ export default {
 
 .country-select {
   flex: 0 0 auto;
-  width: 135px;
-  padding: 0.875rem 0.75rem;
-  font-size: 0.95rem;
+  width: 130px;
+  padding: 0.85rem 0.7rem;
+  font-size: 0.9rem;
   font-weight: 600;
   border: 2px solid #e9ecef;
   border-right: none;
-  border-top-left-radius: 12px;
-  border-bottom-left-radius: 12px;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
   background: #f8f9fa;
@@ -1330,38 +1417,61 @@ export default {
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23495057' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 0.75rem center;
-  padding-right: 2.25rem;
+  background-position: right 0.65rem center;
+  padding-right: 2rem;
+}
+
+@media (max-width: 768px) {
+  .country-select {
+    width: 115px;
+    padding: 0.75rem 0.6rem;
+    font-size: 0.85rem;
+    border-radius: 8px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    padding-right: 1.75rem;
+    background-position: right 0.5rem center;
+  }
 }
 
 .phone-input {
   flex: 1 1 auto;
-  padding: 0.875rem 1.125rem;
-  font-size: 1rem;
+  padding: 0.85rem 1rem;
+  font-size: 0.95rem;
   border: 2px solid #e9ecef;
   border-left: none;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
-  border-top-right-radius: 12px;
-  border-bottom-right-radius: 12px;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
   background: white;
   color: #2c3e50;
   transition: all 0.3s ease;
 }
 
+@media (max-width: 768px) {
+  .phone-input {
+    padding: 0.75rem 0.9rem;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+}
+
 .phone-input:focus {
   outline: none;
-  border-color: #f4a213;
+  border-color: #f4a213 !important;
 }
 
 .phone-input-wrapper:focus-within .country-select {
-  border-color: #f4a213;
+  border-color: #f4a213 !important;
   background: white;
 }
 
 .phone-input-wrapper:focus-within .phone-input {
-  border-color: #f4a213;
-  box-shadow: 0 0 0 4px rgba(244, 162, 19, 0.1);
+  border-color: #f4a213 !important;
+  box-shadow: 0 0 0 3px rgba(244, 162, 19, 0.1) !important;
 }
 
 .error-message {
@@ -1467,59 +1577,80 @@ export default {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  margin-top: 2.5rem;
-  padding-top: 2rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
   border-top: 2px solid #e9ecef;
+}
+
+@media (max-width: 768px) {
+  .nav-buttons {
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    justify-content: center !important;
+  }
 }
 
 .nav-btn {
   flex: 1;
-  max-width: 250px;
-  padding: 1rem 2rem;
-  font-size: 1rem;
+  max-width: 200px;
+  padding: 0.85rem 1.5rem;
+  font-size: 0.9rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border: none;
-  border-radius: 12px;
+  letter-spacing: 0.4px;
+  border: none !important;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
+@media (max-width: 768px) {
+  .nav-btn {
+    max-width: none !important;
+    width: 100% !important;
+    padding: 0.8rem 1.25rem;
+    font-size: 0.85rem;
+    letter-spacing: 0.3px;
+    border-radius: 8px;
+  }
+}
+
 .back-btn {
-  background: #dc3545;
-  color: white;
+  background: #dc3545 !important;
+  color: white !important;
   box-shadow: 0 4px 16px rgba(220, 53, 69, 0.25);
 }
 
 .back-btn:hover:not(:disabled) {
-  background: #c82333;
+  background: #c82333 !important;
   transform: translateY(-2px);
   box-shadow: 0 6px 24px rgba(220, 53, 69, 0.35);
 }
 
 .next-btn,
 .get-tickets-btn {
-  background: #f4a213;
-  color: white;
+  background: #f4a213 !important;
+  color: white !important;
   box-shadow: 0 4px 16px rgba(244, 162, 19, 0.25);
 }
 
 .next-btn:hover:not(:disabled),
 .get-tickets-btn:hover:not(:disabled) {
-  background: #d68910;
+  background: #d68910 !important;
   transform: translateY(-2px);
   box-shadow: 0 6px 24px rgba(244, 162, 19, 0.35);
 }
 
 .pay-btn {
-  background: #047143;
-  color: white;
+  background: #047143 !important;
+  color: white !important;
   box-shadow: 0 4px 16px rgba(4, 113, 67, 0.25);
 }
 
 .pay-btn:hover:not(:disabled) {
-  background: #035a36;
+  background: #035a36 !important;
   transform: translateY(-2px);
   box-shadow: 0 6px 24px rgba(4, 113, 67, 0.35);
 }
@@ -1528,16 +1659,6 @@ export default {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
-}
-
-@media (max-width: 768px) {
-  .nav-buttons {
-    flex-direction: column;
-  }
-
-  .nav-btn {
-    max-width: none;
-  }
 }
 
 /* Sidebar Summary */
