@@ -4,6 +4,12 @@
       <img
         class="img-fluid"
         :src="product.photos[0] || 'https://via.placeholder.com/400x300?text=No+Image'"
+        :alt="product.title + ' event banner'"
+        width="1200"
+        height="400"
+        loading="eager"
+        decoding="async"
+        fetchpriority="high"
       />
 
       <!-- Main content -->
@@ -125,7 +131,11 @@
               "
               class="img-fluid rounded w-100"
               style="height: 200px; object-fit: cover"
-              alt="Event Image"
+              width="400"
+              height="200"
+              :alt="product.title + ' related event'"
+              loading="lazy"
+              decoding="async"
             />
             <div class="pt-2">
               <h5>{{ product.title }}</h5>
