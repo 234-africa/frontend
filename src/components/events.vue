@@ -144,7 +144,11 @@
                   "
                   class="img-fluid rounded w-100"
                   style="height: 200px; object-fit: cover"
-                  alt="Event Image"
+                  width="400"
+                  height="200"
+                  :alt="product.title + ' event image'"
+                  loading="lazy"
+                  decoding="async"
                 />
                 <div class="pt-2">
                   <h5>{{ product.title }}</h5>
