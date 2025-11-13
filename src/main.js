@@ -8,6 +8,7 @@ import { QuillEditor } from 'vue3-quill'
 //import vue3GoogleLogin from 'vue3-google-login'
 import VueSweetalert2 from "vue-sweetalert2"
 import VueGtag from 'vue-gtag'
+import Paystack from 'vue-paystack'
 
 // ✅ Import CSS
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -33,6 +34,7 @@ app.use(store)
 app.use(Notifications)
 app.use(VueSweetalert2)
 app.use(VueGtag, { config: { id: 'G-K79WK6WBGH' } })
+app.use(Paystack)
 
 app.component('QuillEditor', QuillEditor)
 
