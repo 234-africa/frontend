@@ -183,8 +183,35 @@
               {{ timer }} to secure your tickets.
             </div>
 
+            <!-- Gateway Selection (when multiple options available) -->
+            <div v-if="hasMultipleGateways" class="gateway-selection">
+              <p class="gateway-instruction">Choose your preferred payment gateway:</p>
+              <div class="gateway-options">
+                <div 
+                  v-for="gateway in availablePaymentGateways" 
+                  :key="gateway" 
+                  class="gateway-option"
+                  :class="{ 'selected': selectedPaymentGateway === gateway }"
+                  @click="selectGateway(gateway)"
+                >
+                  <input
+                    type="radio"
+                    :id="`gateway-${gateway}`"
+                    v-model="selectedPaymentGateway"
+                    :value="gateway"
+                    class="gateway-radio"
+                    @change="selectGateway(gateway)"
+                  />
+                  <label :for="`gateway-${gateway}`" class="gateway-label">
+                    <span class="gateway-name">{{ gateway === 'paystack' ? 'Paystack' : 'Fincra' }}</span>
+                    <span class="gateway-badge">{{ gateway === 'paystack' ? '🇳🇬' : '🌍' }}</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
             <!-- Paystack Payment -->
-            <div v-if="paymentGateway === 'paystack'" class="payment-option">
+            <div v-if="availablePaymentGateways.includes('paystack') && (!hasMultipleGateways || selectedPaymentGateway === 'paystack')" class="payment-option">
               <input
                 class="payment-radio"
                 type="radio"
@@ -192,7 +219,9 @@
                 value="card"
                 id="payCard"
               />
-              <label class="payment-label" for="payCard">Pay with Paystack</label>
+              <label class="payment-label" for="payCard">
+                {{ hasMultipleGateways ? 'Paystack Payment Details' : 'Pay with Paystack' }}
+              </label>
               <form class="payment-form">
                 <div class="form-group">
                   <label class="input-label">Email</label>
@@ -207,7 +236,7 @@
             </div>
 
             <!-- Fincra Payment -->
-            <div v-if="paymentGateway === 'fincra'" class="payment-option">
+            <div v-if="availablePaymentGateways.includes('fincra') && (!hasMultipleGateways || selectedPaymentGateway === 'fincra')" class="payment-option">
               <input
                 class="payment-radio"
                 type="radio"
@@ -215,7 +244,9 @@
                 value="card"
                 id="payFincra"
               />
-              <label class="payment-label" for="payFincra">Pay with Fincra</label>
+              <label class="payment-label" for="payFincra">
+                {{ hasMultipleGateways ? 'Fincra Payment Details' : 'Pay with Fincra' }}
+              </label>
               <form class="payment-form">
                 <div class="form-group">
                   <label class="input-label">Email</label>
@@ -260,7 +291,7 @@
             v-if="currentStep === 2"
             type="submit"
             @click="initializePayment()"
-            :disabled="!termsAccepted"
+            :disabled="!termsAccepted || (hasMultipleGateways && !selectedPaymentGateway)"
             class="nav-btn pay-btn"
           >
             Pay Now {{ formatPrice(cartTotal, cartCurrency) }}
@@ -344,7 +375,7 @@ import QrcodeVue from "qrcode.vue";
 import spinner from "./spinner.vue";
 import { ref } from "vue";
 import { startOfDay } from "@fullcalendar/core/internal";
-import { formatPrice, getCurrencySymbol, getPaymentGateway } from "@/helpers/currency";
+import { formatPrice, getCurrencySymbol, getPaymentGateway, getAvailablePaymentGateways } from "@/helpers/currency";
 
 export default {
   components: {
@@ -374,6 +405,8 @@ export default {
         countryCode: "+234",
         phone: "",
       },
+      selectedPaymentGateway: null,
+      isGatewayManuallySelected: false,
       countryCodes: [
         { code: "+93", dialCode: "+93", name: "Afghanistan", flag: "🇦🇫" },
         { code: "+355", dialCode: "+355", name: "Albania", flag: "🇦🇱" },
@@ -622,6 +655,11 @@ export default {
   },
   async mounted() {
     this.startCountdown();
+    
+    const gateways = getAvailablePaymentGateways(this.cartCurrency);
+    if (gateways && gateways.length > 0) {
+      this.selectedPaymentGateway = gateways[0];
+    }
   },
   computed: {
     ...mapGetters({
@@ -715,8 +753,17 @@ export default {
     hasSelectedTickets() {
       return this.selectedTickets.length > 0;
     },
+    availablePaymentGateways() {
+      return getAvailablePaymentGateways(this.cartCurrency);
+    },
     paymentGateway() {
+      if (this.selectedPaymentGateway && this.availablePaymentGateways.includes(this.selectedPaymentGateway)) {
+        return this.selectedPaymentGateway;
+      }
       return getPaymentGateway(this.cartCurrency);
+    },
+    hasMultipleGateways() {
+      return this.availablePaymentGateways.length > 1;
     },
   },
   watch: {
@@ -732,6 +779,14 @@ export default {
         this.contact.confirmEmail !== "" &&
         this.contact.email !== this.contact.confirmEmail;
     },
+    availablePaymentGateways(newGateways) {
+      if (!newGateways || newGateways.length === 0) return;
+      
+      if (!this.selectedPaymentGateway || !newGateways.includes(this.selectedPaymentGateway)) {
+        this.selectedPaymentGateway = newGateways[0];
+        this.isGatewayManuallySelected = false;
+      }
+    }
   },
   beforeDestroy() {
     if (this.countdown) {
@@ -742,6 +797,11 @@ export default {
     ...mapMutations(["setContactInfo"]),
     formatPrice,
     getCurrencySymbol,
+    selectGateway(gateway) {
+      this.selectedPaymentGateway = gateway;
+      this.isGatewayManuallySelected = true;
+      console.log("✅ User manually selected gateway:", gateway);
+    },
     startCountdown() {
       let minutes = 10;
       let seconds = 0;
@@ -798,11 +858,19 @@ export default {
       }
     },
     async initializePayment() {
+      console.log("💳 Initializing payment...");
+      console.log("  Currency:", this.cartCurrency);
+      console.log("  Available Gateways:", this.availablePaymentGateways);
+      console.log("  Selected Gateway:", this.selectedPaymentGateway);
+      console.log("  Active Gateway:", this.paymentGateway);
+      
       this.spinner = true;
       try {
         if (this.paymentGateway === "paystack") {
+          console.log("✅ Proceeding with Paystack");
           this.handlePaystackPayment();
         } else if (this.paymentGateway === "fincra") {
+          console.log("✅ Proceeding with Fincra");
           await this.handleFincraPayment();
         } else {
           console.error("Unknown payment gateway:", this.paymentGateway, "for currency:", this.cartCurrency);
@@ -1599,6 +1667,91 @@ export default {
   font-weight: 600;
   padding: 1rem 1.25rem;
   margin-bottom: 1.5rem;
+}
+
+/* Gateway Selection */
+.gateway-selection {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 16px;
+  border: 2px solid #e9ecef;
+}
+
+.gateway-instruction {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.gateway-options {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.gateway-option {
+  flex: 1;
+  min-width: 200px;
+  padding: 1.25rem;
+  background: white;
+  border: 3px solid #dee2e6;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.gateway-option:hover {
+  border-color: #f4a213;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(244, 162, 19, 0.2);
+}
+
+.gateway-option.selected {
+  border-color: #047143;
+  background: #e8f5e9;
+  box-shadow: 0 4px 16px rgba(4, 113, 67, 0.2);
+}
+
+.gateway-radio {
+  margin-right: 0.75rem;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #047143;
+}
+
+.gateway-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  cursor: pointer;
+  margin: 0;
+}
+
+.gateway-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.gateway-badge {
+  font-size: 1.5rem;
+  margin-left: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .gateway-options {
+    flex-direction: column;
+  }
+  
+  .gateway-option {
+    min-width: 100%;
+  }
 }
 
 .payment-option {
