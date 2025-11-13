@@ -715,6 +715,16 @@ export default {
     },
     cartCurrency() {
       if (this.getCart.length === 0) return "NGN";
+      
+      for (const product of this.getCart) {
+        const selectedTicket = product.event?.tickets?.find(
+          ticket => ticket.selectedQuantity > 0
+        );
+        if (selectedTicket?.currency) {
+          return selectedTicket.currency;
+        }
+      }
+      
       const firstTicket = this.getCart[0]?.event?.tickets?.[0];
       return firstTicket?.currency || "NGN";
     },
@@ -756,6 +766,21 @@ export default {
           this.mountStripeElements();
         });
       }
+    },
+    cartCurrency(newCurrency) {
+      this.paymentGateway = getPaymentGateway(newCurrency);
+      if (this.currentStep === 2 && this.paymentGateway === "stripe") {
+        this.$nextTick(() => {
+          this.mountStripeElements();
+        });
+      }
+    },
+    getCart: {
+      handler() {
+        const newCurrency = this.cartCurrency;
+        this.paymentGateway = getPaymentGateway(newCurrency);
+      },
+      deep: true,
     },
   },
   beforeDestroy() {
@@ -1626,6 +1651,7 @@ export default {
     margin-top: 1.5rem;
     padding-top: 1.25rem;
     justify-content: center !important;
+    align-items: center !important;
   }
 }
 
@@ -1645,8 +1671,8 @@ export default {
 
 @media (max-width: 768px) {
   .nav-btn {
-    max-width: none !important;
-    width: 100% !important;
+    max-width: 85% !important;
+    width: 85% !important;
     padding: 0.8rem 1.25rem;
     font-size: 0.85rem;
     letter-spacing: 0.3px;
