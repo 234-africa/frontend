@@ -288,7 +288,7 @@
           </button>
           
           <button
-            v-if="currentStep === 2"
+            v-if="currentStep === 2 && cartTotal > 0"
             type="submit"
             @click="initializePayment()"
             :disabled="!termsAccepted || (hasMultipleGateways && !selectedPaymentGateway)"
