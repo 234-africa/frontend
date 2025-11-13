@@ -641,7 +641,6 @@ export default {
       ],
       paymentMethod: "card",
       termsAccepted: false,
-      paymentGateway: "",
       stripe: null,
       elements: null,
       stripeErrorMessage: "",
@@ -649,7 +648,6 @@ export default {
   },
   async mounted() {
     this.startCountdown();
-    this.paymentGateway = getPaymentGateway(this.cartCurrency);
     if (this.paymentGateway === "stripe") {
       await this.initializeStripe();
     }
@@ -746,6 +744,9 @@ export default {
     hasSelectedTickets() {
       return this.selectedTickets.length > 0;
     },
+    paymentGateway() {
+      return getPaymentGateway(this.cartCurrency);
+    },
   },
   watch: {
     "contact.confirmEmail": function (newVal) {
@@ -767,20 +768,12 @@ export default {
         });
       }
     },
-    cartCurrency(newCurrency) {
-      this.paymentGateway = getPaymentGateway(newCurrency);
-      if (this.currentStep === 2 && this.paymentGateway === "stripe") {
+    paymentGateway(newGateway) {
+      if (this.currentStep === 2 && newGateway === "stripe") {
         this.$nextTick(() => {
           this.mountStripeElements();
         });
       }
-    },
-    getCart: {
-      handler() {
-        const newCurrency = this.cartCurrency;
-        this.paymentGateway = getPaymentGateway(newCurrency);
-      },
-      deep: true,
     },
   },
   beforeDestroy() {
@@ -884,9 +877,14 @@ export default {
           this.handlePaystackPayment();
         } else if (this.paymentGateway === "fincra") {
           await this.handleFincraPayment();
+        } else {
+          console.error("Unknown payment gateway:", this.paymentGateway, "for currency:", this.cartCurrency);
+          alert(`Payment gateway not available for ${this.cartCurrency}. Please contact support or try a different currency.`);
+          this.spinner = false;
         }
       } catch (error) {
         console.error("Payment initialization error:", error);
+        alert("Payment initialization failed. Please try again or contact support.");
         this.spinner = false;
       }
     },
