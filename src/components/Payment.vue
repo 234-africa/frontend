@@ -359,7 +359,6 @@
 <script>
 import { mapGetters, mapMutations } from "vuex";
 import axios from "axios";
-import paystack from "vue-paystack";
 import QrcodeVue from "qrcode.vue";
 import spinner from "./spinner.vue";
 import { ref } from "vue";
@@ -369,7 +368,6 @@ import { loadStripe } from "@stripe/stripe-js";
 
 export default {
   components: {
-    paystack,
     QrcodeVue,
     spinner,
   },
@@ -905,20 +903,31 @@ export default {
         this.spinner = false;
       }
     },
-    handlePaystackPayment() {
-      this.$paystack({
-        key: this.publicKey,
-        email: this.contact.email,
-        amount: this.cartTotal * 100,
-        currency: this.cartCurrency,
-        ref: "" + Math.floor(Math.random() * 1000000000 + 1),
-        callback: (response) => {
-          this.onSuccessfulPayment(response.reference);
-        },
-        onClose: () => {
-          this.spinner = false;
-        },
-      });
+    async handlePaystackPayment() {
+      try {
+        const response = await axios.post(
+          `${process.env.VUE_APP_BASE_URL}/initialize`,
+          {
+            email: this.contact.email,
+            amount: this.cartTotal,
+            currency: this.cartCurrency,
+          }
+        );
+
+        const { authorization_url, reference } = response.data.data;
+        localStorage.setItem("paystack_reference", reference);
+        localStorage.setItem("cartTotal", this.cartTotal);
+        localStorage.setItem("startDate", this.getCart[0]?.event?.start);
+        localStorage.setItem("startTime", this.getCart[0]?.event?.startTime);
+        localStorage.setItem("location", this.getCart[0]?.event?.location?.name);
+
+        this.spinner = false;
+        window.location.href = authorization_url;
+      } catch (error) {
+        console.error("Paystack initialization error:", error);
+        alert("Failed to initialize Paystack payment. Please try again.");
+        this.spinner = false;
+      }
     },
     async handleFincraPayment() {
       try {
