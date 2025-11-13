@@ -1,318 +1,353 @@
 <template>
-  <div class="container my-5">
-    <div class="ticket-footer d-block d-md-none p-2">
-      <div class="text-white p-3 rounded-3 text-center" style="background-color: #047143">
+  <div class="checkout-container">
+    <!-- Mobile Price Footer -->
+    <div class="mobile-price-footer d-block d-md-none">
+      <div class="mobile-price-content">
         <small>subTotal: {{ formatPrice(subTotal, cartCurrency) }}</small>
-        <div class="fw-bold fs-5 mb-1">Total: {{ formatPrice(cartTotal, cartCurrency) }}</div>
+        <div class="mobile-total">Total: {{ formatPrice(cartTotal, cartCurrency) }}</div>
       </div>
     </div>
 
-    <div class="row">
-      <!-- Step Progress Bar -->
-
-      <!-- Left column: steps -->
-
-      <div class="col-md-8">
-        <!-- Progress Bar -->
-        <div class="stepper mb-5 position-relative">
-          <!-- Progress Line -->
-          <div class="progress-line">
-            <div
-              class="progress-fill"
-              :style="{ width: (currentStep / (steps.length - 1)) * 100 + '%' }"
-            ></div>
-          </div>
-
-          <!-- Steps -->
-          <div
-            v-for="(stepLabel, index) in steps"
+    <div class="checkout-wrapper">
+      <!-- Main Checkout Area -->
+      <div class="checkout-main">
+        <!-- Enhanced Progress Stepper -->
+        <div class="progress-stepper">
+          <div class="stepper-track"></div>
+          <div class="stepper-progress" :style="{ width: progressWidth }"></div>
+          
+          <div 
+            v-for="(stepLabel, index) in steps" 
             :key="index"
-            class="currentStep text-center"
+            class="step-item"
             :class="{
-              'step-active': currentStep === index,
-              'step-completed': index < currentStep,
+              'active': currentStep === index,
+              'completed': index < currentStep
             }"
           >
-            <div class="circle">
-              <span v-if="index < currentStep">✔</span>
-              <span v-else>{{ index + 1 }}</span>
+            <div class="step-indicator">
+              <span v-if="index < currentStep" class="checkmark">✔</span>
+              <span v-else class="step-number">{{ index + 1 }}</span>
             </div>
-            <div class="label">{{ stepLabel }}</div>
+            <div class="step-label">{{ stepLabel }}</div>
           </div>
         </div>
 
-        <!-- Step 1: Ticket Selection -->
-        <!-- Place this inside your Vue template -->
-        <div v-if="currentStep === 0" class="ticket-section text-start">
-          <h3>🎟️ Choose Tickets</h3>
+        <!-- Step Content Area -->
+        <div class="step-content">
+          <!-- Step 1: Ticket Selection -->
+          <div v-if="currentStep === 0" class="content-section">
+            <h3 class="section-title">🎟️ Choose Tickets</h3>
 
-          <div class="ticket-card" v-for="product in getCartSorted" :key="product._id">
-            <!-- Loop through tickets inside each product -->
-            <div v-for="ticket in product.event.tickets" :key="ticket._id" class="">
-              <div class="ticket-content d-flex justify-content-between">
-                <div>
-                  <h5>{{ ticket.name }}</h5>
-                  <p class="price">{{ formatPrice(ticket.price, ticket.currency) }}</p>
-                </div>
+            <div class="tickets-list">
+              <div 
+                v-for="product in getCartSorted" 
+                :key="product._id"
+                class="product-group"
+              >
+                <div 
+                  v-for="ticket in product.event.tickets" 
+                  :key="ticket._id" 
+                  class="ticket-item"
+                >
+                  <div class="ticket-details">
+                    <h5 class="ticket-name">{{ ticket.name }}</h5>
+                    <p class="ticket-price">{{ formatPrice(ticket.price, ticket.currency) }}</p>
+                  </div>
 
-                <!-- Optional: Add a quantity selector if needed -->
-                <div>
-                  <template v-if="ticket.quantity > 0">
-                    <select
-                      class="ticket-select mt-2"
-                      v-model.number="ticket.selectedQuantity"
-                    >
-                      <option
-                        v-for="n in Math.min(
-                          ticket.purchaseLimit,
-                          ticket.quantity || Infinity
-                        ) + 1"
-                        :key="n"
-                        :value="n - 1"
+                  <div class="ticket-selector">
+                    <template v-if="ticket.quantity > 0">
+                      <select
+                        class="quantity-select"
+                        v-model.number="ticket.selectedQuantity"
                       >
-                        {{ n - 1 }}
-                      </option>
-                    </select>
-                  </template>
-                  <template v-else>
-                    <span class="text-danger fw-bold">Sold Out</span>
-                  </template>
+                        <option
+                          v-for="n in Math.min(ticket.purchaseLimit, ticket.quantity || Infinity) + 1"
+                          :key="n"
+                          :value="n - 1"
+                        >
+                          {{ n - 1 }}
+                        </option>
+                      </select>
+                    </template>
+                    <template v-else>
+                      <span class="sold-out-badge">Sold Out</span>
+                    </template>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div class="d-block d-md-none">
-            <input
-              v-model="promoCode"
-              placeholder="Enter promo code"
-              class="form-control mb-2"
-            />
-
-            <button @click="applyPromo" class="btn btn-primary">Apply</button>
-
-            <div v-if="discountResult">
-              <p>{{ discountResult.message }}</p>
-            </div>
-            <br />
-            <small> Total includes a service fee </small>
-          </div>
-        </div>
-
-        <!-- Step 2: Contact Info -->
-        <div v-else-if="currentStep === 1" class="text-start">
-          <h3>📇 Contact Information</h3>
-
-          <form ref="myForm" @submit.prevent="">
-            <div class="row mb-3">
-              <div class="col">
-                <label class="form-label">First Name *</label>
-                <input
-                  v-model="contact.firstName"
-                  type="text"
-                  class="form-control"
-                  required
-                />
-              </div>
-              <div class="col">
-                <label class="form-label">Last Name *</label>
-                <input
-                  v-model="contact.lastName"
-                  type="text"
-                  class="form-control"
-                  required
-                />
-              </div>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Email Address *</label>
-              <input v-model="contact.email" type="email" class="form-control" required />
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Confirm Email Address *</label>
+            <!-- Mobile Promo Code -->
+            <div class="mobile-promo d-block d-md-none">
               <input
-                v-model="contact.confirmEmail"
-                type="email"
-                class="form-control"
-                required
+                v-model="promoCode"
+                placeholder="Enter promo code"
+                class="promo-input"
               />
-            </div>
-            <div v-if="emailMismatch" class="text-danger mt-1 mb-3">
-              Email address does not match
-            </div>
-            <div class="mb-3 phone-field-wrapper">
-              <label class="form-label">Phone Number *</label>
-              <div class="input-group">
-                <select v-model="contact.countryCode" class="form-select country-code-select">
-                  <option v-for="(country, index) in processedCountryCodes" :key="`${country.code}-${country.name}-${index}`" :value="country.dialCode">
-                    {{ country.flag }} {{ country.dialCode }}
-                  </option>
-                </select>
-                <input v-model="contact.phone" type="tel" class="form-control" required />
+              <button @click="applyPromo" class="apply-btn">Apply</button>
+              <div v-if="discountResult" class="discount-message">
+                <p>{{ discountResult.message }}</p>
               </div>
+              <small class="fee-notice">Total includes a service fee</small>
             </div>
-          </form>
-        </div>
+          </div>
 
-        <!-- Step 3: Payment -->
-        <div v-else-if="currentStep === 2" class="text-start">
-          <h3>💳 Payment Options</h3>
+          <!-- Step 2: Contact Info -->
+          <div v-else-if="currentStep === 1" class="content-section">
+            <h3 class="section-title">📇 Contact Information</h3>
 
-          <p class="alert alert-warning">
-            We've reserved your ticket. Please complete checkout within
-            {{ timer }} to secure your tickets.
-          </p>
+            <form ref="myForm" @submit.prevent="" class="contact-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="input-label">First Name *</label>
+                  <input
+                    v-model="contact.firstName"
+                    type="text"
+                    class="form-input"
+                    placeholder="Enter first name"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="input-label">Last Name *</label>
+                  <input
+                    v-model="contact.lastName"
+                    type="text"
+                    class="form-input"
+                    placeholder="Enter last name"
+                    required
+                  />
+                </div>
+              </div>
 
-          <!-- Paystack Payment (NGN, GHS) -->
-          <div v-if="paymentGateway === 'paystack'" class="form-check mb-2">
-            <input
-              class="form-check-input"
-              type="radio"
-              v-model="paymentMethod"
-              value="card"
-              id="payCard"
-            />
-            <label class="form-check-label" for="payCard">Pay with Paystack</label>
-            <form>
-              <div class="mb-3">
-                <label>Email</label>
-                <input
-                  :value="getContactInfo.email"
-                  type="email"
-                  class="form-control"
-                  readonly
+              <div class="form-group">
+                <label class="input-label">Email Address *</label>
+                <input 
+                  v-model="contact.email" 
+                  type="email" 
+                  class="form-input"
+                  placeholder="your.email@example.com"
+                  required 
                 />
+              </div>
+
+              <div class="form-group">
+                <label class="input-label">Confirm Email Address *</label>
+                <input
+                  v-model="contact.confirmEmail"
+                  type="email"
+                  class="form-input"
+                  placeholder="Confirm your email"
+                  required
+                />
+              </div>
+
+              <div v-if="emailMismatch" class="error-message">
+                Email addresses do not match
+              </div>
+
+              <div class="form-group phone-group">
+                <label class="input-label">Phone Number *</label>
+                <div class="phone-input-wrapper">
+                  <select 
+                    v-model="contact.countryCode" 
+                    class="country-select"
+                  >
+                    <option 
+                      v-for="(country, index) in processedCountryCodes" 
+                      :key="`${country.code}-${country.name}-${index}`" 
+                      :value="country.dialCode"
+                    >
+                      {{ country.flag }} {{ country.dialCode }}
+                    </option>
+                  </select>
+                  <input 
+                    v-model="contact.phone" 
+                    type="tel" 
+                    class="phone-input"
+                    placeholder="Enter phone number"
+                    required 
+                  />
+                </div>
               </div>
             </form>
           </div>
 
-          <!-- Stripe Payment (USD, GBP, EUR) -->
-          <div v-if="paymentGateway === 'stripe'" class="mb-3">
-            <div class="form-check mb-2">
+          <!-- Step 3: Payment -->
+          <div v-else-if="currentStep === 2" class="content-section">
+            <h3 class="section-title">💳 Payment Options</h3>
+
+            <div class="timer-alert">
+              We've reserved your ticket. Please complete checkout within
+              {{ timer }} to secure your tickets.
+            </div>
+
+            <!-- Paystack Payment -->
+            <div v-if="paymentGateway === 'paystack'" class="payment-option">
               <input
-                class="form-check-input"
+                class="payment-radio"
+                type="radio"
+                v-model="paymentMethod"
+                value="card"
+                id="payCard"
+              />
+              <label class="payment-label" for="payCard">Pay with Paystack</label>
+              <form class="payment-form">
+                <div class="form-group">
+                  <label class="input-label">Email</label>
+                  <input
+                    :value="getContactInfo.email"
+                    type="email"
+                    class="form-input"
+                    readonly
+                  />
+                </div>
+              </form>
+            </div>
+
+            <!-- Stripe Payment -->
+            <div v-if="paymentGateway === 'stripe'" class="payment-option">
+              <input
+                class="payment-radio"
                 type="radio"
                 v-model="paymentMethod"
                 value="card"
                 id="payStripe"
               />
-              <label class="form-check-label" for="payStripe">Pay with Stripe</label>
-            </div>
-            
-            <div v-if="paymentMethod === 'card'" class="mt-3">
-              <div id="stripe-payment-element" class="p-3 border rounded"></div>
-              <div v-if="stripeErrorMessage" class="alert alert-danger mt-2">
-                {{ stripeErrorMessage }}
+              <label class="payment-label" for="payStripe">Pay with Stripe</label>
+              
+              <div v-if="paymentMethod === 'card'" class="stripe-container">
+                <div id="stripe-payment-element" class="stripe-element"></div>
+                <div v-if="stripeErrorMessage" class="error-message">
+                  {{ stripeErrorMessage }}
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- Fincra Payment (KES, UGX, ZMW, ZAR) -->
-          <div v-if="paymentGateway === 'fincra'" class="form-check mb-2">
-            <input
-              class="form-check-input"
-              type="radio"
-              v-model="paymentMethod"
-              value="card"
-              id="payFincra"
-            />
-            <label class="form-check-label" for="payFincra">Pay with Fincra</label>
-            <form>
-              <div class="mb-3">
-                <label>Email</label>
-                <input
-                  :value="getContactInfo.email"
-                  type="email"
-                  class="form-control"
-                  readonly
-                />
-              </div>
-            </form>
-          </div>
+            <!-- Fincra Payment -->
+            <div v-if="paymentGateway === 'fincra'" class="payment-option">
+              <input
+                class="payment-radio"
+                type="radio"
+                v-model="paymentMethod"
+                value="card"
+                id="payFincra"
+              />
+              <label class="payment-label" for="payFincra">Pay with Fincra</label>
+              <form class="payment-form">
+                <div class="form-group">
+                  <label class="input-label">Email</label>
+                  <input
+                    :value="getContactInfo.email"
+                    type="email"
+                    class="form-input"
+                    readonly
+                  />
+                </div>
+              </form>
+            </div>
 
-          <div class="form-check mb-2">
-            <input
-              class="form-check-input"
-              type="checkbox"
-              v-model="termsAccepted"
-              id="terms"
-            />
-            <label class="form-check-label" for="terms">
-              I accept the <a href="#">234Africa Terms and Conditions</a>,
-              <a href="#">Refund Policy</a> and <a href="#">Privacy Policy</a>.
-            </label>
+            <!-- Terms & Conditions -->
+            <div class="terms-wrapper">
+              <input
+                class="terms-checkbox"
+                type="checkbox"
+                v-model="termsAccepted"
+                id="terms"
+              />
+              <label class="terms-label" for="terms">
+                I accept the <a href="#">234Africa Terms and Conditions</a>,
+                <a href="#">Refund Policy</a> and <a href="#">Privacy Policy</a>.
+              </label>
+            </div>
           </div>
         </div>
-        <div class="text-center mt-4 d-flex justify-content-between">
+
+        <!-- Navigation Buttons -->
+        <div class="nav-buttons">
           <button
             type="button"
-            class="btn btn-danger"
+            class="nav-btn back-btn"
             @click="prevStep"
             :disabled="currentStep === 0"
           >
             Back
           </button>
+          
           <button
             v-if="currentStep === 2"
             type="submit"
             @click="initializePayment()"
             :disabled="!termsAccepted"
-            class="btn btn-success"
+            class="nav-btn pay-btn"
           >
             Pay Now {{ formatPrice(cartTotal, cartCurrency) }}
           </button>
+          
           <button
             v-if="currentStep < steps.length - 1"
             :disabled="(currentStep === 1 && emailMismatch) || !hasSelectedTickets"
             type="button"
-            class="btn btn-primary"
+            class="nav-btn next-btn"
             @click="nextStep"
           >
             Next
           </button>
 
-          <!-- Only show when cartTotal is 0 -->
           <button
             v-else-if="cartTotal === 0"
             :disabled="emailMismatch || !contact.phone"
             type="submit"
-            class="btn btn-primary"
+            class="nav-btn get-tickets-btn"
             @click="getTicket()"
           >
             Get tickets
           </button>
         </div>
+
         <spinner v-if="spinner" />
       </div>
 
-      <!-- Right column: Summary -->
-      <div class="col-md-4 text-start d-none d-md-block">
-        <div class="p-4 bg-light border-start">
-          <h5>Summary</h5>
-          <div v-if="selectedTickets.length" class="mt-4">
-            <h5>🎟️ Selected Tickets:</h5>
-            <ul>
+      <!-- Sidebar Summary -->
+      <div class="checkout-sidebar d-none d-md-block">
+        <div class="summary-card">
+          <h5 class="summary-title">Summary</h5>
+          
+          <div v-if="selectedTickets.length" class="selected-tickets">
+            <h6 class="tickets-heading">🎟️ Selected Tickets:</h6>
+            <ul class="tickets-list-summary">
               <li v-for="(ticket, index) in selectedTickets" :key="index">
                 {{ ticket.name }} x {{ ticket.quantity }}
               </li>
             </ul>
           </div>
 
-          <small>subTotal: {{ formatPrice(subTotal, cartCurrency) }}</small>
-          <div class="fw-semibold fs-6">Service Charge (7.5%): {{ formatPrice(serviceCharge, cartCurrency) }}</div>
-
-          <div class="fw-bold fs-5">Total: {{ formatPrice(cartTotal, cartCurrency) }}</div>
+          <div class="price-breakdown">
+            <div class="price-row subtotal">
+              <span>Subtotal:</span>
+              <span>{{ formatPrice(subTotal, cartCurrency) }}</span>
+            </div>
+            <div class="price-row service-charge">
+              <span>Service Charge (7.5%):</span>
+              <span>{{ formatPrice(serviceCharge, cartCurrency) }}</span>
+            </div>
+            <div class="price-row total">
+              <span>Total:</span>
+              <span>{{ formatPrice(cartTotal, cartCurrency) }}</span>
+            </div>
+          </div>
         </div>
-        <div class="">
+
+        <!-- Desktop Promo Code -->
+        <div class="promo-section">
           <input
             v-model="promoCode"
             placeholder="Enter promo code"
-            class="form-control mb-2"
+            class="promo-input"
           />
-
-          <button @click="applyPromo" class="btn btn-primary">Apply</button>
-
-          <div v-if="discountResult">
+          <button @click="applyPromo" class="apply-btn">Apply</button>
+          <div v-if="discountResult" class="discount-message">
             <small>{{ discountResult.message }}</small>
           </div>
         </div>
@@ -386,257 +421,261 @@ export default {
         { code: "+501", dialCode: "+501", name: "Belize", flag: "🇧🇿" },
         { code: "+229", dialCode: "+229", name: "Benin", flag: "🇧🇯" },
         { code: "+1-441", dialCode: "+1441", name: "Bermuda", flag: "🇧🇲" },
-        { code: "+975", name: "Bhutan", flag: "🇧🇹" },
-        { code: "+591", name: "Bolivia", flag: "🇧🇴" },
-        { code: "+387", name: "Bosnia and Herzegovina", flag: "🇧🇦" },
-        { code: "+267", name: "Botswana", flag: "🇧🇼" },
-        { code: "+55", name: "Brazil", flag: "🇧🇷" },
-        { code: "+246", name: "British Indian Ocean Territory", flag: "🇮🇴" },
-        { code: "+247", name: "Ascension Island", flag: "🇦🇨" },
-        { code: "+1-284", name: "British Virgin Islands", flag: "🇻🇬" },
-        { code: "+673", name: "Brunei", flag: "🇧🇳" },
-        { code: "+359", name: "Bulgaria", flag: "🇧🇬" },
-        { code: "+226", name: "Burkina Faso", flag: "🇧🇫" },
-        { code: "+257", name: "Burundi", flag: "🇧🇮" },
-        { code: "+855", name: "Cambodia", flag: "🇰🇭" },
-        { code: "+237", name: "Cameroon", flag: "🇨🇲" },
-        { code: "+1", name: "Canada", flag: "🇨🇦" },
-        { code: "+238", name: "Cape Verde", flag: "🇨🇻" },
-        { code: "+1-345", name: "Cayman Islands", flag: "🇰🇾" },
-        { code: "+236", name: "Central African Republic", flag: "🇨🇫" },
-        { code: "+235", name: "Chad", flag: "🇹🇩" },
-        { code: "+56", name: "Chile", flag: "🇨🇱" },
-        { code: "+86", name: "China", flag: "🇨🇳" },
-        { code: "+672", name: "Norfolk Island / Antarctic Territories", flag: "🇳🇫" },
-        { code: "+57", name: "Colombia", flag: "🇨🇴" },
-        { code: "+269", name: "Comoros", flag: "🇰🇲" },
-        { code: "+682", name: "Cook Islands", flag: "🇨🇰" },
-        { code: "+506", name: "Costa Rica", flag: "🇨🇷" },
-        { code: "+385", name: "Croatia", flag: "🇭🇷" },
-        { code: "+53", name: "Cuba", flag: "🇨🇺" },
-        { code: "+599", name: "Curacao / Caribbean Netherlands", flag: "🇨🇼" },
-        { code: "+357", name: "Cyprus", flag: "🇨🇾" },
-        { code: "+420", name: "Czech Republic", flag: "🇨🇿" },
-        { code: "+243", name: "Democratic Republic of the Congo", flag: "🇨🇩" },
-        { code: "+45", name: "Denmark", flag: "🇩🇰" },
-        { code: "+253", name: "Djibouti", flag: "🇩🇯" },
-        { code: "+1-767", name: "Dominica", flag: "🇩🇲" },
-        { code: "+1-809", name: "Dominican Republic", flag: "🇩🇴" },
-        { code: "+1-829", name: "Dominican Republic", flag: "🇩🇴" },
-        { code: "+1-849", name: "Dominican Republic", flag: "🇩🇴" },
-        { code: "+670", name: "East Timor", flag: "🇹🇱" },
-        { code: "+593", name: "Ecuador", flag: "🇪🇨" },
-        { code: "+20", name: "Egypt", flag: "🇪🇬" },
-        { code: "+503", name: "El Salvador", flag: "🇸🇻" },
-        { code: "+240", name: "Equatorial Guinea", flag: "🇬🇶" },
-        { code: "+291", name: "Eritrea", flag: "🇪🇷" },
-        { code: "+372", name: "Estonia", flag: "🇪🇪" },
-        { code: "+251", name: "Ethiopia", flag: "🇪🇹" },
-        { code: "+500", name: "Falkland Islands", flag: "🇫🇰" },
-        { code: "+298", name: "Faroe Islands", flag: "🇫🇴" },
-        { code: "+679", name: "Fiji", flag: "🇫🇯" },
-        { code: "+358", name: "Finland", flag: "🇫🇮" },
-        { code: "+33", name: "France", flag: "🇫🇷" },
-        { code: "+594", name: "French Guiana", flag: "🇬🇫" },
-        { code: "+689", name: "French Polynesia", flag: "🇵🇫" },
-        { code: "+241", name: "Gabon", flag: "🇬🇦" },
-        { code: "+220", name: "Gambia", flag: "🇬🇲" },
-        { code: "+995", name: "Georgia", flag: "🇬🇪" },
-        { code: "+49", name: "Germany", flag: "🇩🇪" },
-        { code: "+233", name: "Ghana", flag: "🇬🇭" },
-        { code: "+350", name: "Gibraltar", flag: "🇬🇮" },
-        { code: "+30", name: "Greece", flag: "🇬🇷" },
-        { code: "+299", name: "Greenland", flag: "🇬🇱" },
-        { code: "+1-473", name: "Grenada", flag: "🇬🇩" },
-        { code: "+590", name: "Guadeloupe", flag: "🇬🇵" },
-        { code: "+1-671", name: "Guam", flag: "🇬🇺" },
-        { code: "+502", name: "Guatemala", flag: "🇬🇹" },
-        { code: "+44-1481", name: "Guernsey", flag: "🇬🇬" },
-        { code: "+224", name: "Guinea", flag: "🇬🇳" },
-        { code: "+245", name: "Guinea-Bissau", flag: "🇬🇼" },
-        { code: "+592", name: "Guyana", flag: "🇬🇾" },
-        { code: "+509", name: "Haiti", flag: "🇭🇹" },
-        { code: "+504", name: "Honduras", flag: "🇭🇳" },
-        { code: "+852", name: "Hong Kong", flag: "🇭🇰" },
-        { code: "+36", name: "Hungary", flag: "🇭🇺" },
-        { code: "+354", name: "Iceland", flag: "🇮🇸" },
-        { code: "+91", name: "India", flag: "🇮🇳" },
-        { code: "+62", name: "Indonesia", flag: "🇮🇩" },
-        { code: "+98", name: "Iran", flag: "🇮🇷" },
-        { code: "+964", name: "Iraq", flag: "🇮🇶" },
-        { code: "+353", name: "Ireland", flag: "🇮🇪" },
-        { code: "+44-1624", name: "Isle of Man", flag: "🇮🇲" },
-        { code: "+972", name: "Israel", flag: "🇮🇱" },
-        { code: "+39", name: "Italy", flag: "🇮🇹" },
-        { code: "+225", name: "Ivory Coast", flag: "🇨🇮" },
-        { code: "+1-876", name: "Jamaica", flag: "🇯🇲" },
-        { code: "+81", name: "Japan", flag: "🇯🇵" },
-        { code: "+44-1534", name: "Jersey", flag: "🇯🇪" },
-        { code: "+962", name: "Jordan", flag: "🇯🇴" },
-        { code: "+7", name: "Kazakhstan", flag: "🇰🇿" },
-        { code: "+254", name: "Kenya", flag: "🇰🇪" },
-        { code: "+686", name: "Kiribati", flag: "🇰🇮" },
-        { code: "+383", name: "Kosovo", flag: "🇽🇰" },
-        { code: "+965", name: "Kuwait", flag: "🇰🇼" },
-        { code: "+996", name: "Kyrgyzstan", flag: "🇰🇬" },
-        { code: "+856", name: "Laos", flag: "🇱🇦" },
-        { code: "+371", name: "Latvia", flag: "🇱🇻" },
-        { code: "+961", name: "Lebanon", flag: "🇱🇧" },
-        { code: "+266", name: "Lesotho", flag: "🇱🇸" },
-        { code: "+231", name: "Liberia", flag: "🇱🇷" },
-        { code: "+218", name: "Libya", flag: "🇱🇾" },
-        { code: "+423", name: "Liechtenstein", flag: "🇱🇮" },
-        { code: "+370", name: "Lithuania", flag: "🇱🇹" },
-        { code: "+352", name: "Luxembourg", flag: "🇱🇺" },
-        { code: "+853", name: "Macau", flag: "🇲🇴" },
-        { code: "+389", name: "Macedonia", flag: "🇲🇰" },
-        { code: "+261", name: "Madagascar", flag: "🇲🇬" },
-        { code: "+265", name: "Malawi", flag: "🇲🇼" },
-        { code: "+60", name: "Malaysia", flag: "🇲🇾" },
-        { code: "+960", name: "Maldives", flag: "🇲🇻" },
-        { code: "+223", name: "Mali", flag: "🇲🇱" },
-        { code: "+356", name: "Malta", flag: "🇲🇹" },
-        { code: "+692", name: "Marshall Islands", flag: "🇲🇭" },
-        { code: "+596", name: "Martinique", flag: "🇲🇶" },
-        { code: "+222", name: "Mauritania", flag: "🇲🇷" },
-        { code: "+230", name: "Mauritius", flag: "🇲🇺" },
-        { code: "+262", name: "Mayotte", flag: "🇾🇹" },
-        { code: "+52", name: "Mexico", flag: "🇲🇽" },
-        { code: "+691", name: "Micronesia", flag: "🇫🇲" },
-        { code: "+373", name: "Moldova", flag: "🇲🇩" },
-        { code: "+377", name: "Monaco", flag: "🇲🇨" },
-        { code: "+976", name: "Mongolia", flag: "🇲🇳" },
-        { code: "+382", name: "Montenegro", flag: "🇲🇪" },
-        { code: "+1-664", name: "Montserrat", flag: "🇲🇸" },
-        { code: "+212", name: "Morocco", flag: "🇲🇦" },
-        { code: "+258", name: "Mozambique", flag: "🇲🇿" },
-        { code: "+95", name: "Myanmar", flag: "🇲🇲" },
-        { code: "+264", name: "Namibia", flag: "🇳🇦" },
-        { code: "+674", name: "Nauru", flag: "🇳🇷" },
-        { code: "+977", name: "Nepal", flag: "🇳🇵" },
-        { code: "+31", name: "Netherlands", flag: "🇳🇱" },
-        { code: "+687", name: "New Caledonia", flag: "🇳🇨" },
-        { code: "+64", name: "New Zealand", flag: "🇳🇿" },
-        { code: "+505", name: "Nicaragua", flag: "🇳🇮" },
-        { code: "+227", name: "Niger", flag: "🇳🇪" },
-        { code: "+234", name: "Nigeria", flag: "🇳🇬" },
-        { code: "+683", name: "Niue", flag: "🇳🇺" },
-        { code: "+850", name: "North Korea", flag: "🇰🇵" },
-        { code: "+1-670", name: "Northern Mariana Islands", flag: "🇲🇵" },
-        { code: "+47", name: "Norway", flag: "🇳🇴" },
-        { code: "+968", name: "Oman", flag: "🇴🇲" },
-        { code: "+92", name: "Pakistan", flag: "🇵🇰" },
-        { code: "+680", name: "Palau", flag: "🇵🇼" },
-        { code: "+970", name: "Palestine", flag: "🇵🇸" },
-        { code: "+507", name: "Panama", flag: "🇵🇦" },
-        { code: "+675", name: "Papua New Guinea", flag: "🇵🇬" },
-        { code: "+595", name: "Paraguay", flag: "🇵🇾" },
-        { code: "+51", name: "Peru", flag: "🇵🇪" },
-        { code: "+63", name: "Philippines", flag: "🇵🇭" },
-        { code: "+64", name: "Pitcairn", flag: "🇵🇳" },
-        { code: "+48", name: "Poland", flag: "🇵🇱" },
-        { code: "+351", name: "Portugal", flag: "🇵🇹" },
-        { code: "+1-787", name: "Puerto Rico", flag: "🇵🇷" },
-        { code: "+1-939", name: "Puerto Rico", flag: "🇵🇷" },
-        { code: "+974", name: "Qatar", flag: "🇶🇦" },
-        { code: "+242", name: "Republic of the Congo", flag: "🇨🇬" },
-        { code: "+262", name: "Reunion", flag: "🇷🇪" },
-        { code: "+40", name: "Romania", flag: "🇷🇴" },
-        { code: "+7", name: "Russia", flag: "🇷🇺" },
-        { code: "+250", name: "Rwanda", flag: "🇷🇼" },
-        { code: "+590", name: "Saint Barthelemy", flag: "🇧🇱" },
-        { code: "+290", name: "Saint Helena", flag: "🇸🇭" },
-        { code: "+1-869", name: "Saint Kitts and Nevis", flag: "🇰🇳" },
-        { code: "+1-758", name: "Saint Lucia", flag: "🇱🇨" },
-        { code: "+590", name: "Saint Martin", flag: "🇲🇫" },
-        { code: "+508", name: "Saint Pierre and Miquelon", flag: "🇵🇲" },
-        { code: "+1-784", name: "Saint Vincent and the Grenadines", flag: "🇻🇨" },
-        { code: "+685", name: "Samoa", flag: "🇼🇸" },
-        { code: "+378", name: "San Marino", flag: "🇸🇲" },
-        { code: "+239", name: "Sao Tome and Principe", flag: "🇸🇹" },
-        { code: "+966", name: "Saudi Arabia", flag: "🇸🇦" },
-        { code: "+221", name: "Senegal", flag: "🇸🇳" },
-        { code: "+381", name: "Serbia", flag: "🇷🇸" },
-        { code: "+248", name: "Seychelles", flag: "🇸🇨" },
-        { code: "+232", name: "Sierra Leone", flag: "🇸🇱" },
-        { code: "+65", name: "Singapore", flag: "🇸🇬" },
-        { code: "+1-721", name: "Sint Maarten", flag: "🇸🇽" },
-        { code: "+421", name: "Slovakia", flag: "🇸🇰" },
-        { code: "+386", name: "Slovenia", flag: "🇸🇮" },
-        { code: "+677", name: "Solomon Islands", flag: "🇸🇧" },
-        { code: "+252", name: "Somalia", flag: "🇸🇴" },
-        { code: "+27", name: "South Africa", flag: "🇿🇦" },
-        { code: "+82", name: "South Korea", flag: "🇰🇷" },
-        { code: "+211", name: "South Sudan", flag: "🇸🇸" },
-        { code: "+34", name: "Spain", flag: "🇪🇸" },
-        { code: "+94", name: "Sri Lanka", flag: "🇱🇰" },
-        { code: "+249", name: "Sudan", flag: "🇸🇩" },
-        { code: "+597", name: "Suriname", flag: "🇸🇷" },
-        { code: "+47", name: "Svalbard and Jan Mayen", flag: "🇸🇯" },
-        { code: "+268", name: "Swaziland", flag: "🇸🇿" },
-        { code: "+46", name: "Sweden", flag: "🇸🇪" },
-        { code: "+41", name: "Switzerland", flag: "🇨🇭" },
-        { code: "+963", name: "Syria", flag: "🇸🇾" },
-        { code: "+886", name: "Taiwan", flag: "🇹🇼" },
-        { code: "+992", name: "Tajikistan", flag: "🇹🇯" },
-        { code: "+255", name: "Tanzania", flag: "🇹🇿" },
-        { code: "+66", name: "Thailand", flag: "🇹🇭" },
-        { code: "+228", name: "Togo", flag: "🇹🇬" },
-        { code: "+690", name: "Tokelau", flag: "🇹🇰" },
-        { code: "+676", name: "Tonga", flag: "🇹🇴" },
-        { code: "+1-868", name: "Trinidad and Tobago", flag: "🇹🇹" },
-        { code: "+216", name: "Tunisia", flag: "🇹🇳" },
-        { code: "+90", name: "Turkey", flag: "🇹🇷" },
-        { code: "+993", name: "Turkmenistan", flag: "🇹🇲" },
-        { code: "+1-649", name: "Turks and Caicos Islands", flag: "🇹🇨" },
-        { code: "+688", name: "Tuvalu", flag: "🇹🇻" },
-        { code: "+1-340", name: "U.S. Virgin Islands", flag: "🇻🇮" },
-        { code: "+256", name: "Uganda", flag: "🇺🇬" },
-        { code: "+380", name: "Ukraine", flag: "🇺🇦" },
-        { code: "+971", name: "United Arab Emirates", flag: "🇦🇪" },
-        { code: "+44", name: "United Kingdom", flag: "🇬🇧" },
-        { code: "+1", name: "United States", flag: "🇺🇸" },
-        { code: "+598", name: "Uruguay", flag: "🇺🇾" },
-        { code: "+998", name: "Uzbekistan", flag: "🇺🇿" },
-        { code: "+678", name: "Vanuatu", flag: "🇻🇺" },
-        { code: "+379", name: "Vatican", flag: "🇻🇦" },
-        { code: "+58", name: "Venezuela", flag: "🇻🇪" },
-        { code: "+84", name: "Vietnam", flag: "🇻🇳" },
-        { code: "+681", name: "Wallis and Futuna", flag: "🇼🇫" },
-        { code: "+212", name: "Western Sahara", flag: "🇪🇭" },
-        { code: "+967", name: "Yemen", flag: "🇾🇪" },
-        { code: "+260", name: "Zambia", flag: "🇿🇲" },
-        { code: "+263", name: "Zimbabwe", flag: "🇿🇼" },
+        { code: "+975", dialCode: "+975", name: "Bhutan", flag: "🇧🇹" },
+        { code: "+591", dialCode: "+591", name: "Bolivia", flag: "🇧🇴" },
+        { code: "+387", dialCode: "+387", name: "Bosnia and Herzegovina", flag: "🇧🇦" },
+        { code: "+267", dialCode: "+267", name: "Botswana", flag: "🇧🇼" },
+        { code: "+55", dialCode: "+55", name: "Brazil", flag: "🇧🇷" },
+        { code: "+246", dialCode: "+246", name: "British Indian Ocean Territory", flag: "🇮🇴" },
+        { code: "+247", dialCode: "+247", name: "Ascension Island", flag: "🇦🇨" },
+        { code: "+1-284", dialCode: "+1284", name: "British Virgin Islands", flag: "🇻🇬" },
+        { code: "+673", dialCode: "+673", name: "Brunei", flag: "🇧🇳" },
+        { code: "+359", dialCode: "+359", name: "Bulgaria", flag: "🇧🇬" },
+        { code: "+226", dialCode: "+226", name: "Burkina Faso", flag: "🇧🇫" },
+        { code: "+257", dialCode: "+257", name: "Burundi", flag: "🇧🇮" },
+        { code: "+855", dialCode: "+855", name: "Cambodia", flag: "🇰🇭" },
+        { code: "+237", dialCode: "+237", name: "Cameroon", flag: "🇨🇲" },
+        { code: "+1", dialCode: "+1", name: "Canada", flag: "🇨🇦" },
+        { code: "+238", dialCode: "+238", name: "Cape Verde", flag: "🇨🇻" },
+        { code: "+1-345", dialCode: "+1345", name: "Cayman Islands", flag: "🇰🇾" },
+        { code: "+236", dialCode: "+236", name: "Central African Republic", flag: "🇨🇫" },
+        { code: "+235", dialCode: "+235", name: "Chad", flag: "🇹🇩" },
+        { code: "+56", dialCode: "+56", name: "Chile", flag: "🇨🇱" },
+        { code: "+86", dialCode: "+86", name: "China", flag: "🇨🇳" },
+        { code: "+672", dialCode: "+672", name: "Norfolk Island / Antarctic Territories", flag: "🇳🇫" },
+        { code: "+57", dialCode: "+57", name: "Colombia", flag: "🇨🇴" },
+        { code: "+269", dialCode: "+269", name: "Comoros", flag: "🇰🇲" },
+        { code: "+682", dialCode: "+682", name: "Cook Islands", flag: "🇨🇰" },
+        { code: "+506", dialCode: "+506", name: "Costa Rica", flag: "🇨🇷" },
+        { code: "+385", dialCode: "+385", name: "Croatia", flag: "🇭🇷" },
+        { code: "+53", dialCode: "+53", name: "Cuba", flag: "🇨🇺" },
+        { code: "+599", dialCode: "+599", name: "Curacao / Caribbean Netherlands", flag: "🇨🇼" },
+        { code: "+357", dialCode: "+357", name: "Cyprus", flag: "🇨🇾" },
+        { code: "+420", dialCode: "+420", name: "Czech Republic", flag: "🇨🇿" },
+        { code: "+243", dialCode: "+243", name: "Democratic Republic of the Congo", flag: "🇨🇩" },
+        { code: "+45", dialCode: "+45", name: "Denmark", flag: "🇩🇰" },
+        { code: "+253", dialCode: "+253", name: "Djibouti", flag: "🇩🇯" },
+        { code: "+1-767", dialCode: "+1767", name: "Dominica", flag: "🇩🇲" },
+        { code: "+1-809", dialCode: "+1809", name: "Dominican Republic", flag: "🇩🇴" },
+        { code: "+1-829", dialCode: "+1829", name: "Dominican Republic", flag: "🇩🇴" },
+        { code: "+1-849", dialCode: "+1849", name: "Dominican Republic", flag: "🇩🇴" },
+        { code: "+670", dialCode: "+670", name: "East Timor", flag: "🇹🇱" },
+        { code: "+593", dialCode: "+593", name: "Ecuador", flag: "🇪🇨" },
+        { code: "+20", dialCode: "+20", name: "Egypt", flag: "🇪🇬" },
+        { code: "+503", dialCode: "+503", name: "El Salvador", flag: "🇸🇻" },
+        { code: "+240", dialCode: "+240", name: "Equatorial Guinea", flag: "🇬🇶" },
+        { code: "+291", dialCode: "+291", name: "Eritrea", flag: "🇪🇷" },
+        { code: "+372", dialCode: "+372", name: "Estonia", flag: "🇪🇪" },
+        { code: "+251", dialCode: "+251", name: "Ethiopia", flag: "🇪🇹" },
+        { code: "+500", dialCode: "+500", name: "Falkland Islands", flag: "🇫🇰" },
+        { code: "+298", dialCode: "+298", name: "Faroe Islands", flag: "🇫🇴" },
+        { code: "+679", dialCode: "+679", name: "Fiji", flag: "🇫🇯" },
+        { code: "+358", dialCode: "+358", name: "Finland", flag: "🇫🇮" },
+        { code: "+33", dialCode: "+33", name: "France", flag: "🇫🇷" },
+        { code: "+594", dialCode: "+594", name: "French Guiana", flag: "🇬🇫" },
+        { code: "+689", dialCode: "+689", name: "French Polynesia", flag: "🇵🇫" },
+        { code: "+241", dialCode: "+241", name: "Gabon", flag: "🇬🇦" },
+        { code: "+220", dialCode: "+220", name: "Gambia", flag: "🇬🇲" },
+        { code: "+995", dialCode: "+995", name: "Georgia", flag: "🇬🇪" },
+        { code: "+49", dialCode: "+49", name: "Germany", flag: "🇩🇪" },
+        { code: "+233", dialCode: "+233", name: "Ghana", flag: "🇬🇭" },
+        { code: "+350", dialCode: "+350", name: "Gibraltar", flag: "🇬🇮" },
+        { code: "+30", dialCode: "+30", name: "Greece", flag: "🇬🇷" },
+        { code: "+299", dialCode: "+299", name: "Greenland", flag: "🇬🇱" },
+        { code: "+1-473", dialCode: "+1473", name: "Grenada", flag: "🇬🇩" },
+        { code: "+590", dialCode: "+590", name: "Guadeloupe", flag: "🇬🇵" },
+        { code: "+1-671", dialCode: "+1671", name: "Guam", flag: "🇬🇺" },
+        { code: "+502", dialCode: "+502", name: "Guatemala", flag: "🇬🇹" },
+        { code: "+44-1481", dialCode: "+441481", name: "Guernsey", flag: "🇬🇬" },
+        { code: "+224", dialCode: "+224", name: "Guinea", flag: "🇬🇳" },
+        { code: "+245", dialCode: "+245", name: "Guinea-Bissau", flag: "🇬🇼" },
+        { code: "+592", dialCode: "+592", name: "Guyana", flag: "🇬🇾" },
+        { code: "+509", dialCode: "+509", name: "Haiti", flag: "🇭🇹" },
+        { code: "+504", dialCode: "+504", name: "Honduras", flag: "🇭🇳" },
+        { code: "+852", dialCode: "+852", name: "Hong Kong", flag: "🇭🇰" },
+        { code: "+36", dialCode: "+36", name: "Hungary", flag: "🇭🇺" },
+        { code: "+354", dialCode: "+354", name: "Iceland", flag: "🇮🇸" },
+        { code: "+91", dialCode: "+91", name: "India", flag: "🇮🇳" },
+        { code: "+62", dialCode: "+62", name: "Indonesia", flag: "🇮🇩" },
+        { code: "+98", dialCode: "+98", name: "Iran", flag: "🇮🇷" },
+        { code: "+964", dialCode: "+964", name: "Iraq", flag: "🇮🇶" },
+        { code: "+353", dialCode: "+353", name: "Ireland", flag: "🇮🇪" },
+        { code: "+44-1624", dialCode: "+441624", name: "Isle of Man", flag: "🇮🇲" },
+        { code: "+972", dialCode: "+972", name: "Israel", flag: "🇮🇱" },
+        { code: "+39", dialCode: "+39", name: "Italy", flag: "🇮🇹" },
+        { code: "+225", dialCode: "+225", name: "Ivory Coast", flag: "🇨🇮" },
+        { code: "+1-876", dialCode: "+1876", name: "Jamaica", flag: "🇯🇲" },
+        { code: "+81", dialCode: "+81", name: "Japan", flag: "🇯🇵" },
+        { code: "+44-1534", dialCode: "+441534", name: "Jersey", flag: "🇯🇪" },
+        { code: "+962", dialCode: "+962", name: "Jordan", flag: "🇯🇴" },
+        { code: "+7", dialCode: "+7", name: "Kazakhstan", flag: "🇰🇿" },
+        { code: "+254", dialCode: "+254", name: "Kenya", flag: "🇰🇪" },
+        { code: "+686", dialCode: "+686", name: "Kiribati", flag: "🇰🇮" },
+        { code: "+383", dialCode: "+383", name: "Kosovo", flag: "🇽🇰" },
+        { code: "+965", dialCode: "+965", name: "Kuwait", flag: "🇰🇼" },
+        { code: "+996", dialCode: "+996", name: "Kyrgyzstan", flag: "🇰🇬" },
+        { code: "+856", dialCode: "+856", name: "Laos", flag: "🇱🇦" },
+        { code: "+371", dialCode: "+371", name: "Latvia", flag: "🇱🇻" },
+        { code: "+961", dialCode: "+961", name: "Lebanon", flag: "🇱🇧" },
+        { code: "+266", dialCode: "+266", name: "Lesotho", flag: "🇱🇸" },
+        { code: "+231", dialCode: "+231", name: "Liberia", flag: "🇱🇷" },
+        { code: "+218", dialCode: "+218", name: "Libya", flag: "🇱🇾" },
+        { code: "+423", dialCode: "+423", name: "Liechtenstein", flag: "🇱🇮" },
+        { code: "+370", dialCode: "+370", name: "Lithuania", flag: "🇱🇹" },
+        { code: "+352", dialCode: "+352", name: "Luxembourg", flag: "🇱🇺" },
+        { code: "+853", dialCode: "+853", name: "Macau", flag: "🇲🇴" },
+        { code: "+389", dialCode: "+389", name: "Macedonia", flag: "🇲🇰" },
+        { code: "+261", dialCode: "+261", name: "Madagascar", flag: "🇲🇬" },
+        { code: "+265", dialCode: "+265", name: "Malawi", flag: "🇲🇼" },
+        { code: "+60", dialCode: "+60", name: "Malaysia", flag: "🇲🇾" },
+        { code: "+960", dialCode: "+960", name: "Maldives", flag: "🇲🇻" },
+        { code: "+223", dialCode: "+223", name: "Mali", flag: "🇲🇱" },
+        { code: "+356", dialCode: "+356", name: "Malta", flag: "🇲🇹" },
+        { code: "+692", dialCode: "+692", name: "Marshall Islands", flag: "🇲🇭" },
+        { code: "+596", dialCode: "+596", name: "Martinique", flag: "🇲🇶" },
+        { code: "+222", dialCode: "+222", name: "Mauritania", flag: "🇲🇷" },
+        { code: "+230", dialCode: "+230", name: "Mauritius", flag: "🇲🇺" },
+        { code: "+262", dialCode: "+262", name: "Mayotte", flag: "🇾🇹" },
+        { code: "+52", dialCode: "+52", name: "Mexico", flag: "🇲🇽" },
+        { code: "+691", dialCode: "+691", name: "Micronesia", flag: "🇫🇲" },
+        { code: "+373", dialCode: "+373", name: "Moldova", flag: "🇲🇩" },
+        { code: "+377", dialCode: "+377", name: "Monaco", flag: "🇲🇨" },
+        { code: "+976", dialCode: "+976", name: "Mongolia", flag: "🇲🇳" },
+        { code: "+382", dialCode: "+382", name: "Montenegro", flag: "🇲🇪" },
+        { code: "+1-664", dialCode: "+1664", name: "Montserrat", flag: "🇲🇸" },
+        { code: "+212", dialCode: "+212", name: "Morocco", flag: "🇲🇦" },
+        { code: "+258", dialCode: "+258", name: "Mozambique", flag: "🇲🇿" },
+        { code: "+95", dialCode: "+95", name: "Myanmar", flag: "🇲🇲" },
+        { code: "+264", dialCode: "+264", name: "Namibia", flag: "🇳🇦" },
+        { code: "+674", dialCode: "+674", name: "Nauru", flag: "🇳🇷" },
+        { code: "+977", dialCode: "+977", name: "Nepal", flag: "🇳🇵" },
+        { code: "+31", dialCode: "+31", name: "Netherlands", flag: "🇳🇱" },
+        { code: "+687", dialCode: "+687", name: "New Caledonia", flag: "🇳🇨" },
+        { code: "+64", dialCode: "+64", name: "New Zealand", flag: "🇳🇿" },
+        { code: "+505", dialCode: "+505", name: "Nicaragua", flag: "🇳🇮" },
+        { code: "+227", dialCode: "+227", name: "Niger", flag: "🇳🇪" },
+        { code: "+234", dialCode: "+234", name: "Nigeria", flag: "🇳🇬" },
+        { code: "+683", dialCode: "+683", name: "Niue", flag: "🇳🇺" },
+        { code: "+850", dialCode: "+850", name: "North Korea", flag: "🇰🇵" },
+        { code: "+1-670", dialCode: "+1670", name: "Northern Mariana Islands", flag: "🇲🇵" },
+        { code: "+47", dialCode: "+47", name: "Norway", flag: "🇳🇴" },
+        { code: "+968", dialCode: "+968", name: "Oman", flag: "🇴🇲" },
+        { code: "+92", dialCode: "+92", name: "Pakistan", flag: "🇵🇰" },
+        { code: "+680", dialCode: "+680", name: "Palau", flag: "🇵🇼" },
+        { code: "+970", dialCode: "+970", name: "Palestine", flag: "🇵🇸" },
+        { code: "+507", dialCode: "+507", name: "Panama", flag: "🇵🇦" },
+        { code: "+675", dialCode: "+675", name: "Papua New Guinea", flag: "🇵🇬" },
+        { code: "+595", dialCode: "+595", name: "Paraguay", flag: "🇵🇾" },
+        { code: "+51", dialCode: "+51", name: "Peru", flag: "🇵🇪" },
+        { code: "+63", dialCode: "+63", name: "Philippines", flag: "🇵🇭" },
+        { code: "+48", dialCode: "+48", name: "Poland", flag: "🇵🇱" },
+        { code: "+351", dialCode: "+351", name: "Portugal", flag: "🇵🇹" },
+        { code: "+1-787", dialCode: "+1787", name: "Puerto Rico", flag: "🇵🇷" },
+        { code: "+1-939", dialCode: "+1939", name: "Puerto Rico", flag: "🇵🇷" },
+        { code: "+974", dialCode: "+974", name: "Qatar", flag: "🇶🇦" },
+        { code: "+242", dialCode: "+242", name: "Republic of the Congo", flag: "🇨🇬" },
+        { code: "+262", dialCode: "+262", name: "Reunion", flag: "🇷🇪" },
+        { code: "+40", dialCode: "+40", name: "Romania", flag: "🇷🇴" },
+        { code: "+7", dialCode: "+7", name: "Russia", flag: "🇷🇺" },
+        { code: "+250", dialCode: "+250", name: "Rwanda", flag: "🇷🇼" },
+        { code: "+290", dialCode: "+290", name: "Saint Helena", flag: "🇸🇭" },
+        { code: "+1-869", dialCode: "+1869", name: "Saint Kitts and Nevis", flag: "🇰🇳" },
+        { code: "+1-758", dialCode: "+1758", name: "Saint Lucia", flag: "🇱🇨" },
+        { code: "+508", dialCode: "+508", name: "Saint Pierre and Miquelon", flag: "🇵🇲" },
+        { code: "+1-784", dialCode: "+1784", name: "Saint Vincent and the Grenadines", flag: "🇻🇨" },
+        { code: "+685", dialCode: "+685", name: "Samoa", flag: "🇼🇸" },
+        { code: "+378", dialCode: "+378", name: "San Marino", flag: "🇸🇲" },
+        { code: "+239", dialCode: "+239", name: "Sao Tome and Principe", flag: "🇸🇹" },
+        { code: "+966", dialCode: "+966", name: "Saudi Arabia", flag: "🇸🇦" },
+        { code: "+221", dialCode: "+221", name: "Senegal", flag: "🇸🇳" },
+        { code: "+381", dialCode: "+381", name: "Serbia", flag: "🇷🇸" },
+        { code: "+248", dialCode: "+248", name: "Seychelles", flag: "🇸🇨" },
+        { code: "+232", dialCode: "+232", name: "Sierra Leone", flag: "🇸🇱" },
+        { code: "+65", dialCode: "+65", name: "Singapore", flag: "🇸🇬" },
+        { code: "+1-721", dialCode: "+1721", name: "Sint Maarten", flag: "🇸🇽" },
+        { code: "+421", dialCode: "+421", name: "Slovakia", flag: "🇸🇰" },
+        { code: "+386", dialCode: "+386", name: "Slovenia", flag: "🇸🇮" },
+        { code: "+677", dialCode: "+677", name: "Solomon Islands", flag: "🇸🇧" },
+        { code: "+252", dialCode: "+252", name: "Somalia", flag: "🇸🇴" },
+        { code: "+27", dialCode: "+27", name: "South Africa", flag: "🇿🇦" },
+        { code: "+82", dialCode: "+82", name: "South Korea", flag: "🇰🇷" },
+        { code: "+211", dialCode: "+211", name: "South Sudan", flag: "🇸🇸" },
+        { code: "+34", dialCode: "+34", name: "Spain", flag: "🇪🇸" },
+        { code: "+94", dialCode: "+94", name: "Sri Lanka", flag: "🇱🇰" },
+        { code: "+249", dialCode: "+249", name: "Sudan", flag: "🇸🇩" },
+        { code: "+597", dialCode: "+597", name: "Suriname", flag: "🇸🇷" },
+        { code: "+47", dialCode: "+47", name: "Svalbard and Jan Mayen", flag: "🇸🇯" },
+        { code: "+268", dialCode: "+268", name: "Swaziland", flag: "🇸🇿" },
+        { code: "+46", dialCode: "+46", name: "Sweden", flag: "🇸🇪" },
+        { code: "+41", dialCode: "+41", name: "Switzerland", flag: "🇨🇭" },
+        { code: "+963", dialCode: "+963", name: "Syria", flag: "🇸🇾" },
+        { code: "+886", dialCode: "+886", name: "Taiwan", flag: "🇹🇼" },
+        { code: "+992", dialCode: "+992", name: "Tajikistan", flag: "🇹🇯" },
+        { code: "+255", dialCode: "+255", name: "Tanzania", flag: "🇹🇿" },
+        { code: "+66", dialCode: "+66", name: "Thailand", flag: "🇹🇭" },
+        { code: "+228", dialCode: "+228", name: "Togo", flag: "🇹🇬" },
+        { code: "+690", dialCode: "+690", name: "Tokelau", flag: "🇹🇰" },
+        { code: "+676", dialCode: "+676", name: "Tonga", flag: "🇹🇴" },
+        { code: "+1-868", dialCode: "+1868", name: "Trinidad and Tobago", flag: "🇹🇹" },
+        { code: "+216", dialCode: "+216", name: "Tunisia", flag: "🇹🇳" },
+        { code: "+90", dialCode: "+90", name: "Turkey", flag: "🇹🇷" },
+        { code: "+993", dialCode: "+993", name: "Turkmenistan", flag: "🇹🇲" },
+        { code: "+1-649", dialCode: "+1649", name: "Turks and Caicos Islands", flag: "🇹🇨" },
+        { code: "+688", dialCode: "+688", name: "Tuvalu", flag: "🇹🇻" },
+        { code: "+256", dialCode: "+256", name: "Uganda", flag: "🇺🇬" },
+        { code: "+380", dialCode: "+380", name: "Ukraine", flag: "🇺🇦" },
+        { code: "+971", dialCode: "+971", name: "United Arab Emirates", flag: "🇦🇪" },
+        { code: "+44", dialCode: "+44", name: "United Kingdom", flag: "🇬🇧" },
+        { code: "+1", dialCode: "+1", name: "United States", flag: "🇺🇸" },
+        { code: "+598", dialCode: "+598", name: "Uruguay", flag: "🇺🇾" },
+        { code: "+998", dialCode: "+998", name: "Uzbekistan", flag: "🇺🇿" },
+        { code: "+678", dialCode: "+678", name: "Vanuatu", flag: "🇻🇺" },
+        { code: "+379", dialCode: "+379", name: "Vatican", flag: "🇻🇦" },
+        { code: "+58", dialCode: "+58", name: "Venezuela", flag: "🇻🇪" },
+        { code: "+84", dialCode: "+84", name: "Vietnam", flag: "🇻🇳" },
+        { code: "+681", dialCode: "+681", name: "Wallis and Futuna", flag: "🇼🇫" },
+        { code: "+212", dialCode: "+212", name: "Western Sahara", flag: "🇪🇭" },
+        { code: "+967", dialCode: "+967", name: "Yemen", flag: "🇾🇪" },
+        { code: "+260", dialCode: "+260", name: "Zambia", flag: "🇿🇲" },
+        { code: "+263", dialCode: "+263", name: "Zimbabwe", flag: "🇿🇼" },
       ],
-      paymentMethod: "",
+      paymentMethod: "card",
       termsAccepted: false,
-      subscribe: false,
+      paymentGateway: "",
       stripe: null,
-      stripeElements: null,
-      stripePaymentElement: null,
-      stripeClientSecret: "",
-      stripeReady: false,
+      elements: null,
       stripeErrorMessage: "",
     };
   },
+  async mounted() {
+    this.startCountdown();
+    this.paymentGateway = getPaymentGateway(this.cartCurrency);
+    if (this.paymentGateway === "stripe") {
+      await this.initializeStripe();
+    }
+  },
   computed: {
+    ...mapGetters({
+      getCart: "getCart",
+      getCartTotal: "getCartTotal",
+      getCartSubTotal: "getCartSubTotal",
+      getCartServiceCharge: "getCartServiceCharge",
+      getContactInfo: "getContactInfo",
+    }),
+    progressWidth() {
+      if (this.steps.length <= 1) return "0%";
+      const progress = (this.currentStep / (this.steps.length - 1)) * 100;
+      return `${progress}%`;
+    },
     processedCountryCodes() {
-      return this.countryCodes.map(country => ({
-        ...country,
-        dialCode: country.dialCode || country.code.replace(/-/g, '')
-      }));
-    },
-    hasSelectedTickets() {
-      return this.getCart.some((product) => {
-        const tickets = product.event?.tickets;
-        return (
-          Array.isArray(tickets) &&
-          tickets.some((ticket) => Number(ticket.selectedQuantity) > 0)
-        );
+      const seen = new Set();
+      return this.countryCodes.filter(country => {
+        if (seen.has(country.dialCode)) {
+          return false;
+        }
+        seen.add(country.dialCode);
+        return true;
       });
-    },
-    emailMismatch() {
-      return this.contact.email !== this.contact.confirmEmail;
     },
     getCartSorted() {
       return this.getCart.map((product) => {
@@ -649,929 +688,995 @@ export default {
         };
       });
     },
-    // 1. Raw subtotal (tickets only, no service, no discount)
     rawSubtotal() {
-      const subtotal = this.getCart.reduce((sum, product) => {
-        const ticketTotal = product.event.tickets.reduce((innerSum, ticket) => {
-          return innerSum + (ticket.selectedQuantity || 0) * (ticket.price || 0);
-        }, 0);
-        return sum + ticketTotal;
-      }, 0);
-
-      console.log("Raw Subtotal:", subtotal);
-      return subtotal;
-    },
-
-    // Calculate discount based on raw subtotal
-    discountAmount() {
-      if (!this.discountResult) return 0;
-
-      let discount = 0;
-      if (this.discountResult.discountType === "percentage") {
-        discount = this.rawSubtotal * (this.discountResult.discountValue / 100);
-      } else if (this.discountResult.discountType === "flat") {
-        discount = this.discountResult.discountValue;
-      }
-
-      console.log("Discount Applied:", discount);
-      return +discount.toFixed(2);
-    },
-
-    // Subtotal after discount (raw subtotal - discount)
-    subTotal() {
-      const subTotal = this.rawSubtotal - this.discountAmount;
-      console.log("Subtotal After Discount:", subTotal);
-      return +subTotal.toFixed(2);
-    },
-
-    // Service charge based on subtotal after discount
-    serviceCharge() {
-      const charge = this.subTotal * 0.075;
-      console.log("Service Charge (7.5%):", charge);
-      return +charge.toFixed(2);
-    },
-
-    // Final cart total = subtotal after discount + service charge
-    cartTotal() {
-      const total = this.subTotal + this.serviceCharge;
-      console.log("Final Cart Total:", total);
-      return +total.toFixed(2);
-    },
-
-    email() {
-      return this.getContactInfo.email;
-    },
-    amount() {
-      return this.cartTotal;
-    },
-    steps() {
-      // If the cart has a total greater than 0, show payment step
-      return this.cartTotal > 0
-        ? ["Tickets", "Contact", "Payment"]
-        : ["Tickets", "Contact"];
-    },
-    ...mapGetters(["getCart", "getContactInfo", "getSelectedTickets", "getCartTotal"]),
-
-    selectedTickets() {
-      return this.getCart.flatMap((product) => {
+      return this.getCart.reduce((total, product) => {
         return (
-          product.event?.tickets
-            ?.filter((ticket) => ticket.selectedQuantity > 0)
-            .map((ticket) => ({
+          total +
+          product.event.tickets.reduce((productTotal, ticket) => {
+            return productTotal + (ticket.selectedQuantity || 0) * ticket.price;
+          }, 0)
+        );
+      }, 0);
+    },
+    discount() {
+      if (!this.discountResult || !this.discountResult.discountValue) {
+        return 0;
+      }
+      return this.discountResult.discountValue;
+    },
+    subTotal() {
+      return Math.max(0, this.rawSubtotal - this.discount);
+    },
+    serviceCharge() {
+      return this.subTotal * 0.075;
+    },
+    cartTotal() {
+      return this.subTotal + this.serviceCharge;
+    },
+    cartCurrency() {
+      if (this.getCart.length === 0) return "NGN";
+      const firstTicket = this.getCart[0]?.event?.tickets?.[0];
+      return firstTicket?.currency || "NGN";
+    },
+    selectedTickets() {
+      const tickets = [];
+      this.getCart.forEach((product) => {
+        product.event.tickets.forEach((ticket) => {
+          if (ticket.selectedQuantity && ticket.selectedQuantity > 0) {
+            tickets.push({
               name: ticket.name,
               quantity: ticket.selectedQuantity,
-            })) || []
-        );
-      });
-    },
-
-    canCheckout() {
-      return this.paymentMethod && this.termsAccepted;
-    },
-    // Get the currency from the first ticket in the cart
-    cartCurrency() {
-      for (const product of this.getCart) {
-        for (const ticket of product.event?.tickets || []) {
-          if (ticket.selectedQuantity > 0 && ticket.currency) {
-            return ticket.currency;
+              price: ticket.price,
+            });
           }
-        }
-      }
-      return "NGN"; // Default to NGN if no ticket found
+        });
+      });
+      return tickets;
     },
-    // Determine payment gateway based on currency
-    paymentGateway() {
-      return getPaymentGateway(this.cartCurrency);
+    hasSelectedTickets() {
+      return this.selectedTickets.length > 0;
     },
   },
   watch: {
-    currentStep(newVal) {
-      this.updateProgressLine();
-      
-      if (newVal === 2 && this.paymentGateway === 'stripe') {
-        this.$nextTick(() => {
-          this.mountStripeElements();
-        });
-      }
+    "contact.confirmEmail": function (newVal) {
+      this.emailMismatch =
+        this.contact.email !== "" &&
+        newVal !== "" &&
+        this.contact.email !== newVal;
     },
-    getCart: {
-      handler() {
-        this.discountResult = null;
-        this.promoCode = null;
-      },
-      deep: true, // important! watches nested ticket quantities
+    "contact.email": function () {
+      this.emailMismatch =
+        this.contact.email !== "" &&
+        this.contact.confirmEmail !== "" &&
+        this.contact.email !== this.contact.confirmEmail;
     },
-    promoCode(newVal) {
-      if (!newVal || newVal.trim() === "") {
-        localStorage.removeItem("promoCode");
-        localStorage.removeItem("discountedTotal");
-        this.discountResult = null;
-      }
-    },
-    subTotal(newVal) {
-      localStorage.setItem("finalSubtotal", newVal);
-    },
-    paymentMethod(newVal) {
-      if (newVal === 'card' && this.paymentGateway === 'stripe' && !this.stripeReady) {
+    currentStep(newStep) {
+      if (newStep === 2 && this.paymentGateway === "stripe") {
         this.$nextTick(() => {
           this.mountStripeElements();
         });
       }
     },
   },
+  beforeDestroy() {
+    if (this.countdown) {
+      clearInterval(this.countdown);
+    }
+  },
   methods: {
+    ...mapMutations(["setContactInfo"]),
     formatPrice,
     getCurrencySymbol,
-    getPaymentGateway,
-    formatDate(date) {
-      if (!date) return "No date";
-      const options = {
-        weekday: "short",
-        //year: "numeric",
-        month: "short",
-        day: "numeric",
-      };
-      return new Date(date).toLocaleDateString("en-US", options);
-    },
-    ...mapMutations(["setSelectedTickets"]),
-    generateReference() {
-      let text = "";
-      const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-      for (let i = 0; i < 10; i++) {
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-      }
-      return text;
-    },
-    extractSelectedTickets() {
-      const selected = this.getCart.flatMap((product) => {
-        return (
-          product.event?.tickets
-            ?.filter((ticket) => ticket.selectedQuantity > 0)
-            .map((ticket) => ({
-              name: ticket.name,
-              quantity: ticket.selectedQuantity,
-            })) || []
-        );
-      });
-
-      // Save to Vuex
-      this.setSelectedTickets(selected);
-    },
-    async initializePayment() {
-      if (this.paymentGateway === 'stripe') {
-        await this.initializeStripePayment();
-      } else if (this.paymentGateway === 'fincra') {
-        await this.initializeFincraPayment();
-      } else {
-        await this.initializePaystackPayment();
-      }
-    },
-    async initializePaystackPayment() {
-      try {
-        this.spinner = true;
-        const affiliate = localStorage.getItem("affiliateCode");
-        const promoCode = localStorage.getItem("promoCode");
-        
-        const response = await axios.post(
-          "https://event-ticket-backend-yx81.onrender.com/api/initialize",
-          {
-            email: this.email,
-            amount: this.amount,
-            currency: this.cartCurrency,
-            metadata: {
-              orderData: {
-                startDate: this.getCart[0]?.event?.start,
-                startTime: this.getCart[0]?.event?.startTime,
-                location: this.getCart[0]?.event?.location?.name,
-                userId: this.getCart[0]?.user,
-                productId: this.getCart[0]?._id,
-                title: this.getCart[0]?.title,
-                contact: {
-                  name: `${this.getContactInfo.firstName} ${this.getContactInfo.lastName}`,
-                  email: this.getContactInfo.email,
-                  phone: `${this.getContactInfo.countryCode}${this.getContactInfo.phone}`,
-                },
-                tickets: this.getSelectedTickets,
-                price: this.amount,
-                currency: this.cartCurrency,
-                affiliate,
-                promoCode,
-              }
-            }
+    startCountdown() {
+      let minutes = 10;
+      let seconds = 0;
+      this.countdown = setInterval(() => {
+        if (seconds === 0) {
+          if (minutes === 0) {
+            clearInterval(this.countdown);
+            this.timer = "00:00";
+            alert("Time's up! Please refresh to try again.");
+            return;
           }
-        );
-        console.log(response.data);
-
-        const { authorization_url, reference } = response.data.data;
-        localStorage.setItem("paystack_reference", reference);
-        localStorage.setItem("cartTotal", this.amount);
-        localStorage.setItem("startDate", this.getCart[0]?.event?.start);
-        localStorage.setItem("startTime", this.getCart[0]?.event?.startTime);
-        localStorage.setItem("location", this.getCart[0]?.event?.location?.name);
-
-        this.spinner = false;
-        window.location.href = authorization_url;
-      } catch (error) {
-        this.spinner = false;
-        alert("Payment initialization failed");
-        console.error(error);
-      }
-    },
-    async initializeFincraPayment() {
-      try {
-        this.spinner = true;
-        const affiliate = localStorage.getItem("affiliateCode");
-        const promoCode = localStorage.getItem("promoCode");
-        
-        const response = await axios.post(
-          "https://event-ticket-backend-yx81.onrender.com/api/fincra/create-checkout",
-          {
-            email: this.email,
-            amount: this.amount,
-            currency: this.cartCurrency,
-            metadata: {
-              orderData: {
-                startDate: this.getCart[0]?.event?.start,
-                startTime: this.getCart[0]?.event?.startTime,
-                location: this.getCart[0]?.event?.location?.name,
-                userId: this.getCart[0]?.user,
-                productId: this.getCart[0]?._id,
-                title: this.getCart[0]?.title,
-                contact: {
-                  name: `${this.getContactInfo.firstName} ${this.getContactInfo.lastName}`,
-                  email: this.getContactInfo.email,
-                  phone: `${this.getContactInfo.countryCode}${this.getContactInfo.phone}`,
-                },
-                tickets: this.getSelectedTickets,
-                price: this.amount,
-                currency: this.cartCurrency,
-                affiliate,
-                promoCode,
-              }
-            }
-          }
-        );
-        console.log(response.data);
-
-        const { checkout_url, reference } = response.data.data;
-        localStorage.setItem("fincra_reference", reference);
-        localStorage.setItem("cartTotal", this.amount);
-        localStorage.setItem("startDate", this.getCart[0]?.event?.start);
-        localStorage.setItem("startTime", this.getCart[0]?.event?.startTime);
-        localStorage.setItem("location", this.getCart[0]?.event?.location?.name);
-
-        this.spinner = false;
-        window.location.href = checkout_url;
-      } catch (error) {
-        this.spinner = false;
-        alert("Payment initialization failed");
-        console.error(error);
-      }
-    },
-    async mountStripeElements() {
-      if (this.stripeReady || !this.stripePublicKey) {
-        return;
-      }
-
-      try {
-        this.spinner = true;
-        
-        if (!this.stripe) {
-          this.stripe = await loadStripe(this.stripePublicKey);
+          minutes--;
+          seconds = 59;
+        } else {
+          seconds--;
         }
-
-        const affiliate = localStorage.getItem("affiliateCode");
-        const promoCode = localStorage.getItem("promoCode");
-        
-        const response = await axios.post(
-          "https://event-ticket-backend-yx81.onrender.com/api/stripe/create-payment-intent",
-          {
-            email: this.email,
-            amount: this.amount,
-            currency: this.cartCurrency,
-            metadata: {
-              orderData: JSON.stringify({
-                startDate: this.getCart[0]?.event?.start,
-                startTime: this.getCart[0]?.event?.startTime,
-                location: this.getCart[0]?.event?.location?.name,
-                userId: this.getCart[0]?.user,
-                productId: this.getCart[0]?._id,
-                title: this.getCart[0]?.title,
-                contact: {
-                  name: `${this.getContactInfo.firstName} ${this.getContactInfo.lastName}`,
-                  email: this.getContactInfo.email,
-                  phone: `${this.getContactInfo.countryCode}${this.getContactInfo.phone}`,
-                },
-                tickets: this.getSelectedTickets,
-                price: this.amount,
-                currency: this.cartCurrency,
-                affiliate,
-                promoCode,
-              }),
-            },
-          }
-        );
-
-        this.stripeClientSecret = response.data.clientSecret;
-        
-        const options = {
-          clientSecret: this.stripeClientSecret,
-          appearance: {
-            theme: 'stripe',
-            variables: {
-              colorPrimary: '#047143',
-              colorBackground: '#ffffff',
-              colorText: '#30313d',
-            },
-          },
-        };
-
-        this.stripeElements = this.stripe.elements(options);
-        this.stripePaymentElement = this.stripeElements.create('payment');
-        this.stripePaymentElement.mount('#stripe-payment-element');
-        
-        this.stripeReady = true;
-        this.spinner = false;
-      } catch (error) {
-        this.spinner = false;
-        console.error("Stripe initialization error:", error);
-        this.stripeErrorMessage = "Failed to initialize payment. Please try again.";
+        this.timer = `${minutes.toString().padStart(2, "0")}:${seconds
+          .toString()
+          .padStart(2, "0")}`;
+      }, 1000);
+    },
+    nextStep() {
+      if (this.currentStep === 1) {
+        this.setContactInfo(this.contact);
+      }
+      if (this.currentStep < this.steps.length - 1) {
+        this.currentStep++;
       }
     },
-    async initializeStripePayment() {
-      if (!this.stripe || !this.stripeElements) {
-        this.stripeErrorMessage = "Payment system not ready. Please refresh the page.";
-        return;
-      }
-
-      try {
-        this.spinner = true;
-        this.stripeErrorMessage = "";
-
-        const { error } = await this.stripe.confirmPayment({
-          elements: this.stripeElements,
-          confirmParams: {
-            return_url: `${window.location.origin}/payment-success`,
-          },
-        });
-
-        if (error) {
-          this.stripeErrorMessage = error.message;
-          this.spinner = false;
-        }
-      } catch (error) {
-        this.spinner = false;
-        this.stripeErrorMessage = "Payment failed. Please try again.";
-        console.error("Stripe payment error:", error);
-      }
-    },
-    async getTicket() {
-      try {
-        this.reference = this.generateReference(); // generate and store
-        localStorage.setItem("paystack_reference", this.reference);
-        this.spinner = true; // Show spinner while processing
-        const affiliate = localStorage.getItem("affiliateCode");
-
-        const payload = {
-          startDate: this.getCart[0]?.event?.start,
-          startTime: this.getCart[0]?.event?.startTime,
-          location: this.getCart[0]?.event?.location.name,
-          reference: this.reference,
-          userId: this.getCart[0]?.user,
-          productId: this.getCart[0]?._id,
-          title: this.getCart[0]?.title,
-          contact: {
-            name: `${this.getContactInfo.firstName} ${this.getContactInfo.lastName}`,
-            email: this.getContactInfo.email,
-            phone: `${this.getContactInfo.countryCode}${this.getContactInfo.phone}`,
-          },
-          tickets: this.getSelectedTickets,
-          price: this.cartTotal,
-          affiliate,
-        };
-
-        console.log("Sending order info:", payload);
-        const res = await axios.post(
-          "https://event-ticket-backend-yx81.onrender.com/api/order",
-          payload
-        );
-        this.spinner = false; // Hide spinner after processing
-        alert(
-          "Your ticket has been confirmed, check your  email inbox & spam for booking confirmation"
-        );
-        //this.showQRCode = true;
-        this.$refs.myForm.reset();
-        this.$router.push({ name: "home" });
-        console.log("Order info sent:", res.data);
-      } catch (err) {
-        console.error("Failed to send order info:", err);
+    prevStep() {
+      if (this.currentStep > 0) {
+        this.currentStep--;
       }
     },
     async applyPromo() {
+      if (!this.promoCode || this.promoCode.trim() === "") {
+        this.discountResult = { message: "Please enter a promo code." };
+        return;
+      }
       try {
-        const payload = {
-          code: this.promoCode,
-          orderTotal: this.cartTotal,
-          id: this.getCart[0].id,
-        };
-
-        console.log("Payload being sent:", payload);
-
-        const res = await axios.post(
-          "https://event-ticket-backend-yx81.onrender.com/api/apply-promo",
-          payload
+        const response = await axios.post(
+          `${process.env.VUE_APP_BASE_URL}/promo/validate`,
+          {
+            code: this.promoCode,
+            subtotal: this.rawSubtotal,
+          }
         );
-
-        this.discountResult = res.data;
-        localStorage.setItem("discountedTotal", res.data.newTotal);
-        localStorage.setItem("promoCode", this.promoCode);
-        console.log("Promo response:", res.data);
-      } catch (err) {
-        alert(`❌ ${err.response?.data?.message || err.message}`);
+        this.discountResult = response.data;
+      } catch (error) {
+        this.discountResult = {
+          message:
+            error.response?.data?.message || "Invalid or expired promo code.",
+        };
       }
     },
-
-    processPayment: () => {
-      window.alert("Payment recieved");
-    },
-    close: () => {
-      console.log("You closed checkout page");
-    },
-    updateProgressLine() {
-      const wrapper = this.$el.querySelector(".stepper-wrapper");
-      if (wrapper) {
-        const value = this.currentStep / (this.steps.length - 1);
-        wrapper.style.setProperty("--progress", value);
+    async initializeStripe() {
+      try {
+        this.stripe = await loadStripe(this.stripePublicKey);
+      } catch (error) {
+        console.error("Error loading Stripe:", error);
       }
     },
-    nextStep() {
-      this.$store.dispatch("setContactInfo", this.contact);
-      const selected = this.getCart.flatMap((product) =>
-        product.event.tickets
-          .filter((ticket) => ticket.selectedQuantity > 0)
-          .map((ticket) => ({
-            name: ticket.name,
-            quantity: ticket.selectedQuantity,
-          }))
-      );
-
-      // Save to Vuex
-      this.$store.commit("setSelectedTickets", selected);
-      if (this.currentStep < this.steps.length - 1) this.currentStep++;
+    async mountStripeElements() {
+      if (!this.stripe) return;
+      try {
+        const response = await axios.post(
+          `${process.env.VUE_APP_BASE_URL}/payment/stripe/create-payment-intent`,
+          {
+            amount: Math.round(this.cartTotal * 100),
+            currency: this.cartCurrency.toLowerCase(),
+            email: this.contact.email,
+          }
+        );
+        const { clientSecret } = response.data;
+        const appearance = { theme: "stripe" };
+        this.elements = this.stripe.elements({ clientSecret, appearance });
+        const paymentElement = this.elements.create("payment");
+        paymentElement.mount("#stripe-payment-element");
+      } catch (error) {
+        console.error("Error creating Stripe Payment Intent:", error);
+        this.stripeErrorMessage = "Failed to initialize payment. Please try again.";
+      }
     },
-    prevStep() {
-      if (this.currentStep > 0) this.currentStep--;
-    },
-
-    checkout() {
-      alert("✅ Checkout successful!");
-    },
-    startTimer() {
-      let totalSeconds = 600;
-      this.countdown = setInterval(() => {
-        totalSeconds--;
-        const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
-        const seconds = String(totalSeconds % 60).padStart(2, "0");
-        this.timer = `${minutes}:${seconds}`;
-        if (totalSeconds <= 0) {
-          clearInterval(this.countdown);
-          alert("⏰ Time expired! Please restart.");
-          location.reload();
+    async initializePayment() {
+      this.spinner = true;
+      try {
+        if (this.paymentGateway === "stripe") {
+          await this.handleStripePayment();
+        } else if (this.paymentGateway === "paystack") {
+          this.handlePaystackPayment();
+        } else if (this.paymentGateway === "fincra") {
+          await this.handleFincraPayment();
         }
-      }, 1000);
+      } catch (error) {
+        console.error("Payment initialization error:", error);
+        this.spinner = false;
+      }
     },
-  },
-  mounted() {
-    this.startTimer();
-
-    this.updateProgressLine();
-  },
-  beforeUnmount() {
-    clearInterval(this.countdown);
+    async handleStripePayment() {
+      if (!this.stripe || !this.elements) {
+        this.stripeErrorMessage = "Stripe not initialized";
+        this.spinner = false;
+        return;
+      }
+      const { error } = await this.stripe.confirmPayment({
+        elements: this.elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/success`,
+        },
+      });
+      if (error) {
+        this.stripeErrorMessage = error.message;
+        this.spinner = false;
+      }
+    },
+    handlePaystackPayment() {
+      this.$paystack({
+        key: this.publicKey,
+        email: this.contact.email,
+        amount: this.cartTotal * 100,
+        currency: this.cartCurrency,
+        ref: "" + Math.floor(Math.random() * 1000000000 + 1),
+        callback: (response) => {
+          this.onSuccessfulPayment(response.reference);
+        },
+        onClose: () => {
+          this.spinner = false;
+        },
+      });
+    },
+    async handleFincraPayment() {
+      try {
+        const response = await axios.post(
+          `${process.env.VUE_APP_BASE_URL}/payment/fincra/initiate`,
+          {
+            amount: this.cartTotal,
+            currency: this.cartCurrency,
+            customer: {
+              name: `${this.contact.firstName} ${this.contact.lastName}`,
+              email: this.contact.email,
+              phoneNumber: `${this.contact.countryCode}${this.contact.phone}`,
+            },
+            cart: this.getCart,
+          }
+        );
+        if (response.data && response.data.link) {
+          window.location.href = response.data.link;
+        }
+      } catch (error) {
+        console.error("Fincra payment error:", error);
+        this.spinner = false;
+      }
+    },
+    async onSuccessfulPayment(reference) {
+      try {
+        const response = await axios.post(
+          `${process.env.VUE_APP_BASE_URL}/payment/verify/${reference}`
+        );
+        if (response.data.status === "success") {
+          this.$router.push("/success");
+        } else {
+          alert("Payment verification failed. Please contact support.");
+          this.spinner = false;
+        }
+      } catch (error) {
+        console.error("Payment verification error:", error);
+        this.spinner = false;
+      }
+    },
+    async getTicket() {
+      this.spinner = true;
+      try {
+        const response = await axios.post(
+          `${process.env.VUE_APP_BASE_URL}/tickets/free`,
+          {
+            contact: this.contact,
+            cart: this.getCart,
+          }
+        );
+        if (response.data.success) {
+          this.$router.push("/success");
+        }
+      } catch (error) {
+        console.error("Free ticket error:", error);
+        alert("Failed to get free tickets. Please try again.");
+      } finally {
+        this.spinner = false;
+      }
+    },
   },
 };
 </script>
 
 <style scoped>
-/* Modern Checkout Design */
-.container {
-  background: #f8f9fa;
+* {
+  box-sizing: border-box;
+}
+
+.checkout-container {
   min-height: 100vh;
-  padding: 2rem 1rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 2rem 0;
 }
 
-.qr-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1050;
-  backdrop-filter: blur(4px);
+.checkout-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 2rem;
 }
 
-.modal-content {
-  background: #fff;
-  padding: 30px;
-  border-radius: 20px;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  animation: fadeIn 0.3s ease-in-out;
+@media (max-width: 991px) {
+  .checkout-wrapper {
+    grid-template-columns: 1fr;
+  }
 }
 
-.ticket-footer {
+/* Mobile Price Footer */
+.mobile-price-footer {
   position: fixed;
   bottom: 0;
   left: 0;
-  width: 100%;
+  right: 0;
   background: #047143;
-  padding: 15px 20px;
-  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  z-index: 9999;
+  padding: 1rem;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
 }
 
-.ticket-section {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 30px;
-  background: white;
-  border-radius: 20px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+.mobile-price-content {
+  text-align: center;
+  color: white;
 }
 
-h3 {
-  font-size: 1.75rem;
-  margin-bottom: 25px;
-  color: #2c3e50;
+.mobile-price-content small {
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+.mobile-total {
+  font-size: 1.25rem;
   font-weight: 700;
-  letter-spacing: -0.5px;
+  margin-top: 0.25rem;
 }
 
-.ticket-card {
+/* Main Checkout Area */
+.checkout-main {
   background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-  padding: 25px;
-  margin-bottom: 20px;
-  border: 1px solid #e9ecef;
-  transition: all 0.3s ease;
+  border-radius: 24px;
+  padding: 2.5rem;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
 }
 
-.ticket-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-  border-color: #f4a213;
+@media (max-width: 768px) {
+  .checkout-main {
+    padding: 1.5rem;
+    margin-bottom: 100px;
+  }
 }
 
-.ticket-content {
+/* Enhanced Progress Stepper */
+.progress-stepper {
+  position: relative;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  margin-bottom: 3rem;
+  padding: 0 1rem;
 }
 
-.ticket-info h5 {
-  font-size: 1.2rem;
-  margin: 0 0 8px;
-  color: #2c3e50;
-  font-weight: 600;
-}
-
-.price {
-  font-weight: 700;
-  color: #f4a213;
-  font-size: 1.15rem;
-  margin: 0 0 5px;
-}
-
-.access {
-  font-size: 0.9rem;
-  color: #6c757d;
-  margin: 0;
-}
-
-.ticket-select {
-  padding: 10px 14px;
-  font-size: 1rem;
+.stepper-track {
+  position: absolute;
+  top: 28px;
+  left: 15%;
+  right: 15%;
+  height: 4px;
+  background: #e9ecef;
   border-radius: 10px;
-  border: 2px solid #e9ecef;
-  outline: none;
-  background: white;
-  font-weight: 600;
-  color: #2c3e50;
-  transition: all 0.3s ease;
-  cursor: pointer;
+  z-index: 1;
 }
 
-.ticket-select:hover {
-  border-color: #f4a213;
-}
-
-.ticket-select:focus {
-  border-color: #f4a213;
-  box-shadow: 0 0 0 3px rgba(244, 162, 19, 0.1);
-}
-
-.stepper-wrapper {
-  position: relative;
-  width: 100%;
-  padding: 0 15px;
-}
-
-.stepper {
-  position: relative;
-  align-items: center;
-  display: flex;
-  background: white;
-  padding: 30px 20px;
-  border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-}
-
-.currentStep {
-  position: relative;
+.stepper-progress {
+  position: absolute;
+  top: 28px;
+  left: 15%;
+  height: 4px;
+  background: linear-gradient(90deg, #047143 0%, #f4a213 100%);
+  border-radius: 10px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 2;
-  flex: 1;
 }
 
-.circle {
-  width: 45px;
-  height: 45px;
+.step-item {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 3;
+}
+
+.step-indicator {
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  border: 3px solid #dee2e6;
+  background: white;
+  border: 4px solid #dee2e6;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 10px;
-  background-color: white;
-  color: #adb5bd;
   font-weight: 700;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  font-size: 1.1rem;
+  color: #adb5bd;
+  margin-bottom: 0.75rem;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
-.currentStep.step-active .circle {
-  border-color: #f4a213;
+.step-item.active .step-indicator {
   background: #f4a213;
+  border-color: #f4a213;
   color: white;
-  box-shadow: 0 4px 15px rgba(244, 162, 19, 0.3);
-  transform: scale(1.1);
+  transform: scale(1.15);
+  box-shadow: 0 6px 24px rgba(244, 162, 19, 0.35);
 }
 
-.currentStep.step-completed .circle {
+.step-item.completed .step-indicator {
   background: #047143;
-  color: white;
   border-color: #047143;
-  box-shadow: 0 2px 10px rgba(4, 113, 67, 0.2);
+  color: white;
+  box-shadow: 0 4px 16px rgba(4, 113, 67, 0.25);
 }
 
-.label {
-  font-size: 0.9rem;
-  color: #6c757d;
+.checkmark {
+  font-size: 1.3rem;
+}
+
+.step-number {
+  font-size: 1.1rem;
+}
+
+.step-label {
+  font-size: 0.95rem;
   font-weight: 500;
+  color: #6c757d;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
 }
 
-.currentStep.step-active .label {
+.step-item.active .step-label {
   color: #f4a213;
   font-weight: 700;
 }
 
-.currentStep.step-completed .label {
+.step-item.completed .step-label {
   color: #047143;
   font-weight: 600;
 }
 
-.progress-line {
-  position: absolute;
-  top: 22px;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background-color: #e9ecef;
-  z-index: 1;
-  border-radius: 10px;
+@media (max-width: 768px) {
+  .progress-stepper {
+    padding: 0 0.5rem;
+  }
+
+  .step-indicator {
+    width: 44px;
+    height: 44px;
+    font-size: 0.95rem;
+  }
+
+  .step-label {
+    font-size: 0.75rem;
+  }
+
+  .stepper-track,
+  .stepper-progress {
+    top: 22px;
+  }
 }
 
-.progress-fill {
-  height: 100%;
-  background: #f4a213;
-  width: 0%;
-  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 10px;
+/* Content Section */
+.content-section {
+  margin-top: 1.5rem;
 }
 
-.form-label {
+.section-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 2rem;
+  letter-spacing: -0.5px;
+}
+
+@media (max-width: 768px) {
+  .section-title {
+    font-size: 1.5rem;
+  }
+}
+
+/* Tickets List */
+.tickets-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.ticket-item {
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 16px;
+  padding: 1.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.ticket-item:hover {
+  border-color: #f4a213;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.ticket-details {
+  flex: 1;
+}
+
+.ticket-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0 0 0.5rem 0;
+}
+
+.ticket-price {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #f4a213;
+  margin: 0;
+}
+
+.ticket-selector {
+  margin-left: 1rem;
+}
+
+.quantity-select {
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  background: white;
+  color: #2c3e50;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 80px;
+}
+
+.quantity-select:hover {
+  border-color: #f4a213;
+}
+
+.quantity-select:focus {
+  outline: none;
+  border-color: #f4a213;
+  box-shadow: 0 0 0 4px rgba(244, 162, 19, 0.1);
+}
+
+.sold-out-badge {
+  background: #dc3545;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+/* Contact Form */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-label {
   font-weight: 600;
   color: #495057;
   margin-bottom: 0.5rem;
   font-size: 0.95rem;
 }
 
-.form-control {
+.form-input {
+  padding: 0.875rem 1.125rem;
+  font-size: 1rem;
   border: 2px solid #e9ecef;
   border-radius: 12px;
-  padding: 12px 16px;
-  font-size: 1rem;
-  transition: all 0.3s ease;
   background: white;
+  color: #2c3e50;
+  transition: all 0.3s ease;
 }
 
-.form-control:focus {
+.form-input:focus {
+  outline: none;
   border-color: #f4a213;
   box-shadow: 0 0 0 4px rgba(244, 162, 19, 0.1);
-  outline: none;
 }
 
-.country-code-select {
-  max-width: 110px;
-  min-width: 95px;
-  border-right: none;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-  border-top-left-radius: 12px;
-  border-bottom-left-radius: 12px;
-  font-size: 0.95rem;
-  padding: 12px 10px;
-  background-color: #f8f9fa;
-  border: 2px solid #e9ecef;
-  transition: all 0.3s ease;
-  height: calc(1.5em + 0.75rem + 26px);
-  font-weight: 600;
+.form-input::placeholder {
+  color: #adb5bd;
 }
 
-.country-code-select:focus {
-  background-color: white;
-  border-color: #f4a213;
-  box-shadow: none;
-  outline: none;
+/* Phone Input - PERFECTLY ALIGNED */
+.phone-group {
+  margin-top: 0.5rem;
 }
 
-.country-code-select option {
-  padding: 10px;
-  font-size: 0.9rem;
-}
-
-.input-group {
+.phone-input-wrapper {
   display: flex;
+  gap: 0;
   align-items: stretch;
 }
 
-.input-group .form-control {
+.country-select {
+  flex: 0 0 auto;
+  width: 135px;
+  padding: 0.875rem 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: 2px solid #e9ecef;
+  border-right: none;
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  background: #f8f9fa;
+  color: #2c3e50;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23495057' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2.25rem;
+}
+
+.phone-input {
+  flex: 1 1 auto;
+  padding: 0.875rem 1.125rem;
+  font-size: 1rem;
+  border: 2px solid #e9ecef;
+  border-left: none;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   border-top-right-radius: 12px;
   border-bottom-right-radius: 12px;
-  border-left: none;
-  height: calc(1.5em + 0.75rem + 26px);
-}
-
-.input-group .form-control:focus {
-  border-color: #f4a213;
-  box-shadow: none;
-  outline: none;
-}
-
-.input-group:focus-within .country-code-select {
-  border-color: #f4a213;
-  background-color: white;
-}
-
-.input-group:focus-within .form-control {
-  border-color: #f4a213;
-}
-
-.btn {
-  padding: 12px 30px;
-  border-radius: 12px;
-  font-weight: 700;
-  font-size: 1rem;
+  background: white;
+  color: #2c3e50;
   transition: all 0.3s ease;
-  border: none;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
-.btn-primary {
-  background: #f4a213;
-  color: white;
-  box-shadow: 0 4px 15px rgba(244, 162, 19, 0.3);
+.phone-input:focus {
+  outline: none;
+  border-color: #f4a213;
 }
 
-.btn-primary:hover:not(:disabled) {
-  background: #d68910;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(244, 162, 19, 0.4);
+.phone-input-wrapper:focus-within .country-select {
+  border-color: #f4a213;
+  background: white;
 }
 
-.btn-primary:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
+.phone-input-wrapper:focus-within .phone-input {
+  border-color: #f4a213;
+  box-shadow: 0 0 0 4px rgba(244, 162, 19, 0.1);
 }
 
-.btn-success {
-  background: #047143;
-  color: white;
-  box-shadow: 0 4px 15px rgba(4, 113, 67, 0.3);
+.error-message {
+  color: #dc3545;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-top: -0.5rem;
+  padding: 0.5rem;
+  background: #fff5f5;
+  border-radius: 8px;
+  border-left: 3px solid #dc3545;
 }
 
-.btn-success:hover:not(:disabled) {
-  background: #035a36;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(4, 113, 67, 0.4);
-}
-
-.btn-danger {
-  background: #dc3545;
-  color: white;
-  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
-}
-
-.btn-danger:hover:not(:disabled) {
-  background: #c82333;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
-}
-
-.col-md-4 .bg-light {
-  background: white !important;
-  border-radius: 20px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e9ecef;
-  border-left: 4px solid #f4a213 !important;
-}
-
-.alert-warning {
+/* Payment Section */
+.timer-alert {
   background: #fff3cd;
   border: 2px solid #ffc107;
   border-radius: 12px;
   color: #856404;
   font-weight: 600;
-  padding: 15px 20px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
 }
 
-.phone-field-wrapper {
-  margin-top: 1.5rem !important;
+.payment-option {
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  transition: all 0.3s ease;
 }
 
-.phone-field-wrapper .input-group {
+.payment-option:hover {
+  border-color: #f4a213;
+}
+
+.payment-radio {
+  margin-right: 0.75rem;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.payment-label {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #2c3e50;
+  cursor: pointer;
+}
+
+.payment-form {
+  margin-top: 1rem;
+}
+
+.stripe-container {
+  margin-top: 1rem;
+}
+
+.stripe-element {
+  padding: 1.25rem;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  background: white;
+}
+
+.terms-wrapper {
   display: flex;
-  align-items: stretch;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+  margin-top: 1rem;
 }
 
-.phone-field-wrapper .country-code-select {
-  max-width: 140px;
-  min-width: 120px;
-  flex: 0 0 auto !important;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
+.terms-checkbox {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  cursor: pointer;
+  flex-shrink: 0;
 }
 
-.phone-field-wrapper .form-control[type="tel"] {
-  flex: 1 1 auto !important;
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-  border-left: 0;
+.terms-label {
+  font-size: 0.95rem;
+  color: #495057;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.terms-label a {
+  color: #f4a213;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.terms-label a:hover {
+  text-decoration: underline;
+}
+
+/* Navigation Buttons */
+.nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 2px solid #e9ecef;
+}
+
+.nav-btn {
+  flex: 1;
+  max-width: 250px;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.back-btn {
+  background: #dc3545;
+  color: white;
+  box-shadow: 0 4px 16px rgba(220, 53, 69, 0.25);
+}
+
+.back-btn:hover:not(:disabled) {
+  background: #c82333;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(220, 53, 69, 0.35);
+}
+
+.next-btn,
+.get-tickets-btn {
+  background: #f4a213;
+  color: white;
+  box-shadow: 0 4px 16px rgba(244, 162, 19, 0.25);
+}
+
+.next-btn:hover:not(:disabled),
+.get-tickets-btn:hover:not(:disabled) {
+  background: #d68910;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(244, 162, 19, 0.35);
+}
+
+.pay-btn {
+  background: #047143;
+  color: white;
+  box-shadow: 0 4px 16px rgba(4, 113, 67, 0.25);
+}
+
+.pay-btn:hover:not(:disabled) {
+  background: #035a36;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(4, 113, 67, 0.35);
+}
+
+.nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
 }
 
 @media (max-width: 768px) {
-  .container {
-    padding: 1rem 0.5rem;
+  .nav-buttons {
+    flex-direction: column;
   }
 
-  h3 {
-    font-size: 1.4rem;
+  .nav-btn {
+    max-width: none;
   }
+}
 
-  .ticket-section {
-    padding: 20px 15px;
-  }
+/* Sidebar Summary */
+.checkout-sidebar {
+  position: sticky;
+  top: 2rem;
+  height: fit-content;
+}
 
-  .stepper {
-    padding: 20px 10px;
-  }
+.summary-card {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1);
+  border-left: 5px solid #f4a213;
+  margin-bottom: 1.5rem;
+}
 
-  .circle {
-    width: 35px;
-    height: 35px;
-    font-size: 0.9rem;
-  }
+.summary-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+}
 
-  .label {
-    font-size: 0.75rem;
-  }
+.selected-tickets {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid #e9ecef;
+}
 
-  .btn {
-    padding: 10px 20px;
-    font-size: 0.9rem;
-  }
+.tickets-heading {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.75rem;
+}
+
+.tickets-list-summary {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tickets-list-summary li {
+  padding: 0.5rem 0;
+  color: #6c757d;
+  font-size: 0.95rem;
+}
+
+.price-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.price-row.subtotal,
+.price-row.service-charge {
+  font-size: 0.95rem;
+  color: #6c757d;
+}
+
+.price-row.total {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #047143;
+  padding-top: 0.75rem;
+  border-top: 2px solid #e9ecef;
+  margin-top: 0.5rem;
+}
+
+/* Promo Section */
+.promo-section,
+.mobile-promo {
+  margin-top: 1.5rem;
+}
+
+.promo-input {
+  width: 100%;
+  padding: 0.875rem 1.125rem;
+  font-size: 0.95rem;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.promo-input:focus {
+  outline: none;
+  border-color: #f4a213;
+  box-shadow: 0 0 0 4px rgba(244, 162, 19, 0.1);
+}
+
+.apply-btn {
+  width: 100%;
+  padding: 0.875rem;
+  background: #f4a213;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.apply-btn:hover {
+  background: #d68910;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(244, 162, 19, 0.3);
+}
+
+.discount-message {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background: #d4edda;
+  border: 1px solid #c3e6cb;
+  border-radius: 8px;
+  color: #155724;
+  font-size: 0.9rem;
+}
+
+.mobile-promo {
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 16px;
+  margin-top: 2rem;
+}
+
+.fee-notice {
+  display: block;
+  margin-top: 1rem;
+  color: #6c757d;
+  font-size: 0.85rem;
 }
 </style>
