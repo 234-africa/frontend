@@ -1042,13 +1042,16 @@ export default {
   }
 }
 
-/* Enhanced Progress Stepper */
+/* Enhanced Progress Stepper - Override all Bootstrap wizard styles */
 .progress-stepper {
   position: relative;
   display: flex;
   justify-content: space-between;
   margin-bottom: 2.5rem;
   padding: 0 0.5rem;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 @media (max-width: 768px) {
@@ -1056,6 +1059,18 @@ export default {
     margin-bottom: 1.5rem;
     padding: 0 0.25rem;
   }
+}
+
+/* Force override any Bootstrap .wizard or .steps classes */
+.wizard,
+.steps,
+.wizard > .steps,
+.wizard > .steps > ul,
+.wizard > .steps > ul > li {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 .stepper-track {
@@ -1095,6 +1110,28 @@ export default {
   flex-direction: column;
   align-items: center;
   z-index: 3;
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: auto !important;
+  min-width: 0 !important;
+  box-shadow: none !important;
+}
+
+.step-item.active {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.step-item.completed {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 .step-indicator {
