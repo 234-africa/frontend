@@ -936,6 +936,9 @@ export default {
     },
     async handlePaystackPayment() {
       try {
+        console.log("🔵 Starting Paystack payment initialization...");
+        console.log("Backend URL:", process.env.VUE_APP_BASE_URL);
+        
         const selectedTickets = this.getCart.flatMap((product) =>
           product.event.tickets
             .filter((ticket) => ticket.selectedQuantity > 0)
@@ -966,15 +969,22 @@ export default {
           promoCode: this.promoCode,
         };
 
+        const payload = {
+          email: this.contact.email,
+          amount: this.cartTotal,
+          currency: this.cartCurrency,
+          metadata: { orderData },
+        };
+
+        console.log("📤 Sending Paystack initialization request:", payload);
+        console.log("📍 Endpoint:", `${process.env.VUE_APP_BASE_URL}/api/initialize`);
+
         const response = await axios.post(
           `${process.env.VUE_APP_BASE_URL}/api/initialize`,
-          {
-            email: this.contact.email,
-            amount: this.cartTotal,
-            currency: this.cartCurrency,
-            metadata: { orderData },
-          }
+          payload
         );
+
+        console.log("✅ Paystack initialization response:", response.data);
 
         const { authorization_url, reference } = response.data.data;
         localStorage.setItem("paystack_reference", reference);
@@ -986,8 +996,10 @@ export default {
         this.spinner = false;
         window.location.href = authorization_url;
       } catch (error) {
-        console.error("Paystack initialization error:", error);
-        alert("Failed to initialize Paystack payment. Please try again.");
+        console.error("❌ Paystack initialization error:", error);
+        console.error("❌ Error response:", error.response?.data);
+        console.error("❌ Error status:", error.response?.status);
+        alert(`Failed to initialize payment: ${error.response?.data?.error || error.message}`);
         this.spinner = false;
       }
     },
@@ -1073,6 +1085,9 @@ export default {
     },
     async getTicket() {
       try {
+        console.log("🟢 Starting free ticket order (getTicket method)...");
+        console.log("Backend URL:", process.env.VUE_APP_BASE_URL);
+        
         this.reference = this.generateReference();
         localStorage.setItem("paystack_reference", this.reference);
         this.spinner = true;
@@ -1107,18 +1122,24 @@ export default {
           promoCode: this.promoCode,
         };
 
-        console.log("Sending free ticket order:", payload);
+        console.log("📤 Sending free ticket order:", payload);
+        console.log("📍 Endpoint:", `${process.env.VUE_APP_BASE_URL}/api/order`);
+        
         const res = await axios.post(
           `${process.env.VUE_APP_BASE_URL}/api/order`,
           payload
         );
+        
+        console.log("✅ Free ticket order response:", res.data);
+        
         this.spinner = false;
         alert("Your ticket has been confirmed, check your email inbox & spam for booking confirmation");
         this.$router.push({ name: "home" });
-        console.log("Order confirmed:", res.data);
       } catch (err) {
-        console.error("Failed to get free ticket:", err);
-        alert("Failed to get free tickets. Please try again.");
+        console.error("❌ Failed to get free ticket:", err);
+        console.error("❌ Error response:", err.response?.data);
+        console.error("❌ Error status:", err.response?.status);
+        alert(`Failed to get free tickets: ${err.response?.data?.error || err.message}`);
         this.spinner = false;
       }
     },
