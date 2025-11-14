@@ -171,7 +171,6 @@ export default {
       selectedEvent: "",
       currentPage: 1,
       rowsPerPage: 10,
-      totalPrice: 0,
       orders: [],
     };
   },
@@ -326,9 +325,6 @@ export default {
       .then((response) => {
         this.orders = response.data.orders;
         console.log("Orders fetched:", this.orders);
-        const total = this.orders.reduce((sum, order) => sum + order.price, 0);
-        this.totalPrice = total;
-        console.log("Total price:", this.totalPrice);
       })
       .catch((error) => {
         console.error("Error fetching orders:", error.response?.data || error);
