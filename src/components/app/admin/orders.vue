@@ -51,7 +51,7 @@
             <td>{{ order.title }}</td>
             <td>{{ order.contact?.email || "N/A" }}</td>
             <td>{{ order.contact?.phone || "N/A" }}</td>
-            <td>${{ order.price }}</td>
+            <td>{{ formatPrice(order.price, order.currency) }}</td>
             <td>
               <div v-for="ticket in order.tickets" :key="ticket._id">
                 {{ ticket.name }} x {{ ticket.quantity }}
@@ -70,6 +70,7 @@
 <script>
 import axios from "axios";
 import { mapGetters } from "vuex";
+import { formatPrice } from "@/helpers/currency";
 
 export default {
   name: "Orders",
@@ -103,6 +104,7 @@ export default {
     this.fetchOrders();
   },
   methods: {
+    formatPrice,
     async fetchOrders() {
       try {
         const response = await axios.get(
