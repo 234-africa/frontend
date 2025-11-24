@@ -894,6 +894,7 @@ export default {
             .map((ticket) => ({
               name: ticket.name,
               quantity: ticket.selectedQuantity,
+              type: ticket.type,
             }))
         );
 
@@ -912,7 +913,7 @@ export default {
             phone: `${this.contact.countryCode}${this.contact.phone}`,
           },
           tickets: selectedTickets,
-          price: this.cartTotal,
+          price: this.subTotal,
           currency: this.cartCurrency,
           affiliate,
           promoCode: this.promoCode,
@@ -960,6 +961,7 @@ export default {
             .map((ticket) => ({
               name: ticket.name,
               quantity: ticket.selectedQuantity,
+              type: ticket.type,
             }))
         );
 
@@ -978,7 +980,7 @@ export default {
             phone: `${this.contact.countryCode}${this.contact.phone}`,
           },
           tickets: selectedTickets,
-          price: this.cartTotal,
+          price: this.subTotal,
           currency: this.cartCurrency,
           affiliate,
           promoCode: this.promoCode,
@@ -1048,6 +1050,7 @@ export default {
             .map((ticket) => ({
               name: ticket.name,
               quantity: ticket.selectedQuantity,
+              type: ticket.type,
             }))
         );
 
@@ -1065,7 +1068,7 @@ export default {
             phone: `${this.contact.countryCode}${this.contact.phone}`,
           },
           tickets: selectedTickets,
-          price: this.cartTotal,
+          price: this.subTotal,
           currency: this.cartCurrency,
           affiliate,
           promoCode: this.promoCode,
