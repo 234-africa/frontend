@@ -109,7 +109,7 @@
                     <td class="amount">{{ formatPrice(order.price, order.currency) }}</td>
                     <td>
                       <div v-for="ticket in order.tickets" :key="ticket._id" class="ticket-badge">
-                        {{ ticket.name }} x {{ ticket.quantity }}
+                        {{ ticket.name }} ({{ ticket.type || 'limited' }}) x {{ ticket.quantity }}
                       </div>
                     </td>
                   </tr>
