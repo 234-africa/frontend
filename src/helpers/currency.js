@@ -68,7 +68,7 @@ export function getTicketPriceRange(tickets) {
 
 /**
  * Get available payment gateways for a given currency
- * NGN → Both Paystack and Fincra (user can choose)
+ * NGN → Paystack, Alat Pay, and Fincra (user can choose, in that order)
  * GHS, USD, GBP, EUR, KES, UGX, ZMW, ZAR → Fincra only
  * @param {string} currency - Currency code
  * @returns {string[]} Array of available payment gateway names
@@ -77,8 +77,8 @@ export function getAvailablePaymentGateways(currency) {
   const normalizedCurrency = currency ? currency.toUpperCase() : "NGN";
   
   if (normalizedCurrency === "NGN") {
-    // NGN supports both Paystack and Fincra
-    return ["paystack", "fincra"];
+    // NGN supports Paystack, Alat Pay, and Fincra (in that order)
+    return ["paystack", "alatpay", "fincra"];
   } else if (["GHS", "USD", "GBP", "EUR", "KES", "UGX", "ZMW", "ZAR"].includes(normalizedCurrency)) {
     // Other currencies use Fincra only
     return ["fincra"];
@@ -90,10 +90,11 @@ export function getAvailablePaymentGateways(currency) {
 
 /**
  * Determine payment gateway based on currency (for backward compatibility)
- * Paystack → NGN only (Nigerian Naira)
+ * Paystack → NGN only (Nigerian Naira) - default for NGN
+ * Alat Pay → NGN only (Nigerian Naira)
  * Fincra → NGN, GHS, USD, GBP, EUR, KES, UGX, ZMW, ZAR (All currencies including Naira and Cedis)
  * @param {string} currency - Currency code
- * @returns {string} Payment gateway name ('paystack' or 'fincra')
+ * @returns {string} Payment gateway name ('paystack', 'alatpay', or 'fincra')
  * @deprecated Use getAvailablePaymentGateways() instead for multi-gateway support
  */
 export function getPaymentGateway(currency) {
