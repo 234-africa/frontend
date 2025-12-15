@@ -203,8 +203,8 @@
                     @change="selectGateway(gateway)"
                   />
                   <label :for="`gateway-${gateway}`" class="gateway-label">
-                    <span class="gateway-name">{{ gateway === 'paystack' ? 'Paystack' : 'Fincra' }}</span>
-                    <span class="gateway-badge">{{ gateway === 'paystack' ? '🇳🇬' : '🌍' }}</span>
+                    <span class="gateway-name">{{ getGatewayDisplayName(gateway) }}</span>
+                    <span class="gateway-badge">{{ getGatewayBadge(gateway) }}</span>
                   </label>
                 </div>
               </div>
@@ -221,6 +221,31 @@
               />
               <label class="payment-label" for="payCard">
                 {{ hasMultipleGateways ? 'Paystack Payment Details' : 'Pay with Paystack' }}
+              </label>
+              <form class="payment-form">
+                <div class="form-group">
+                  <label class="input-label">Email</label>
+                  <input
+                    :value="getContactInfo.email"
+                    type="email"
+                    class="form-input"
+                    readonly
+                  />
+                </div>
+              </form>
+            </div>
+
+            <!-- Alat Pay Payment (NGN only) -->
+            <div v-if="availablePaymentGateways.includes('alatpay') && (!hasMultipleGateways || selectedPaymentGateway === 'alatpay')" class="payment-option">
+              <input
+                class="payment-radio"
+                type="radio"
+                v-model="paymentMethod"
+                value="card"
+                id="payAlatpay"
+              />
+              <label class="payment-label" for="payAlatpay">
+                {{ hasMultipleGateways ? 'Alat Pay Payment Details' : 'Pay with Alat Pay' }}
               </label>
               <form class="payment-form">
                 <div class="form-group">
@@ -802,6 +827,22 @@ export default {
       this.isGatewayManuallySelected = true;
       console.log("✅ User manually selected gateway:", gateway);
     },
+    getGatewayDisplayName(gateway) {
+      const names = {
+        paystack: 'Paystack',
+        alatpay: 'Alat Pay',
+        fincra: 'Fincra'
+      };
+      return names[gateway] || gateway;
+    },
+    getGatewayBadge(gateway) {
+      const badges = {
+        paystack: '🇳🇬',
+        alatpay: '🏦',
+        fincra: '🌍'
+      };
+      return badges[gateway] || '💳';
+    },
     startCountdown() {
       let minutes = 10;
       let seconds = 0;
@@ -869,6 +910,9 @@ export default {
         if (this.paymentGateway === "paystack") {
           console.log("✅ Proceeding with Paystack");
           this.handlePaystackPayment();
+        } else if (this.paymentGateway === "alatpay") {
+          console.log("✅ Proceeding with Alat Pay");
+          await this.handleAlatpayPayment();
         } else if (this.paymentGateway === "fincra") {
           console.log("✅ Proceeding with Fincra");
           await this.handleFincraPayment();
@@ -950,6 +994,65 @@ export default {
         console.error("❌ Error response:", error.response?.data);
         console.error("❌ Error status:", error.response?.status);
         alert(`Failed to initialize payment: ${error.response?.data?.error || error.message}`);
+        this.spinner = false;
+      }
+    },
+    async handleAlatpayPayment() {
+      try {
+        console.log("🏦 Starting Alat Pay payment initialization...");
+        
+        const selectedTickets = this.getCart.flatMap((product) =>
+          product.event.tickets
+            .filter((ticket) => ticket.selectedQuantity > 0)
+            .map((ticket) => ({
+              name: ticket.name,
+              quantity: ticket.selectedQuantity,
+              type: ticket.type,
+            }))
+        );
+
+        const affiliate = localStorage.getItem("affiliateCode");
+
+        const orderData = {
+          startDate: this.getCart[0]?.event?.start,
+          startTime: this.getCart[0]?.event?.startTime,
+          location: this.getCart[0]?.event?.location?.name,
+          userId: this.getCart[0]?.user,
+          productId: this.getCart[0]?.id,
+          title: this.getCart[0]?.title,
+          contact: {
+            name: `${this.contact.firstName} ${this.contact.lastName}`,
+            email: this.contact.email,
+            phone: `${this.contact.countryCode}${this.contact.phone}`,
+          },
+          tickets: selectedTickets,
+          price: this.subTotal,
+          currency: "NGN",
+          affiliate,
+          promoCode: this.promoCode,
+        };
+
+        const response = await axios.post(
+          `${process.env.VUE_APP_BASE_URL}/api/alatpay/create-checkout`,
+          {
+            amount: this.cartTotal,
+            currency: "NGN",
+            email: this.contact.email,
+            metadata: { orderData },
+          }
+        );
+        
+        if (response.data && response.data.data && response.data.data.checkout_url) {
+          this.spinner = false;
+          window.location.href = response.data.data.checkout_url;
+        } else {
+          console.error("Invalid Alat Pay response:", response.data);
+          alert("Failed to initialize Alat Pay payment. Please try again.");
+          this.spinner = false;
+        }
+      } catch (error) {
+        console.error("Alat Pay payment error:", error);
+        alert("Failed to initialize Alat Pay payment. Please try again.");
         this.spinner = false;
       }
     },
