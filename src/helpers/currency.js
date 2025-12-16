@@ -67,7 +67,7 @@ export function getTicketPriceRange(tickets) {
 }
 
 /**
- * Get available payment gateways for a given currency
+ * Get available payment gateways for a given currency (2025 Official API Support)
  * NGN → Paystack, Alat Pay, and Fincra (user can choose, in that order)
  * GHS, USD, GBP, EUR, KES, UGX, ZMW, ZAR → Fincra only
  * @param {string} currency - Currency code
