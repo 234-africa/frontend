@@ -1087,22 +1087,22 @@ export default {
       
       loadAlatPayScript()
         .then((Alatpay) => {
-          console.log("🏦 AlatPay SDK loaded, opening popup...");
+          console.log("🏦 AlatPay Web Plugin loaded, opening popup...");
           
           const popup = Alatpay.setup({
             apiKey: config.apiKey,
             businessId: config.businessId,
             email: config.email,
-            amount: config.amount,
-            currency: config.currency,
             phone: config.phone || '',
             firstName: config.firstName,
             lastName: config.lastName || '',
-            metadata: JSON.stringify(config.metadata || {}),
+            metadata: config.metadata || null,
+            currency: config.currency,
+            amount: config.amount,
             onTransaction: function(response) {
               console.log("🏦 AlatPay transaction response:", response);
               self.spinner = false;
-              if (response && (response.status === 'successful' || response.status === 'success')) {
+              if (response && (response.status === 'successful' || response.status === 'success' || response.Status === 'completed')) {
                 window.location.href = `/payment-success?reference=${config.reference}&gateway=alatpay`;
               } else {
                 alert("Payment was not successful. Please try again.");
