@@ -68,8 +68,14 @@ export function getTicketPriceRange(tickets) {
 
 /**
  * Get available payment gateways for a given currency (2025 Official API Support)
- * NGN → Paystack, Alat Pay, and Fincra (user can choose, in that order)
- * GHS, USD, GBP, EUR, KES, UGX, ZMW, ZAR → Fincra only
+ * Per official docs:
+ * - Paystack: NGN only (https://paystack.com/docs)
+ * - AlatPay: NGN and USD (https://docs.alatpay.ng/web-plugin)
+ * - Fincra: NGN, GHS, KES, UGX, ZMW, ZAR, USD, XAF, XOF, TZS (https://docs.fincra.com/docs/checkout-redirect)
+ * 
+ * NGN → Paystack, Alat Pay, and Fincra
+ * USD → Alat Pay and Fincra
+ * GHS, KES, UGX, ZMW, ZAR, XAF, XOF, TZS → Fincra only
  * @param {string} currency - Currency code
  * @returns {string[]} Array of available payment gateway names
  */
@@ -79,8 +85,11 @@ export function getAvailablePaymentGateways(currency) {
   if (normalizedCurrency === "NGN") {
     // NGN supports Paystack, Alat Pay, and Fincra (in that order)
     return ["paystack", "alatpay", "fincra"];
-  } else if (["GHS", "USD", "GBP", "EUR", "KES", "UGX", "ZMW", "ZAR"].includes(normalizedCurrency)) {
-    // Other currencies use Fincra only
+  } else if (normalizedCurrency === "USD") {
+    // USD supports AlatPay (for cards) and Fincra
+    return ["alatpay", "fincra"];
+  } else if (["GHS", "KES", "UGX", "ZMW", "ZAR", "XAF", "XOF", "TZS"].includes(normalizedCurrency)) {
+    // These currencies use Fincra only
     return ["fincra"];
   } else {
     // Fallback to Fincra for unsupported currencies
@@ -90,21 +99,20 @@ export function getAvailablePaymentGateways(currency) {
 
 /**
  * Determine payment gateway based on currency (for backward compatibility)
- * Paystack → NGN only (Nigerian Naira) - default for NGN
- * Alat Pay → NGN only (Nigerian Naira)
- * Fincra → NGN, GHS, USD, GBP, EUR, KES, UGX, ZMW, ZAR (All currencies including Naira and Cedis)
+ * Per official docs:
+ * - Paystack → NGN only (default for NGN)
+ * - Alat Pay → NGN, USD (https://docs.alatpay.ng/web-plugin)
+ * - Fincra → NGN, GHS, KES, UGX, ZMW, ZAR, USD, XAF, XOF, TZS (https://docs.fincra.com/docs/checkout-redirect)
  * @param {string} currency - Currency code
  * @returns {string} Payment gateway name ('paystack', 'alatpay', or 'fincra')
  * @deprecated Use getAvailablePaymentGateways() instead for multi-gateway support
  */
 export function getPaymentGateway(currency) {
   const normalizedCurrency = currency ? currency.toUpperCase() : "NGN";
-  const paystackCurrencies = ["NGN"];
-  const fincraCurrencies = ["NGN", "GHS", "USD", "GBP", "EUR", "KES", "UGX", "ZMW", "ZAR"];
   
-  if (paystackCurrencies.includes(normalizedCurrency)) {
+  if (normalizedCurrency === "NGN") {
     return "paystack";
-  } else if (fincraCurrencies.includes(normalizedCurrency)) {
+  } else if (["GHS", "KES", "UGX", "ZMW", "ZAR", "USD", "XAF", "XOF", "TZS"].includes(normalizedCurrency)) {
     return "fincra";
   } else {
     return "fincra";
