@@ -235,7 +235,7 @@
               </form>
             </div>
 
-            <!-- Alat Pay Payment (NGN only) -->
+            <!-- Alat Pay Payment (NGN only - uses inline popup) -->
             <div v-if="availablePaymentGateways.includes('alatpay') && (!hasMultipleGateways || selectedPaymentGateway === 'alatpay')" class="payment-option">
               <input
                 class="payment-radio"
@@ -1042,9 +1042,17 @@ export default {
           }
         );
         
-        if (response.data && response.data.data && response.data.data.checkout_url) {
-          this.spinner = false;
-          window.location.href = response.data.data.checkout_url;
+        if (response.data && response.data.status && response.data.data) {
+          const config = response.data.data;
+          
+          localStorage.setItem("paystack_reference", config.reference);
+          localStorage.setItem("cartTotal", this.cartTotal);
+          localStorage.setItem("startDate", this.getCart[0]?.event?.start);
+          localStorage.setItem("startTime", this.getCart[0]?.event?.startTime);
+          localStorage.setItem("location", this.getCart[0]?.event?.location?.name);
+          localStorage.setItem("alatpay_order_data", JSON.stringify(orderData));
+          
+          this.openAlatPayPopup(config, orderData);
         } else {
           console.error("Invalid Alat Pay response:", response.data);
           alert("Failed to initialize Alat Pay payment. Please try again.");
@@ -1052,9 +1060,67 @@ export default {
         }
       } catch (error) {
         console.error("Alat Pay payment error:", error);
-        alert("Failed to initialize Alat Pay payment. Please try again.");
+        console.error("Alat Pay error response:", error.response?.data);
+        const errorMessage = error.response?.data?.error || error.message || "Unknown error";
+        alert(`Failed to initialize Alat Pay payment: ${errorMessage}`);
         this.spinner = false;
       }
+    },
+    openAlatPayPopup(config, orderData) {
+      const self = this;
+      
+      const loadAlatPayScript = () => {
+        return new Promise((resolve, reject) => {
+          if (window.Alatpay) {
+            resolve(window.Alatpay);
+            return;
+          }
+          
+          const script = document.createElement('script');
+          script.src = 'https://web.alatpay.ng/js/alatpay.js';
+          script.async = true;
+          script.onload = () => resolve(window.Alatpay);
+          script.onerror = () => reject(new Error('Failed to load AlatPay SDK'));
+          document.head.appendChild(script);
+        });
+      };
+      
+      loadAlatPayScript()
+        .then((Alatpay) => {
+          console.log("🏦 AlatPay SDK loaded, opening popup...");
+          
+          const popup = Alatpay.setup({
+            apiKey: config.apiKey,
+            businessId: config.businessId,
+            email: config.email,
+            amount: config.amount,
+            currency: config.currency,
+            phone: config.phone || '',
+            firstName: config.firstName,
+            lastName: config.lastName || '',
+            metadata: JSON.stringify(config.metadata || {}),
+            onTransaction: function(response) {
+              console.log("🏦 AlatPay transaction response:", response);
+              self.spinner = false;
+              if (response && (response.status === 'successful' || response.status === 'success')) {
+                window.location.href = `/payment-success?reference=${config.reference}&gateway=alatpay`;
+              } else {
+                alert("Payment was not successful. Please try again.");
+              }
+            },
+            onClose: function() {
+              console.log("🏦 AlatPay popup closed");
+              self.spinner = false;
+            }
+          });
+          
+          popup.show();
+        })
+        .catch((error) => {
+          console.error("Failed to load AlatPay SDK:", error);
+          alert("Failed to load payment gateway. Please try again.");
+          self.spinner = false;
+        });
     },
     async handleFincraPayment() {
       try {
@@ -1109,7 +1175,9 @@ export default {
         }
       } catch (error) {
         console.error("Fincra payment error:", error);
-        alert("Failed to initialize Fincra payment. Please try again.");
+        console.error("Fincra error response:", error.response?.data);
+        const errorMessage = error.response?.data?.error || error.message || "Unknown error";
+        alert(`Failed to initialize Fincra payment: ${errorMessage}`);
         this.spinner = false;
       }
     },
