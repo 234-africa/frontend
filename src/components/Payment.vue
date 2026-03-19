@@ -188,7 +188,7 @@
               <p class="gateway-instruction">Choose your preferred payment gateway:</p>
               <div class="gateway-options">
                 <div 
-                  v-for="gateway in availablePaymentGateways" 
+                  v-for="gateway in availablePaymentGateways.filter(g => g !== 'fincra')" 
                   :key="gateway" 
                   class="gateway-option"
                   :class="{ 'selected': selectedPaymentGateway === gateway }"
@@ -261,7 +261,7 @@
             </div>
 
             <!-- Fincra Payment -->
-            <div v-if="availablePaymentGateways.includes('fincra') && (!hasMultipleGateways || selectedPaymentGateway === 'fincra')" class="payment-option">
+            <div v-if="availablePaymentGateways.includes('fincra') && (!hasMultipleGateways || selectedPaymentGateway === 'fincra')" class="payment-option" style="display: none !important;">
               <input
                 class="payment-radio"
                 type="radio"
