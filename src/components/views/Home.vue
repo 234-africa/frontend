@@ -179,7 +179,7 @@
         <!-- Image Section -->
         <div class="col-lg-6 text-center">
           <img
-            src="WhatsApp Image 2025-08-26 at 16.50.53_abdf8872.jpg"
+            src="/section-about.jpg"
             alt="People enjoying an event at 234africa"
             class="img-fluid rounded"
             width="600"
@@ -194,7 +194,7 @@
         <!-- SVG Illustration -->
         <div class="col-md-6 text-center mt-4 mt-md-0">
           <img
-            src="/WhatsApp Image 2025-08-25 at 15.27.25_f8d06780.jpg"
+            src="/section-manage.jpg"
             class="img-fluid"
             alt="Manage Events Illustration at 234africa"
             width="600"
@@ -224,8 +224,8 @@
               payments
             </li>
           </ul>
-          <a href="features-create.html" class="btn btn-primary btn-primary:hover mt-3"
-            >Create Event</a
+          <router-link to="/dashboard?activeTab=add-event" class="btn btn-primary btn-primary:hover mt-3"
+            >Create Event</router-link
           >
         </div>
       </div>
@@ -264,7 +264,9 @@
                   </li>
                 </ul>
                 <a
-                  href="#"
+                  href="https://wa.link/55uckw"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   class="btn btn-primary btn-primary:hover mt-3 mb-3"
                   style="color: #429371"
                   >Get Help Now</a
@@ -272,7 +274,7 @@
               </div>
               <div class="col-md-6 mb-4 mb-md-0 text-center">
                 <img
-                  src="/WhatsApp Image 2025-08-25 at 15.27.25_58bc1d25.jpg"
+                  src="/section-support.jpg"
                   class="img-fluid"
                   alt="24/7 Live Support at 234africa"
                   width="600"
