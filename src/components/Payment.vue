@@ -1363,11 +1363,14 @@ export default {
   border-radius: 24px;
   padding: 2.5rem;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+  width: 100%;
+  overflow: hidden;
 }
 
 @media (max-width: 768px) {
   .checkout-main {
-    padding: 1.25rem 1rem;
+    padding: 1.25rem 1.25rem;
     margin-bottom: 100px;
     border-radius: 0;
     box-shadow: none;
@@ -1569,6 +1572,9 @@ export default {
 /* Content Section */
 .content-section {
   margin-top: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 @media (max-width: 768px) {
