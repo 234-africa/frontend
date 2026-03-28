@@ -107,7 +107,12 @@
             <div class="mb-3">
               <label class="form-label">What's your event about:</label>
               <div>
-                <textarea class="w-100 h-50" v-model="product.description" />
+                <textarea
+                  class="w-100 form-control"
+                  v-model="product.description"
+                  rows="6"
+                  style="min-height: 150px; resize: vertical;"
+                />
               </div>
             </div>
           </div>
@@ -302,6 +307,15 @@
                 </div>
 
                 <div class="col-md-2">
+                  <label class="form-label">Type</label>
+                  <select v-model="ticket.type" class="form-select" required>
+                    <option value="" disabled selected>Select type</option>
+                    <option value="limited">Limited</option>
+                    <option value="unlimited">Unlimited</option>
+                  </select>
+                </div>
+
+                <div class="col-md-2">
                   <label class="form-label">Quantity</label>
                   <input
                     v-model.number="ticket.quantity"
@@ -309,7 +323,7 @@
                     class="form-control p-3"
                     :disabled="ticket.type === 'unlimited'"
                     :required="ticket.type === 'limited'"
-                    min="1"
+                    min="0"
                     placeholder="e.g. 100"
                   />
                 </div>
@@ -336,24 +350,19 @@
                 </div>
 
                 <div class="col-md-2">
-                  <label class="form-label">Type</label>
-                  <select v-model="ticket.type" class="form-select" required>
-                    <option value="" disabled selected>Select type</option>
-                    <option value="limited">Limited</option>
-                    <option value="unlimited">Unlimited</option>
-                  </select>
-                </div>
-
-                <div class="col-md-2">
                   <label class="form-label">Purchase Limit</label>
-                  <input
+                  <select
                     v-model.number="ticket.purchaseLimit"
-                    type="number"
-                    class="form-control"
-                    min="1"
-                    placeholder="tickets per order"
+                    class="form-select"
                     required
-                  />
+                  >
+                    <option value="" disabled selected>Per order</option>
+                    <option :value="1">1</option>
+                    <option :value="2">2</option>
+                    <option :value="3">3</option>
+                    <option :value="4">4</option>
+                    <option :value="5">5</option>
+                  </select>
                 </div>
 
                 <div class="col-md-1 d-flex pb-2 pt-2 pb-md-0 pt-md-0 align-items-end">
