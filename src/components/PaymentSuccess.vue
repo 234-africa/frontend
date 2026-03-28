@@ -51,18 +51,17 @@ export default {
           location,
           promoCode,
           affiliate,
-          reference, // Paystack reference
+          reference,
           productId: this.getCart[0]?._id,
-          title: this.getCart[0]?.title, // Get name from first cart item
+          title: this.getCart[0]?.title,
           contact: {
             name: `${this.getContactInfo.firstName} ${this.getContactInfo.lastName}`,
-
             email: this.getContactInfo.email,
             phone: this.getContactInfo.phone,
           },
-          userId: this.getCart[0]?.user, // Get user from first cart item
-          tickets: this.getSelectedTickets, // Only selected ones
-          price, // Total price from cart
+          userId: this.getCart[0]?.user,
+          tickets: this.getSelectedTickets,
+          price,
         };
         console.log("Sending order info:", payload);
         const res = await axios.post(
@@ -70,7 +69,6 @@ export default {
           payload
         );
         console.log("Order info sent:", res.data);
-        // ✅ Clear storage values after successful order
       } catch (err) {
         console.error("Failed to send order info:", err);
       }
@@ -84,13 +82,27 @@ export default {
       return;
     }
 
+    // Detect gateway from URL query param (?gateway=alatpay)
+    const urlParams = new URLSearchParams(window.location.search);
+    const gateway = urlParams.get("gateway");
+
     try {
-      const res = await axios.get(
-        `https://event-ticket-backend-yx81.onrender.com/api/verify/${this.reference}`
-      );
-      if (res.data.data.status === "success") {
+      if (gateway === "alatpay") {
+        // Alat Pay: payment already confirmed by the popup callback before redirect.
+        // The onTransaction handler only redirects here on success, so we trust it
+        // and create the order directly without a separate Paystack verify call.
+        console.log("✅ Alat Pay redirect detected — marking as verified");
         this.verified = true;
-        await this.sendOrderInfo(); // Send order info after successful verification
+        await this.sendOrderInfo();
+      } else {
+        // Paystack (default): verify via backend
+        const res = await axios.get(
+          `https://event-ticket-backend-yx81.onrender.com/api/verify/${this.reference}`
+        );
+        if (res.data.data.status === "success") {
+          this.verified = true;
+          await this.sendOrderInfo();
+        }
       }
     } catch (err) {
       console.error("Verification error:", err);
