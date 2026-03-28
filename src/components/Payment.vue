@@ -212,17 +212,19 @@
 
             <!-- Paystack Payment -->
             <div v-if="availablePaymentGateways.includes('paystack') && (!hasMultipleGateways || selectedPaymentGateway === 'paystack')" class="payment-option">
-              <input
-                class="payment-radio"
-                type="radio"
-                v-model="paymentMethod"
-                value="card"
-                id="payCard"
-              />
-              <label class="payment-label" for="payCard">
-                {{ hasMultipleGateways ? 'Paystack Payment Details' : 'Pay with Paystack' }}
-              </label>
-              <form class="payment-form">
+              <div class="payment-option-header">
+                <input
+                  class="payment-radio"
+                  type="radio"
+                  v-model="paymentMethod"
+                  value="card"
+                  id="payCard"
+                />
+                <label class="payment-label" for="payCard">
+                  {{ hasMultipleGateways ? 'Paystack Payment Details' : 'Pay with Paystack' }}
+                </label>
+              </div>
+              <div class="payment-form">
                 <div class="form-group">
                   <label class="input-label">Email</label>
                   <input
@@ -232,22 +234,24 @@
                     readonly
                   />
                 </div>
-              </form>
+              </div>
             </div>
 
             <!-- Alat Pay Payment (NGN only - uses inline popup) -->
             <div v-if="availablePaymentGateways.includes('alatpay') && (!hasMultipleGateways || selectedPaymentGateway === 'alatpay')" class="payment-option">
-              <input
-                class="payment-radio"
-                type="radio"
-                v-model="paymentMethod"
-                value="card"
-                id="payAlatpay"
-              />
-              <label class="payment-label" for="payAlatpay">
-                {{ hasMultipleGateways ? 'Alat Pay Payment Details' : 'Pay with Alat Pay' }}
-              </label>
-              <form class="payment-form">
+              <div class="payment-option-header">
+                <input
+                  class="payment-radio"
+                  type="radio"
+                  v-model="paymentMethod"
+                  value="card"
+                  id="payAlatpay"
+                />
+                <label class="payment-label" for="payAlatpay">
+                  {{ hasMultipleGateways ? 'Alat Pay Payment Details' : 'Pay with Alat Pay' }}
+                </label>
+              </div>
+              <div class="payment-form">
                 <div class="form-group">
                   <label class="input-label">Email</label>
                   <input
@@ -257,22 +261,24 @@
                     readonly
                   />
                 </div>
-              </form>
+              </div>
             </div>
 
             <!-- Fincra Payment -->
             <div v-if="availablePaymentGateways.includes('fincra') && (!hasMultipleGateways || selectedPaymentGateway === 'fincra')" class="payment-option" style="display: none !important;">
-              <input
-                class="payment-radio"
-                type="radio"
-                v-model="paymentMethod"
-                value="card"
-                id="payFincra"
-              />
-              <label class="payment-label" for="payFincra">
-                {{ hasMultipleGateways ? 'Fincra Payment Details' : 'Pay with Fincra' }}
-              </label>
-              <form class="payment-form">
+              <div class="payment-option-header">
+                <input
+                  class="payment-radio"
+                  type="radio"
+                  v-model="paymentMethod"
+                  value="card"
+                  id="payFincra"
+                />
+                <label class="payment-label" for="payFincra">
+                  {{ hasMultipleGateways ? 'Fincra Payment Details' : 'Pay with Fincra' }}
+                </label>
+              </div>
+              <div class="payment-form">
                 <div class="form-group">
                   <label class="input-label">Email</label>
                   <input
@@ -282,7 +288,7 @@
                     readonly
                   />
                 </div>
-              </form>
+              </div>
             </div>
 
             <!-- Terms & Conditions -->
@@ -324,7 +330,7 @@
           
           <button
             v-if="currentStep < steps.length - 1"
-            :disabled="(currentStep === 1 && emailMismatch) || !hasSelectedTickets"
+            :disabled="(currentStep === 1 && !isContactValid) || !hasSelectedTickets"
             type="button"
             class="nav-btn next-btn"
             @click="nextStep"
@@ -334,7 +340,7 @@
 
           <button
             v-else-if="cartTotal === 0"
-            :disabled="emailMismatch || !contact.phone"
+            :disabled="!isContactValid"
             type="submit"
             class="nav-btn get-tickets-btn"
             @click="getTicket()"
@@ -778,6 +784,16 @@ export default {
     hasSelectedTickets() {
       return this.selectedTickets.length > 0;
     },
+    isContactValid() {
+      return (
+        this.contact.firstName.trim() !== "" &&
+        this.contact.lastName.trim() !== "" &&
+        this.contact.email.trim() !== "" &&
+        this.contact.confirmEmail.trim() !== "" &&
+        this.contact.phone.trim() !== "" &&
+        !this.emailMismatch
+      );
+    },
     availablePaymentGateways() {
       return getAvailablePaymentGateways(this.cartCurrency);
     },
@@ -883,11 +899,13 @@ export default {
         return;
       }
       try {
+        const productId = this.getCart[0]?._id || this.getCart[0]?.id || "";
         const response = await axios.post(
-          `${process.env.VUE_APP_BASE_URL}/promo/validate`,
+          `${process.env.VUE_APP_BASE_URL}/api/apply-promo`,
           {
             code: this.promoCode,
-            subtotal: this.rawSubtotal,
+            orderTotal: this.rawSubtotal,
+            id: productId,
           }
         );
         this.discountResult = response.data;
@@ -1934,10 +1952,19 @@ export default {
   border: 2px solid #e9ecef;
   border-radius: 12px;
   transition: all 0.3s ease;
+  display: block;
 }
 
 .payment-option:hover {
   border-color: #f4a213;
+}
+
+.payment-option-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
 }
 
 .payment-radio {
