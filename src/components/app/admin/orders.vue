@@ -6,16 +6,17 @@
     </div>
 
     <!-- 🔍 Search Input & Export Button -->
-    <div class="p-3 d-flex justify-content-between align-items-center">
+    <div class="p-3 d-flex justify-content-between align-items-center gap-2 flex-wrap">
       <input
         v-model="searchQuery"
         type="text"
-        class="form-control w-50"
+        class="form-control"
+        style="max-width: 320px; min-width: 180px;"
         placeholder="Search by Email or Reference"
       />
       <button
         @click="exportToExcel"
-        class="btn btn-success"
+        class="btn btn-success d-flex align-items-center gap-1 flex-shrink-0"
         :disabled="exportLoading"
       >
         <span v-if="exportLoading">
