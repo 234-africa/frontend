@@ -1297,6 +1297,8 @@ export default {
   min-height: 100vh;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   padding: 2rem 0;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 @media (max-width: 768px) {
@@ -1313,6 +1315,8 @@ export default {
   display: grid;
   grid-template-columns: 1fr 380px;
   gap: 2rem;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 @media (max-width: 991px) {
@@ -1684,6 +1688,9 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 @media (max-width: 768px) {
@@ -1696,6 +1703,7 @@ export default {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
+  width: 100%;
 }
 
 @media (max-width: 768px) {
@@ -1708,6 +1716,8 @@ export default {
 .form-group {
   display: flex;
   flex-direction: column;
+  width: 100%;
+  min-width: 0;
 }
 
 .input-label {
@@ -1725,6 +1735,8 @@ export default {
 }
 
 .form-input {
+  width: 100%;
+  max-width: 100%;
   padding: 0.85rem 1rem;
   font-size: 0.95rem;
   border: 2px solid #e9ecef;
@@ -1732,6 +1744,7 @@ export default {
   background: white;
   color: #2c3e50;
   transition: all 0.3s ease;
+  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
@@ -1752,22 +1765,28 @@ export default {
   color: #adb5bd;
 }
 
-/* Phone Input - PERFECTLY ALIGNED */
+/* Phone Input */
 .phone-group {
   margin-top: 0.5rem;
+  width: 100%;
+  min-width: 0;
 }
 
 .phone-input-wrapper {
   display: flex;
   gap: 0;
   align-items: stretch;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .country-select {
-  flex: 0 0 auto;
-  width: 130px;
-  padding: 0.85rem 0.7rem;
-  font-size: 0.9rem;
+  flex: 0 0 110px;
+  width: 110px;
+  min-width: 0;
+  padding: 0.85rem 0.5rem;
+  font-size: 0.85rem;
   font-weight: 600;
   border: 2px solid #e9ecef;
   border-right: none;
@@ -1782,25 +1801,29 @@ export default {
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23495057' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 0.65rem center;
-  padding-right: 2rem;
+  background-position: right 0.4rem center;
+  padding-right: 1.5rem;
+  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
   .country-select {
-    width: 115px;
-    padding: 0.75rem 0.6rem;
-    font-size: 0.85rem;
+    flex: 0 0 100px;
+    width: 100px;
+    padding: 0.75rem 0.5rem;
+    font-size: 0.8rem;
     border-radius: 8px;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
-    padding-right: 1.75rem;
-    background-position: right 0.5rem center;
+    padding-right: 1.4rem;
+    background-position: right 0.35rem center;
   }
 }
 
 .phone-input {
-  flex: 1 1 auto;
+  flex: 1 1 0;
+  min-width: 0;
+  width: 0;
   padding: 0.85rem 1rem;
   font-size: 0.95rem;
   border: 2px solid #e9ecef;
@@ -1812,11 +1835,12 @@ export default {
   background: white;
   color: #2c3e50;
   transition: all 0.3s ease;
+  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
   .phone-input {
-    padding: 0.75rem 0.9rem;
+    padding: 0.75rem 0.75rem;
     font-size: 0.9rem;
     border-radius: 8px;
     border-top-left-radius: 0;
