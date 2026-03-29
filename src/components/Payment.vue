@@ -155,10 +155,10 @@
               <!-- Phone -->
               <div style="display:flex;flex-direction:column;width:100%;box-sizing:border-box;">
                 <label style="font-weight:600;color:#495057;margin-bottom:6px;font-size:0.9rem;display:block;width:100%;">Phone Number *</label>
-                <div style="display:flex;width:100%;box-sizing:border-box;overflow:hidden;border:2px solid #e9ecef;border-radius:10px;">
+                <div style="display:flex;width:100%;box-sizing:border-box;border:2px solid #e9ecef;border-radius:10px;overflow:hidden;background:white;">
                   <select
                     v-model="contact.countryCode"
-                    style="flex:0 0 100px;width:100px;padding:12px 6px;font-size:0.85rem;font-weight:600;border:none;border-right:2px solid #e9ecef;background:#f8f9fa;color:#2c3e50;cursor:pointer;outline:none;box-sizing:border-box;"
+                    style="flex:0 0 90px;width:90px;padding:12px 4px 12px 8px;font-size:0.85rem;font-weight:600;border:none;border-right:2px solid #e9ecef;background:#f8f9fa;color:#2c3e50;cursor:pointer;outline:none;box-sizing:border-box;appearance:none;-webkit-appearance:none;"
                   >
                     <option
                       v-for="(country, index) in processedCountryCodes"
@@ -173,7 +173,7 @@
                     type="tel"
                     placeholder="Enter phone number"
                     required
-                    style="flex:1 1 0%;min-width:0;padding:12px 14px;font-size:0.95rem;border:none;background:white;color:#2c3e50;outline:none;box-sizing:border-box;"
+                    style="flex:1 1 0%;min-width:0;width:0;padding:12px 14px;font-size:0.95rem;border:none;background:white;color:#2c3e50;outline:none;box-sizing:border-box;"
                   />
                 </div>
               </div>
