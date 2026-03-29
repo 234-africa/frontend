@@ -98,80 +98,86 @@
           <div v-else-if="currentStep === 1" class="content-section">
             <h3 class="section-title">📇 Contact Information</h3>
 
-            <form ref="myForm" @submit.prevent="" class="contact-form">
-              <div class="form-row">
-                <div class="form-group">
-                  <label class="input-label">First Name *</label>
-                  <input
-                    v-model="contact.firstName"
-                    type="text"
-                    class="form-input"
-                    placeholder="Enter first name"
-                    required
-                  />
-                </div>
-                <div class="form-group">
-                  <label class="input-label">Last Name *</label>
-                  <input
-                    v-model="contact.lastName"
-                    type="text"
-                    class="form-input"
-                    placeholder="Enter last name"
-                    required
-                  />
-                </div>
-              </div>
+            <form ref="myForm" @submit.prevent="" style="display:flex;flex-direction:column;gap:1rem;width:100%;box-sizing:border-box;">
 
-              <div class="form-group">
-                <label class="input-label">Email Address *</label>
-                <input 
-                  v-model="contact.email" 
-                  type="email" 
-                  class="form-input"
-                  placeholder="your.email@example.com"
-                  required 
+              <!-- First Name -->
+              <div style="display:flex;flex-direction:column;width:100%;box-sizing:border-box;">
+                <label style="font-weight:600;color:#495057;margin-bottom:6px;font-size:0.9rem;display:block;width:100%;">First Name *</label>
+                <input
+                  v-model="contact.firstName"
+                  type="text"
+                  placeholder="Enter first name"
+                  required
+                  style="width:100%;box-sizing:border-box;padding:12px 14px;font-size:0.95rem;border:2px solid #e9ecef;border-radius:10px;background:white;color:#2c3e50;outline:none;display:block;"
                 />
               </div>
 
-              <div class="form-group">
-                <label class="input-label">Confirm Email Address *</label>
+              <!-- Last Name -->
+              <div style="display:flex;flex-direction:column;width:100%;box-sizing:border-box;">
+                <label style="font-weight:600;color:#495057;margin-bottom:6px;font-size:0.9rem;display:block;width:100%;">Last Name *</label>
+                <input
+                  v-model="contact.lastName"
+                  type="text"
+                  placeholder="Enter last name"
+                  required
+                  style="width:100%;box-sizing:border-box;padding:12px 14px;font-size:0.95rem;border:2px solid #e9ecef;border-radius:10px;background:white;color:#2c3e50;outline:none;display:block;"
+                />
+              </div>
+
+              <!-- Email -->
+              <div style="display:flex;flex-direction:column;width:100%;box-sizing:border-box;">
+                <label style="font-weight:600;color:#495057;margin-bottom:6px;font-size:0.9rem;display:block;width:100%;">Email Address *</label>
+                <input
+                  v-model="contact.email"
+                  type="email"
+                  placeholder="your.email@example.com"
+                  required
+                  style="width:100%;box-sizing:border-box;padding:12px 14px;font-size:0.95rem;border:2px solid #e9ecef;border-radius:10px;background:white;color:#2c3e50;outline:none;display:block;"
+                />
+              </div>
+
+              <!-- Confirm Email -->
+              <div style="display:flex;flex-direction:column;width:100%;box-sizing:border-box;">
+                <label style="font-weight:600;color:#495057;margin-bottom:6px;font-size:0.9rem;display:block;width:100%;">Confirm Email Address *</label>
                 <input
                   v-model="contact.confirmEmail"
                   type="email"
-                  class="form-input"
                   placeholder="Confirm your email"
                   required
+                  style="width:100%;box-sizing:border-box;padding:12px 14px;font-size:0.95rem;border:2px solid #e9ecef;border-radius:10px;background:white;color:#2c3e50;outline:none;display:block;"
                 />
               </div>
 
-              <div v-if="emailMismatch" class="error-message">
+              <div v-if="emailMismatch" style="color:#dc3545;font-size:0.9rem;font-weight:500;padding:8px 12px;background:#fff5f5;border-radius:8px;border-left:3px solid #dc3545;">
                 Email addresses do not match
               </div>
 
-              <div class="form-group phone-group">
-                <label class="input-label">Phone Number *</label>
-                <div class="phone-input-wrapper">
-                  <select 
-                    v-model="contact.countryCode" 
-                    class="country-select"
+              <!-- Phone -->
+              <div style="display:flex;flex-direction:column;width:100%;box-sizing:border-box;">
+                <label style="font-weight:600;color:#495057;margin-bottom:6px;font-size:0.9rem;display:block;width:100%;">Phone Number *</label>
+                <div style="display:flex;width:100%;box-sizing:border-box;overflow:hidden;border:2px solid #e9ecef;border-radius:10px;">
+                  <select
+                    v-model="contact.countryCode"
+                    style="flex:0 0 100px;width:100px;padding:12px 6px;font-size:0.85rem;font-weight:600;border:none;border-right:2px solid #e9ecef;background:#f8f9fa;color:#2c3e50;cursor:pointer;outline:none;box-sizing:border-box;"
                   >
-                    <option 
-                      v-for="(country, index) in processedCountryCodes" 
-                      :key="`${country.code}-${country.name}-${index}`" 
+                    <option
+                      v-for="(country, index) in processedCountryCodes"
+                      :key="`${country.code}-${country.name}-${index}`"
                       :value="country.dialCode"
                     >
                       {{ country.flag }} {{ country.dialCode }}
                     </option>
                   </select>
-                  <input 
-                    v-model="contact.phone" 
-                    type="tel" 
-                    class="phone-input"
+                  <input
+                    v-model="contact.phone"
+                    type="tel"
                     placeholder="Enter phone number"
-                    required 
+                    required
+                    style="flex:1 1 0%;min-width:0;padding:12px 14px;font-size:0.95rem;border:none;background:white;color:#2c3e50;outline:none;box-sizing:border-box;"
                   />
                 </div>
               </div>
+
             </form>
           </div>
 
