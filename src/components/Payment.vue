@@ -13,8 +13,9 @@
       <div class="checkout-main">
         <!-- Enhanced Progress Stepper -->
         <div class="progress-stepper">
-          <div class="stepper-track"></div>
-          <div class="stepper-progress" :style="{ width: progressWidth }"></div>
+          <div class="stepper-track">
+            <div class="stepper-progress" :style="{ width: progressWidth }"></div>
+          </div>
           
           <div 
             v-for="(stepLabel, index) in steps" 
@@ -212,19 +213,17 @@
 
             <!-- Paystack Payment -->
             <div v-if="availablePaymentGateways.includes('paystack') && (!hasMultipleGateways || selectedPaymentGateway === 'paystack')" class="payment-option">
-              <div class="payment-option-header">
-                <input
-                  class="payment-radio"
-                  type="radio"
-                  v-model="paymentMethod"
-                  value="card"
-                  id="payCard"
-                />
-                <label class="payment-label" for="payCard">
-                  {{ hasMultipleGateways ? 'Paystack Payment Details' : 'Pay with Paystack' }}
-                </label>
-              </div>
-              <div class="payment-form">
+              <input
+                class="payment-radio"
+                type="radio"
+                v-model="paymentMethod"
+                value="card"
+                id="payCard"
+              />
+              <label class="payment-label" for="payCard">
+                {{ hasMultipleGateways ? 'Paystack Payment Details' : 'Pay with Paystack' }}
+              </label>
+              <form class="payment-form">
                 <div class="form-group">
                   <label class="input-label">Email</label>
                   <input
@@ -234,24 +233,22 @@
                     readonly
                   />
                 </div>
-              </div>
+              </form>
             </div>
 
             <!-- Alat Pay Payment (NGN only - uses inline popup) -->
             <div v-if="availablePaymentGateways.includes('alatpay') && (!hasMultipleGateways || selectedPaymentGateway === 'alatpay')" class="payment-option">
-              <div class="payment-option-header">
-                <input
-                  class="payment-radio"
-                  type="radio"
-                  v-model="paymentMethod"
-                  value="card"
-                  id="payAlatpay"
-                />
-                <label class="payment-label" for="payAlatpay">
-                  {{ hasMultipleGateways ? 'Alat Pay Payment Details' : 'Pay with Alat Pay' }}
-                </label>
-              </div>
-              <div class="payment-form">
+              <input
+                class="payment-radio"
+                type="radio"
+                v-model="paymentMethod"
+                value="card"
+                id="payAlatpay"
+              />
+              <label class="payment-label" for="payAlatpay">
+                {{ hasMultipleGateways ? 'Alat Pay Payment Details' : 'Pay with Alat Pay' }}
+              </label>
+              <form class="payment-form">
                 <div class="form-group">
                   <label class="input-label">Email</label>
                   <input
@@ -261,24 +258,22 @@
                     readonly
                   />
                 </div>
-              </div>
+              </form>
             </div>
 
             <!-- Fincra Payment -->
             <div v-if="availablePaymentGateways.includes('fincra') && (!hasMultipleGateways || selectedPaymentGateway === 'fincra')" class="payment-option" style="display: none !important;">
-              <div class="payment-option-header">
-                <input
-                  class="payment-radio"
-                  type="radio"
-                  v-model="paymentMethod"
-                  value="card"
-                  id="payFincra"
-                />
-                <label class="payment-label" for="payFincra">
-                  {{ hasMultipleGateways ? 'Fincra Payment Details' : 'Pay with Fincra' }}
-                </label>
-              </div>
-              <div class="payment-form">
+              <input
+                class="payment-radio"
+                type="radio"
+                v-model="paymentMethod"
+                value="card"
+                id="payFincra"
+              />
+              <label class="payment-label" for="payFincra">
+                {{ hasMultipleGateways ? 'Fincra Payment Details' : 'Pay with Fincra' }}
+              </label>
+              <form class="payment-form">
                 <div class="form-group">
                   <label class="input-label">Email</label>
                   <input
@@ -288,7 +283,7 @@
                     readonly
                   />
                 </div>
-              </div>
+              </form>
             </div>
 
             <!-- Terms & Conditions -->
@@ -330,7 +325,7 @@
           
           <button
             v-if="currentStep < steps.length - 1"
-            :disabled="(currentStep === 1 && !isContactValid) || !hasSelectedTickets"
+            :disabled="(currentStep === 1 && emailMismatch) || !hasSelectedTickets"
             type="button"
             class="nav-btn next-btn"
             @click="nextStep"
@@ -340,7 +335,7 @@
 
           <button
             v-else-if="cartTotal === 0"
-            :disabled="!isContactValid"
+            :disabled="emailMismatch || !contact.phone"
             type="submit"
             class="nav-btn get-tickets-btn"
             @click="getTicket()"
@@ -784,16 +779,6 @@ export default {
     hasSelectedTickets() {
       return this.selectedTickets.length > 0;
     },
-    isContactValid() {
-      return (
-        this.contact.firstName.trim() !== "" &&
-        this.contact.lastName.trim() !== "" &&
-        this.contact.email.trim() !== "" &&
-        this.contact.confirmEmail.trim() !== "" &&
-        this.contact.phone.trim() !== "" &&
-        !this.emailMismatch
-      );
-    },
     availablePaymentGateways() {
       return getAvailablePaymentGateways(this.cartCurrency);
     },
@@ -899,13 +884,11 @@ export default {
         return;
       }
       try {
-        const productId = this.getCart[0]?._id || this.getCart[0]?.id || "";
         const response = await axios.post(
-          `${process.env.VUE_APP_BASE_URL}/api/apply-promo`,
+          `${process.env.VUE_APP_BASE_URL}/promo/validate`,
           {
             code: this.promoCode,
-            orderTotal: this.rawSubtotal,
-            id: productId,
+            subtotal: this.rawSubtotal,
           }
         );
         this.discountResult = response.data;
@@ -1297,8 +1280,6 @@ export default {
   min-height: 100vh;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   padding: 2rem 0;
-  overflow-x: hidden;
-  width: 100%;
 }
 
 @media (max-width: 768px) {
@@ -1315,8 +1296,6 @@ export default {
   display: grid;
   grid-template-columns: 1fr 380px;
   gap: 2rem;
-  box-sizing: border-box;
-  width: 100%;
 }
 
 @media (max-width: 991px) {
@@ -1363,14 +1342,11 @@ export default {
   border-radius: 24px;
   padding: 2.5rem;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
-  box-sizing: border-box;
-  width: 100%;
-  overflow: hidden;
 }
 
 @media (max-width: 768px) {
   .checkout-main {
-    padding: 1.25rem 1.25rem;
+    padding: 1.25rem 1rem;
     margin-bottom: 100px;
     border-radius: 0;
     box-shadow: none;
@@ -1417,22 +1393,23 @@ export default {
   background: #e9ecef;
   border-radius: 10px;
   z-index: 1;
+  overflow: hidden;
 }
 
 .stepper-progress {
   position: absolute;
-  top: 24px;
-  left: 15%;
-  height: 3px;
+  top: 0;
+  left: 0;
+  height: 100%;
   background: linear-gradient(90deg, #047143 0%, #f4a213 100%);
   border-radius: 10px;
   transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 2;
+  max-width: 100%;
 }
 
 @media (max-width: 768px) {
-  .stepper-track,
-  .stepper-progress {
+  .stepper-track {
     top: 18px;
     height: 2px;
   }
@@ -1572,9 +1549,6 @@ export default {
 /* Content Section */
 .content-section {
   margin-top: 1rem;
-  width: 100%;
-  box-sizing: border-box;
-  overflow: hidden;
 }
 
 @media (max-width: 768px) {
@@ -1694,9 +1668,6 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  width: 100%;
-  max-width: 100%;
-  overflow: hidden;
 }
 
 @media (max-width: 768px) {
@@ -1709,7 +1680,6 @@ export default {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
-  width: 100%;
 }
 
 @media (max-width: 768px) {
@@ -1722,8 +1692,6 @@ export default {
 .form-group {
   display: flex;
   flex-direction: column;
-  width: 100%;
-  min-width: 0;
 }
 
 .input-label {
@@ -1741,8 +1709,6 @@ export default {
 }
 
 .form-input {
-  width: 100%;
-  max-width: 100%;
   padding: 0.85rem 1rem;
   font-size: 0.95rem;
   border: 2px solid #e9ecef;
@@ -1750,7 +1716,6 @@ export default {
   background: white;
   color: #2c3e50;
   transition: all 0.3s ease;
-  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
@@ -1771,28 +1736,22 @@ export default {
   color: #adb5bd;
 }
 
-/* Phone Input */
+/* Phone Input - PERFECTLY ALIGNED */
 .phone-group {
   margin-top: 0.5rem;
-  width: 100%;
-  min-width: 0;
 }
 
 .phone-input-wrapper {
   display: flex;
   gap: 0;
   align-items: stretch;
-  width: 100%;
-  max-width: 100%;
-  overflow: hidden;
 }
 
 .country-select {
-  flex: 0 0 110px;
-  width: 110px;
-  min-width: 0;
-  padding: 0.85rem 0.5rem;
-  font-size: 0.85rem;
+  flex: 0 0 auto;
+  width: 130px;
+  padding: 0.85rem 0.7rem;
+  font-size: 0.9rem;
   font-weight: 600;
   border: 2px solid #e9ecef;
   border-right: none;
@@ -1807,29 +1766,25 @@ export default {
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23495057' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 0.4rem center;
-  padding-right: 1.5rem;
-  box-sizing: border-box;
+  background-position: right 0.65rem center;
+  padding-right: 2rem;
 }
 
 @media (max-width: 768px) {
   .country-select {
-    flex: 0 0 100px;
-    width: 100px;
-    padding: 0.75rem 0.5rem;
-    font-size: 0.8rem;
+    width: 115px;
+    padding: 0.75rem 0.6rem;
+    font-size: 0.85rem;
     border-radius: 8px;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
-    padding-right: 1.4rem;
-    background-position: right 0.35rem center;
+    padding-right: 1.75rem;
+    background-position: right 0.5rem center;
   }
 }
 
 .phone-input {
-  flex: 1 1 0;
-  min-width: 0;
-  width: 0;
+  flex: 1 1 auto;
   padding: 0.85rem 1rem;
   font-size: 0.95rem;
   border: 2px solid #e9ecef;
@@ -1841,12 +1796,11 @@ export default {
   background: white;
   color: #2c3e50;
   transition: all 0.3s ease;
-  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
   .phone-input {
-    padding: 0.75rem 0.75rem;
+    padding: 0.75rem 0.9rem;
     font-size: 0.9rem;
     border-radius: 8px;
     border-top-left-radius: 0;
@@ -1982,19 +1936,10 @@ export default {
   border: 2px solid #e9ecef;
   border-radius: 12px;
   transition: all 0.3s ease;
-  display: block;
 }
 
 .payment-option:hover {
   border-color: #f4a213;
-}
-
-.payment-option-header {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin: 0;
-  padding: 0;
 }
 
 .payment-radio {
