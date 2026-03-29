@@ -43,7 +43,7 @@
                 <i class="bi bi-geo-alt me-2"></i>
                 {{ product.event.location.name }}
               </p>
-              <div class="event-description" style="white-space: pre-wrap; word-break: break-word;">{{ product.description }}</div>
+              {{ product.description }}
 
               <!-- Address Tag -->
 
