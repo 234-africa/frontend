@@ -325,7 +325,7 @@
           
           <button
             v-if="currentStep < steps.length - 1"
-            :disabled="(currentStep === 1 && emailMismatch) || !hasSelectedTickets"
+            :disabled="(currentStep === 1 && (emailMismatch || !contact.firstName.trim() || !contact.lastName.trim() || !contact.email.trim() || !contact.confirmEmail.trim() || !contact.phone.trim())) || !hasSelectedTickets"
             type="button"
             class="nav-btn next-btn"
             @click="nextStep"
@@ -335,7 +335,7 @@
 
           <button
             v-else-if="cartTotal === 0"
-            :disabled="emailMismatch || !contact.phone"
+            :disabled="emailMismatch || !contact.firstName.trim() || !contact.lastName.trim() || !contact.email.trim() || !contact.confirmEmail.trim() || !contact.phone.trim()"
             type="submit"
             class="nav-btn get-tickets-btn"
             @click="getTicket()"
@@ -884,11 +884,13 @@ export default {
         return;
       }
       try {
+        const productId = this.getCart[0]?._id || this.getCart[0]?.id;
         const response = await axios.post(
-          `${process.env.VUE_APP_BASE_URL}/promo/validate`,
+          `${process.env.VUE_APP_BASE_URL}/api/apply-promo`,
           {
-            code: this.promoCode,
-            subtotal: this.rawSubtotal,
+            code: this.promoCode.trim(),
+            orderTotal: this.rawSubtotal,
+            id: productId,
           }
         );
         this.discountResult = response.data;
@@ -1104,6 +1106,7 @@ export default {
               console.log("🏦 AlatPay transaction response:", response);
               self.spinner = false;
               if (response && (response.status === 'successful' || response.status === 'success' || response.Status === 'completed')) {
+                localStorage.setItem("payment_gateway", "alatpay");
                 window.location.href = `/payment-success?reference=${config.reference}&gateway=alatpay`;
               } else {
                 alert("Payment was not successful. Please try again.");
@@ -1280,12 +1283,18 @@ export default {
   min-height: 100vh;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   padding: 2rem 0;
+  overflow-x: hidden;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
   .checkout-container {
     padding: 0;
     background: #f8f9fa;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
   }
 }
 
@@ -1296,12 +1305,17 @@ export default {
   display: grid;
   grid-template-columns: 1fr 380px;
   gap: 2rem;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 @media (max-width: 991px) {
   .checkout-wrapper {
     grid-template-columns: 1fr;
     padding: 0;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
   }
 }
 
@@ -1342,6 +1356,9 @@ export default {
   border-radius: 24px;
   padding: 2.5rem;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
@@ -1350,6 +1367,11 @@ export default {
     margin-bottom: 100px;
     border-radius: 0;
     box-shadow: none;
+    min-width: 0;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+    box-sizing: border-box;
   }
 }
 
@@ -1363,12 +1385,17 @@ export default {
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 @media (max-width: 768px) {
   .progress-stepper {
     margin-bottom: 1.5rem;
     padding: 0 0.25rem;
+    width: 100%;
+    overflow: hidden;
   }
 }
 
@@ -1546,14 +1573,28 @@ export default {
   font-weight: 600;
 }
 
+/* Step Content wrapper */
+.step-content {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
 /* Content Section */
 .content-section {
   margin-top: 1rem;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
   .content-section {
     margin-top: 0.75rem;
+    min-width: 0;
+    width: 100%;
+    overflow-x: hidden;
   }
 }
 
@@ -1668,11 +1709,13 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  width: 100%;
 }
 
 @media (max-width: 768px) {
   .contact-form {
     gap: 1rem;
+    width: 100%;
   }
 }
 
@@ -1680,18 +1723,22 @@ export default {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
+  width: 100%;
 }
 
 @media (max-width: 768px) {
   .form-row {
     grid-template-columns: 1fr;
     gap: 1rem;
+    width: 100%;
   }
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
+  width: 100%;
+  min-width: 0;
 }
 
 .input-label {
@@ -1716,6 +1763,9 @@ export default {
   background: white;
   color: #2c3e50;
   transition: all 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 @media (max-width: 768px) {
@@ -1723,6 +1773,8 @@ export default {
     padding: 0.75rem 0.9rem;
     font-size: 0.9rem;
     border-radius: 8px;
+    width: 100%;
+    max-width: 100%;
   }
 }
 
@@ -1736,20 +1788,26 @@ export default {
   color: #adb5bd;
 }
 
-/* Phone Input - PERFECTLY ALIGNED */
+/* Phone Input */
 .phone-group {
   margin-top: 0.5rem;
+  width: 100%;
+  min-width: 0;
 }
 
 .phone-input-wrapper {
   display: flex;
   gap: 0;
   align-items: stretch;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .country-select {
   flex: 0 0 auto;
-  width: 130px;
+  width: 115px;
+  min-width: 90px;
   padding: 0.85rem 0.7rem;
   font-size: 0.9rem;
   font-weight: 600;
@@ -1766,20 +1824,22 @@ export default {
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23495057' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 0.65rem center;
-  padding-right: 2rem;
+  background-position: right 0.5rem center;
+  padding-right: 1.75rem;
+  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
   .country-select {
-    width: 115px;
-    padding: 0.75rem 0.6rem;
-    font-size: 0.85rem;
+    width: 100px;
+    min-width: 80px;
+    padding: 0.75rem 0.5rem;
+    font-size: 0.82rem;
     border-radius: 8px;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
-    padding-right: 1.75rem;
-    background-position: right 0.5rem center;
+    padding-right: 1.5rem;
+    background-position: right 0.35rem center;
   }
 }
 
@@ -1796,15 +1856,19 @@ export default {
   background: white;
   color: #2c3e50;
   transition: all 0.3s ease;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
   .phone-input {
-    padding: 0.75rem 0.9rem;
+    padding: 0.75rem 0.75rem;
     font-size: 0.9rem;
     border-radius: 8px;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
+    min-width: 0;
   }
 }
 
@@ -2223,5 +2287,43 @@ export default {
   margin-top: 1rem;
   color: #6c757d;
   font-size: 0.85rem;
+}
+</style>
+
+<style>
+/* Global fix: prevent horizontal overflow on the checkout page on mobile */
+@media (max-width: 768px) {
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+  .checkout-container,
+  .checkout-container * {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  .checkout-container input,
+  .checkout-container select,
+  .checkout-container textarea {
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .checkout-container .phone-input-wrapper {
+    display: flex !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+  }
+  .checkout-container .phone-input {
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
+    width: auto !important;
+  }
+  .checkout-container .country-select {
+    flex: 0 0 100px !important;
+    width: 100px !important;
+    min-width: 0 !important;
+  }
 }
 </style>
