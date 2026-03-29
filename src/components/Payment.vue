@@ -1728,9 +1728,15 @@ export default {
 
 @media (max-width: 768px) {
   .form-row {
-    grid-template-columns: 1fr;
-    gap: 1rem;
+    display: block;
     width: 100%;
+  }
+  .form-row .form-group {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+  .form-row .form-group:last-child {
+    margin-bottom: 0;
   }
 }
 
