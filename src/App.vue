@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="text-capitalize">
-    <nav class="navbar-fixed-top bi">
+    <nav class="site-navbar bi">
       <topp />
     </nav>
 
@@ -34,10 +34,17 @@ html {
   margin: 0;
   padding: 0;
   overflow-x: hidden; /* hides horizontal scroll */
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
 :root {
   --bs-primary: #f4a213 !important;
+}
+
+.site-navbar {
+  position: relative;
+  z-index: 100;
 }
 
 .btn-primary {
