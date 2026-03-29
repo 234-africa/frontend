@@ -185,124 +185,82 @@
           <div v-else-if="currentStep === 2" class="content-section">
             <h3 class="section-title">💳 Payment Options</h3>
 
-            <div class="timer-alert">
-              We've reserved your ticket. Please complete checkout within
-              {{ timer }} to secure your tickets.
+            <!-- Timer -->
+            <div style="background:#fff3cd;border:2px solid #ffc107;border-radius:12px;color:#856404;font-weight:600;padding:1rem 1.25rem;margin-bottom:1.5rem;width:100%;box-sizing:border-box;">
+              We've reserved your ticket. Please complete checkout within {{ timer }} to secure your tickets.
             </div>
 
-            <!-- Gateway Selection (when multiple options available) -->
-            <div v-if="hasMultipleGateways" class="gateway-selection">
-              <p class="gateway-instruction">Choose your preferred payment gateway:</p>
-              <div class="gateway-options">
-                <div 
-                  v-for="gateway in availablePaymentGateways.filter(g => g !== 'fincra')" 
-                  :key="gateway" 
-                  class="gateway-option"
-                  :class="{ 'selected': selectedPaymentGateway === gateway }"
+            <!-- Gateway Selection -->
+            <div v-if="hasMultipleGateways" style="margin-bottom:1.5rem;padding:1.25rem;background:#f8f9fa;border-radius:16px;border:2px solid #e9ecef;width:100%;box-sizing:border-box;">
+              <p style="font-size:1rem;font-weight:600;color:#2c3e50;margin-bottom:1rem;">Choose your preferred payment gateway:</p>
+              <div style="display:flex;flex-direction:column;gap:0.75rem;width:100%;box-sizing:border-box;">
+                <div
+                  v-for="gateway in availablePaymentGateways.filter(g => g !== 'fincra')"
+                  :key="gateway"
                   @click="selectGateway(gateway)"
+                  :style="{
+                    display:'flex',
+                    alignItems:'center',
+                    padding:'1rem',
+                    background: selectedPaymentGateway === gateway ? '#e8f5e9' : 'white',
+                    border: selectedPaymentGateway === gateway ? '3px solid #047143' : '3px solid #dee2e6',
+                    borderRadius:'12px',
+                    cursor:'pointer',
+                    width:'100%',
+                    boxSizing:'border-box'
+                  }"
                 >
                   <input
                     type="radio"
                     :id="`gateway-${gateway}`"
                     v-model="selectedPaymentGateway"
                     :value="gateway"
-                    class="gateway-radio"
                     @change="selectGateway(gateway)"
+                    style="width:20px;height:20px;cursor:pointer;accent-color:#047143;flex-shrink:0;margin-right:0.75rem;"
                   />
-                  <label :for="`gateway-${gateway}`" class="gateway-label">
-                    <span class="gateway-name">{{ getGatewayDisplayName(gateway) }}</span>
-                    <span class="gateway-badge">{{ getGatewayBadge(gateway) }}</span>
+                  <label :for="`gateway-${gateway}`" style="display:flex;align-items:center;justify-content:space-between;flex:1;cursor:pointer;margin:0;min-width:0;">
+                    <span style="font-size:1.1rem;font-weight:700;color:#2c3e50;">{{ getGatewayDisplayName(gateway) }}</span>
+                    <span style="font-size:1.5rem;margin-left:0.5rem;flex-shrink:0;">{{ getGatewayBadge(gateway) }}</span>
                   </label>
                 </div>
               </div>
             </div>
 
-            <!-- Paystack Payment -->
-            <div v-if="availablePaymentGateways.includes('paystack') && (!hasMultipleGateways || selectedPaymentGateway === 'paystack')" class="payment-option">
-              <input
-                class="payment-radio"
-                type="radio"
-                v-model="paymentMethod"
-                value="card"
-                id="payCard"
-              />
-              <label class="payment-label" for="payCard">
-                {{ hasMultipleGateways ? 'Paystack Payment Details' : 'Pay with Paystack' }}
-              </label>
-              <form class="payment-form">
-                <div class="form-group">
-                  <label class="input-label">Email</label>
-                  <input
-                    :value="getContactInfo.email"
-                    type="email"
-                    class="form-input"
-                    readonly
-                  />
-                </div>
-              </form>
+            <!-- Paystack Payment Details -->
+            <div v-if="availablePaymentGateways.includes('paystack') && (!hasMultipleGateways || selectedPaymentGateway === 'paystack')" style="margin-bottom:1.5rem;padding:1.25rem;border:2px solid #e9ecef;border-radius:12px;width:100%;box-sizing:border-box;">
+              <div style="display:flex;align-items:center;margin-bottom:1rem;">
+                <input type="radio" v-model="paymentMethod" value="card" id="payCard" style="width:20px;height:20px;cursor:pointer;margin-right:0.75rem;flex-shrink:0;" />
+                <label for="payCard" style="font-size:1.05rem;font-weight:600;color:#2c3e50;cursor:pointer;margin:0;">{{ hasMultipleGateways ? 'Paystack Payment Details' : 'Pay with Paystack' }}</label>
+              </div>
+              <div style="display:flex;flex-direction:column;width:100%;box-sizing:border-box;">
+                <label style="font-weight:600;color:#495057;margin-bottom:6px;font-size:0.9rem;">Email</label>
+                <input :value="getContactInfo.email" type="email" readonly style="width:100%;box-sizing:border-box;padding:12px 14px;font-size:0.95rem;border:2px solid #e9ecef;border-radius:10px;background:#f8f9fa;color:#2c3e50;outline:none;" />
+              </div>
             </div>
 
-            <!-- Alat Pay Payment (NGN only - uses inline popup) -->
-            <div v-if="availablePaymentGateways.includes('alatpay') && (!hasMultipleGateways || selectedPaymentGateway === 'alatpay')" class="payment-option">
-              <input
-                class="payment-radio"
-                type="radio"
-                v-model="paymentMethod"
-                value="card"
-                id="payAlatpay"
-              />
-              <label class="payment-label" for="payAlatpay">
-                {{ hasMultipleGateways ? 'Alat Pay Payment Details' : 'Pay with Alat Pay' }}
-              </label>
-              <form class="payment-form">
-                <div class="form-group">
-                  <label class="input-label">Email</label>
-                  <input
-                    :value="getContactInfo.email"
-                    type="email"
-                    class="form-input"
-                    readonly
-                  />
-                </div>
-              </form>
-            </div>
-
-            <!-- Fincra Payment -->
-            <div v-if="availablePaymentGateways.includes('fincra') && (!hasMultipleGateways || selectedPaymentGateway === 'fincra')" class="payment-option" style="display: none !important;">
-              <input
-                class="payment-radio"
-                type="radio"
-                v-model="paymentMethod"
-                value="card"
-                id="payFincra"
-              />
-              <label class="payment-label" for="payFincra">
-                {{ hasMultipleGateways ? 'Fincra Payment Details' : 'Pay with Fincra' }}
-              </label>
-              <form class="payment-form">
-                <div class="form-group">
-                  <label class="input-label">Email</label>
-                  <input
-                    :value="getContactInfo.email"
-                    type="email"
-                    class="form-input"
-                    readonly
-                  />
-                </div>
-              </form>
+            <!-- Alat Pay Payment Details -->
+            <div v-if="availablePaymentGateways.includes('alatpay') && (!hasMultipleGateways || selectedPaymentGateway === 'alatpay')" style="margin-bottom:1.5rem;padding:1.25rem;border:2px solid #e9ecef;border-radius:12px;width:100%;box-sizing:border-box;">
+              <div style="display:flex;align-items:center;margin-bottom:1rem;">
+                <input type="radio" v-model="paymentMethod" value="card" id="payAlatpay" style="width:20px;height:20px;cursor:pointer;margin-right:0.75rem;flex-shrink:0;" />
+                <label for="payAlatpay" style="font-size:1.05rem;font-weight:600;color:#2c3e50;cursor:pointer;margin:0;">{{ hasMultipleGateways ? 'Alat Pay Payment Details' : 'Pay with Alat Pay' }}</label>
+              </div>
+              <div style="display:flex;flex-direction:column;width:100%;box-sizing:border-box;">
+                <label style="font-weight:600;color:#495057;margin-bottom:6px;font-size:0.9rem;">Email</label>
+                <input :value="getContactInfo.email" type="email" readonly style="width:100%;box-sizing:border-box;padding:12px 14px;font-size:0.95rem;border:2px solid #e9ecef;border-radius:10px;background:#f8f9fa;color:#2c3e50;outline:none;" />
+              </div>
             </div>
 
             <!-- Terms & Conditions -->
-            <div class="terms-wrapper">
+            <div style="display:flex;align-items:flex-start;gap:0.75rem;padding:1.25rem;background:#f8f9fa;border-radius:12px;margin-top:1rem;width:100%;box-sizing:border-box;">
               <input
-                class="terms-checkbox"
                 type="checkbox"
                 v-model="termsAccepted"
                 id="terms"
+                style="width:20px;height:20px;margin-top:2px;cursor:pointer;flex-shrink:0;"
               />
-              <label class="terms-label" for="terms">
-                I accept the <a href="#">234Africa Terms and Conditions</a>,
-                <a href="#">Refund Policy</a> and <a href="#">Privacy Policy</a>.
+              <label for="terms" style="font-size:0.95rem;color:#495057;line-height:1.5;cursor:pointer;flex:1;min-width:0;word-wrap:break-word;">
+                I accept the <a href="#" style="color:#f4a213;text-decoration:none;font-weight:600;">234Africa Terms and Conditions</a>,
+                <a href="#" style="color:#f4a213;text-decoration:none;font-weight:600;">Refund Policy</a> and <a href="#" style="color:#f4a213;text-decoration:none;font-weight:600;">Privacy Policy</a>.
               </label>
             </div>
           </div>
