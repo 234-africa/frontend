@@ -182,33 +182,26 @@
           </div>
 
           <!-- Step 3: Payment -->
-          <div v-else-if="currentStep === 2" class="content-section">
+          <div v-else-if="currentStep === 2" class="content-section payment-step">
+
             <h3 class="section-title">💳 Payment Options</h3>
 
-            <!-- Timer -->
-            <div style="background:#fff3cd;border:2px solid #ffc107;border-radius:12px;color:#856404;font-weight:600;padding:1rem 1.25rem;margin-bottom:1.5rem;width:100%;box-sizing:border-box;">
-              We've reserved your ticket. Please complete checkout within {{ timer }} to secure your tickets.
+            <!-- Timer Banner -->
+            <div class="payment-timer-banner">
+              <span class="timer-icon">⏱</span>
+              <span class="timer-text">Ticket reserved! Complete checkout within <strong>{{ timer }}</strong> to secure your spot.</span>
             </div>
 
             <!-- Gateway Selection -->
-            <div v-if="hasMultipleGateways" style="margin-bottom:1.5rem;padding:1.25rem;background:#f8f9fa;border-radius:16px;border:2px solid #e9ecef;width:100%;box-sizing:border-box;">
-              <p style="font-size:1rem;font-weight:600;color:#2c3e50;margin-bottom:1rem;">Choose your preferred payment gateway:</p>
-              <div style="display:flex;flex-direction:column;gap:0.75rem;width:100%;box-sizing:border-box;">
+            <div v-if="hasMultipleGateways" class="payment-gateway-block">
+              <p class="payment-block-title">Choose Your Preferred Payment Gateway:</p>
+              <div class="gateway-options">
                 <div
                   v-for="gateway in availablePaymentGateways.filter(g => g !== 'fincra')"
                   :key="gateway"
+                  class="gateway-option"
+                  :class="{ 'gateway-selected': selectedPaymentGateway === gateway }"
                   @click="selectGateway(gateway)"
-                  :style="{
-                    display:'flex',
-                    alignItems:'center',
-                    padding:'1rem',
-                    background: selectedPaymentGateway === gateway ? '#e8f5e9' : 'white',
-                    border: selectedPaymentGateway === gateway ? '3px solid #047143' : '3px solid #dee2e6',
-                    borderRadius:'12px',
-                    cursor:'pointer',
-                    width:'100%',
-                    boxSizing:'border-box'
-                  }"
                 >
                   <input
                     type="radio"
@@ -216,53 +209,77 @@
                     v-model="selectedPaymentGateway"
                     :value="gateway"
                     @change="selectGateway(gateway)"
-                    style="width:20px;height:20px;cursor:pointer;accent-color:#047143;flex-shrink:0;margin-right:0.75rem;"
+                    class="gateway-radio"
                   />
-                  <label :for="`gateway-${gateway}`" style="display:flex;align-items:center;justify-content:space-between;flex:1;cursor:pointer;margin:0;min-width:0;">
-                    <span style="font-size:1.1rem;font-weight:700;color:#2c3e50;">{{ getGatewayDisplayName(gateway) }}</span>
-                    <span style="font-size:1.5rem;margin-left:0.5rem;flex-shrink:0;">{{ getGatewayBadge(gateway) }}</span>
+                  <label :for="`gateway-${gateway}`" class="gateway-label">
+                    <span class="gateway-name">{{ getGatewayDisplayName(gateway) }}</span>
+                    <span class="gateway-badge">{{ getGatewayBadge(gateway) }}</span>
                   </label>
                 </div>
               </div>
             </div>
 
             <!-- Paystack Payment Details -->
-            <div v-if="availablePaymentGateways.includes('paystack') && (!hasMultipleGateways || selectedPaymentGateway === 'paystack')" style="margin-bottom:1.5rem;padding:1.25rem;border:2px solid #e9ecef;border-radius:12px;width:100%;box-sizing:border-box;">
-              <div style="display:flex;align-items:center;margin-bottom:1rem;">
-                <input type="radio" v-model="paymentMethod" value="card" id="payCard" style="width:20px;height:20px;cursor:pointer;margin-right:0.75rem;flex-shrink:0;" />
-                <label for="payCard" style="font-size:1.05rem;font-weight:600;color:#2c3e50;cursor:pointer;margin:0;">{{ hasMultipleGateways ? 'Paystack Payment Details' : 'Pay with Paystack' }}</label>
+            <div
+              v-if="availablePaymentGateways.includes('paystack') && (!hasMultipleGateways || selectedPaymentGateway === 'paystack')"
+              class="payment-detail-block"
+            >
+              <div class="payment-method-row">
+                <input type="radio" v-model="paymentMethod" value="card" id="payCard" class="method-radio" />
+                <label for="payCard" class="method-label">
+                  {{ hasMultipleGateways ? 'Paystack Payment Details' : 'Pay with Paystack' }}
+                </label>
               </div>
-              <div style="display:flex;flex-direction:column;width:100%;box-sizing:border-box;">
-                <label style="font-weight:600;color:#495057;margin-bottom:6px;font-size:0.9rem;">Email</label>
-                <input :value="getContactInfo.email" type="email" readonly style="width:100%;box-sizing:border-box;padding:12px 14px;font-size:0.95rem;border:2px solid #e9ecef;border-radius:10px;background:#f8f9fa;color:#2c3e50;outline:none;" />
+              <div class="payment-email-row">
+                <label class="email-field-label">Email</label>
+                <input
+                  :value="getContactInfo.email"
+                  type="email"
+                  readonly
+                  class="email-field-input"
+                />
               </div>
             </div>
 
             <!-- Alat Pay Payment Details -->
-            <div v-if="availablePaymentGateways.includes('alatpay') && (!hasMultipleGateways || selectedPaymentGateway === 'alatpay')" style="margin-bottom:1.5rem;padding:1.25rem;border:2px solid #e9ecef;border-radius:12px;width:100%;box-sizing:border-box;">
-              <div style="display:flex;align-items:center;margin-bottom:1rem;">
-                <input type="radio" v-model="paymentMethod" value="card" id="payAlatpay" style="width:20px;height:20px;cursor:pointer;margin-right:0.75rem;flex-shrink:0;" />
-                <label for="payAlatpay" style="font-size:1.05rem;font-weight:600;color:#2c3e50;cursor:pointer;margin:0;">{{ hasMultipleGateways ? 'Alat Pay Payment Details' : 'Pay with Alat Pay' }}</label>
+            <div
+              v-if="availablePaymentGateways.includes('alatpay') && (!hasMultipleGateways || selectedPaymentGateway === 'alatpay')"
+              class="payment-detail-block"
+            >
+              <div class="payment-method-row">
+                <input type="radio" v-model="paymentMethod" value="card" id="payAlatpay" class="method-radio" />
+                <label for="payAlatpay" class="method-label">
+                  {{ hasMultipleGateways ? 'Alat Pay Payment Details' : 'Pay with Alat Pay' }}
+                </label>
               </div>
-              <div style="display:flex;flex-direction:column;width:100%;box-sizing:border-box;">
-                <label style="font-weight:600;color:#495057;margin-bottom:6px;font-size:0.9rem;">Email</label>
-                <input :value="getContactInfo.email" type="email" readonly style="width:100%;box-sizing:border-box;padding:12px 14px;font-size:0.95rem;border:2px solid #e9ecef;border-radius:10px;background:#f8f9fa;color:#2c3e50;outline:none;" />
+              <div class="payment-email-row">
+                <label class="email-field-label">Email</label>
+                <input
+                  :value="getContactInfo.email"
+                  type="email"
+                  readonly
+                  class="email-field-input"
+                />
               </div>
             </div>
 
             <!-- Terms & Conditions -->
-            <div style="display:flex;align-items:flex-start;gap:0.75rem;padding:1.25rem;background:#f8f9fa;border-radius:12px;margin-top:1rem;width:100%;box-sizing:border-box;">
+            <div class="terms-block">
               <input
                 type="checkbox"
                 v-model="termsAccepted"
                 id="terms"
-                style="width:20px;height:20px;margin-top:2px;cursor:pointer;flex-shrink:0;"
+                class="terms-checkbox"
               />
-              <label for="terms" style="font-size:0.95rem;color:#495057;line-height:1.5;cursor:pointer;flex:1;min-width:0;word-wrap:break-word;">
-                I accept the <a href="#" style="color:#f4a213;text-decoration:none;font-weight:600;">234Africa Terms and Conditions</a>,
-                <a href="#" style="color:#f4a213;text-decoration:none;font-weight:600;">Refund Policy</a> and <a href="#" style="color:#f4a213;text-decoration:none;font-weight:600;">Privacy Policy</a>.
+              <label for="terms" class="terms-label">
+                I accept the
+                <a href="#" class="terms-link">234Africa Terms and Conditions</a>,
+                <a href="#" class="terms-link">Refund Policy</a>
+                and
+                <a href="#" class="terms-link">Privacy Policy</a>.
               </label>
             </div>
+
           </div>
         </div>
 
@@ -2257,6 +2274,224 @@ export default {
   margin-top: 1rem;
   color: #6c757d;
   font-size: 0.85rem;
+}
+
+/* ─── Step 3: Payment ─────────────────────────────────── */
+.payment-step {
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.payment-timer-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  background: #fff8e1;
+  border: 2px solid #ffc107;
+  border-radius: 12px;
+  color: #856404;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.9rem 1rem;
+  margin-bottom: 1.25rem;
+  width: 100%;
+  box-sizing: border-box;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.timer-icon {
+  flex-shrink: 0;
+  font-size: 1.1rem;
+}
+
+.timer-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.payment-gateway-block {
+  background: #f8f9fa;
+  border: 2px solid #e9ecef;
+  border-radius: 14px;
+  padding: 1.1rem;
+  margin-bottom: 1.25rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.payment-block-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 0.85rem 0;
+}
+
+.gateway-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.gateway-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: white;
+  border: 2.5px solid #dee2e6;
+  border-radius: 10px;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.gateway-option.gateway-selected {
+  background: #e8f5e9;
+  border-color: #047143;
+}
+
+.gateway-radio {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  cursor: pointer;
+  accent-color: #047143;
+}
+
+.gateway-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+  margin: 0;
+}
+
+.gateway-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #2c3e50;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gateway-badge {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}
+
+.payment-detail-block {
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  padding: 1.1rem;
+  margin-bottom: 1.25rem;
+  width: 100%;
+  box-sizing: border-box;
+  background: white;
+}
+
+.payment-method-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.85rem;
+}
+
+.method-radio {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  cursor: pointer;
+  accent-color: #047143;
+}
+
+.method-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2c3e50;
+  cursor: pointer;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.payment-email-row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.email-field-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+.email-field-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 13px;
+  font-size: 0.93rem;
+  border: 2px solid #e9ecef;
+  border-radius: 10px;
+  background: #f8f9fa;
+  color: #2c3e50;
+  outline: none;
+}
+
+.terms-block {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 0.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.terms-checkbox {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  margin-top: 3px;
+  cursor: pointer;
+  accent-color: #047143;
+}
+
+.terms-label {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.9rem;
+  color: #495057;
+  line-height: 1.6;
+  cursor: pointer;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+.terms-link {
+  color: #f4a213;
+  text-decoration: none;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.terms-link:hover {
+  text-decoration: underline;
 }
 </style>
 
