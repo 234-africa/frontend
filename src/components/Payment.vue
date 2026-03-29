@@ -181,7 +181,7 @@
             </form>
           </div>
 
-          <!-- Step 3: Payment — fully rebuilt, zero Bootstrap, scoped inline styles -->
+          <!-- Step 3: Payment — grid-based rebuild, no flex+label conflicts -->
           <div v-else-if="currentStep === 2" class="s3-wrap">
 
             <h3 class="section-title">💳 Payment Options</h3>
@@ -197,22 +197,24 @@
               <div
                 v-for="gateway in availablePaymentGateways.filter(g => g !== 'fincra')"
                 :key="gateway"
-                class="s3-gateway-row"
-                :class="{ 's3-gateway-active': selectedPaymentGateway === gateway }"
+                class="s3-row"
+                :class="{ 's3-row-active': selectedPaymentGateway === gateway }"
                 @click="selectGateway(gateway)"
               >
-                <input
-                  type="radio"
-                  :id="`gw-${gateway}`"
-                  v-model="selectedPaymentGateway"
-                  :value="gateway"
-                  @change="selectGateway(gateway)"
-                  class="s3-radio"
-                />
-                <label :for="`gw-${gateway}`" class="s3-gateway-label">
-                  <span class="s3-gateway-name">{{ getGatewayDisplayName(gateway) }}</span>
-                  <span class="s3-gateway-icon">{{ getGatewayBadge(gateway) }}</span>
-                </label>
+                <div class="s3-row-radio">
+                  <input
+                    type="radio"
+                    :id="`gw-${gateway}`"
+                    v-model="selectedPaymentGateway"
+                    :value="gateway"
+                    @change="selectGateway(gateway)"
+                    class="s3-radioinput"
+                  />
+                </div>
+                <div class="s3-row-body">
+                  <span class="s3-row-title">{{ getGatewayDisplayName(gateway) }}</span>
+                  <span class="s3-row-icon">{{ getGatewayBadge(gateway) }}</span>
+                </div>
               </div>
             </div>
 
@@ -221,11 +223,13 @@
               v-if="availablePaymentGateways.includes('paystack') && (!hasMultipleGateways || selectedPaymentGateway === 'paystack')"
               class="s3-card"
             >
-              <div class="s3-method-row">
-                <input type="radio" v-model="paymentMethod" value="card" id="s3-payCard" class="s3-radio" />
-                <label for="s3-payCard" class="s3-method-label">
-                  {{ hasMultipleGateways ? 'Paystack Payment Details' : 'Pay with Paystack' }}
-                </label>
+              <div class="s3-row" style="margin-bottom:12px;">
+                <div class="s3-row-radio">
+                  <input type="radio" v-model="paymentMethod" value="card" id="s3-payCard" class="s3-radioinput" />
+                </div>
+                <div class="s3-row-body">
+                  <span class="s3-row-title">{{ hasMultipleGateways ? 'Paystack Payment Details' : 'Pay with Paystack' }}</span>
+                </div>
               </div>
               <p class="s3-field-label">Email</p>
               <input :value="getContactInfo.email" type="email" readonly class="s3-field-input" />
@@ -236,11 +240,13 @@
               v-if="availablePaymentGateways.includes('alatpay') && (!hasMultipleGateways || selectedPaymentGateway === 'alatpay')"
               class="s3-card"
             >
-              <div class="s3-method-row">
-                <input type="radio" v-model="paymentMethod" value="card" id="s3-payAlatpay" class="s3-radio" />
-                <label for="s3-payAlatpay" class="s3-method-label">
-                  {{ hasMultipleGateways ? 'Alat Pay Payment Details' : 'Pay with Alat Pay' }}
-                </label>
+              <div class="s3-row" style="margin-bottom:12px;">
+                <div class="s3-row-radio">
+                  <input type="radio" v-model="paymentMethod" value="card" id="s3-payAlatpay" class="s3-radioinput" />
+                </div>
+                <div class="s3-row-body">
+                  <span class="s3-row-title">{{ hasMultipleGateways ? 'Alat Pay Payment Details' : 'Pay with Alat Pay' }}</span>
+                </div>
               </div>
               <p class="s3-field-label">Email</p>
               <input :value="getContactInfo.email" type="email" readonly class="s3-field-input" />
@@ -248,12 +254,14 @@
 
             <!-- Terms -->
             <div class="s3-terms">
-              <input type="checkbox" v-model="termsAccepted" id="s3-terms" class="s3-terms-check" />
-              <label for="s3-terms" class="s3-terms-text">
+              <div class="s3-row-radio" style="margin-top:2px;">
+                <input type="checkbox" v-model="termsAccepted" id="s3-terms" class="s3-radioinput" />
+              </div>
+              <div class="s3-terms-body">
                 I accept the <a href="#" class="s3-terms-link">234Africa Terms and Conditions</a>,
                 <a href="#" class="s3-terms-link">Refund Policy</a> and
                 <a href="#" class="s3-terms-link">Privacy Policy</a>.
-              </label>
+              </div>
             </div>
 
           </div>
@@ -2092,7 +2100,7 @@ export default {
   font-size: 0.85rem;
 }
 
-/* ── Step 3 Payment — fresh build, s3- prefix, zero conflicts ── */
+/* ── Step 3 Payment — CSS Grid, no <label> as layout child ── */
 .s3-wrap {
   display: block;
   width: 100%;
@@ -2113,6 +2121,7 @@ export default {
   padding: 12px 14px;
   margin-bottom: 16px;
   word-break: break-word;
+  white-space: normal;
 }
 
 .s3-card {
@@ -2133,11 +2142,14 @@ export default {
   color: #1a2e22;
   margin: 0 0 12px 0;
   word-break: break-word;
+  white-space: normal;
 }
 
-.s3-gateway-row {
-  display: flex;
-  flex-direction: row;
+/* Grid row: 28px radio col + remaining text col — cannot overflow */
+.s3-row {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  grid-template-rows: auto;
   align-items: center;
   width: 100%;
   box-sizing: border-box;
@@ -2147,72 +2159,59 @@ export default {
   padding: 12px;
   margin-bottom: 10px;
   cursor: pointer;
+  overflow: hidden;
 }
 
-.s3-gateway-row:last-child {
+.s3-row:last-of-type {
   margin-bottom: 0;
 }
 
-.s3-gateway-row.s3-gateway-active {
+.s3-row.s3-row-active {
   background: #e8f5e9;
   border-color: #047143;
 }
 
-.s3-radio {
+.s3-row-radio {
+  display: block;
+  width: 20px;
+  box-sizing: border-box;
+}
+
+.s3-radioinput {
+  display: block;
   width: 18px;
   height: 18px;
-  flex-shrink: 0;
   margin: 0;
+  padding: 0;
   cursor: pointer;
   accent-color: #047143;
 }
 
-.s3-gateway-label {
-  display: flex;
-  flex-direction: row;
+.s3-row-body {
+  display: grid;
+  grid-template-columns: 1fr auto;
   align-items: center;
-  justify-content: space-between;
-  flex: 1;
-  min-width: 0;
-  margin: 0 0 0 10px;
-  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding-left: 10px;
 }
 
-.s3-gateway-name {
+.s3-row-title {
   display: block;
   font-size: 0.95rem;
   font-weight: 700;
   color: #1a2e22;
-  flex: 1;
-  min-width: 0;
+  white-space: normal;
   word-break: break-word;
-}
-
-.s3-gateway-icon {
-  flex-shrink: 0;
-  font-size: 1.3rem;
-  margin-left: 8px;
-}
-
-.s3-method-row {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  width: 100%;
+  overflow: hidden;
   box-sizing: border-box;
-  margin-bottom: 12px;
 }
 
-.s3-method-label {
+.s3-row-icon {
   display: block;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #1a2e22;
-  margin: 0 0 0 10px;
-  cursor: pointer;
-  word-break: break-word;
-  flex: 1;
-  min-width: 0;
+  font-size: 1.3rem;
+  padding-left: 8px;
 }
 
 .s3-field-label {
@@ -2236,38 +2235,31 @@ export default {
   outline: none;
 }
 
+/* Terms — same grid pattern, no <label> as grid child */
 .s3-terms {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  align-items: start;
   width: 100%;
   box-sizing: border-box;
   background: #f5f5f5;
   border-radius: 10px;
   padding: 14px;
   margin-top: 4px;
+  overflow: hidden;
 }
 
-.s3-terms-check {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-  margin: 2px 0 0 0;
-  cursor: pointer;
-  accent-color: #047143;
-}
-
-.s3-terms-text {
+.s3-terms-body {
   display: block;
-  flex: 1;
-  min-width: 0;
   font-size: 0.88rem;
   color: #444;
   line-height: 1.65;
-  margin: 0 0 0 10px;
-  cursor: pointer;
   word-break: break-word;
   overflow-wrap: break-word;
+  white-space: normal;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding-left: 10px;
 }
 
 .s3-terms-link {
