@@ -329,7 +329,7 @@
       </div>
 
       <!-- Sidebar Summary -->
-      <div class="checkout-sidebar d-none d-md-block">
+      <div class="checkout-sidebar d-none d-lg-block">
         <div class="summary-card">
           <h5 class="summary-title">Summary</h5>
           
@@ -1269,11 +1269,11 @@ export default {
   box-sizing: border-box;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 991px) {
   .checkout-container {
     padding: 0;
     background: #f8f9fa;
-    overflow-x: hidden;
+    overflow: hidden;
     width: 100%;
     max-width: 100vw;
   }
@@ -1293,6 +1293,7 @@ export default {
 @media (max-width: 991px) {
   .checkout-wrapper {
     grid-template-columns: 1fr;
+    gap: 0;
     padding: 0;
     width: 100%;
     max-width: 100vw;
