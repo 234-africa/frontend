@@ -18,6 +18,11 @@
       <button class="toggle-btn bg-none" @click="show = !show">☰</button>
     </div>
 
+    <!-- Backdrop overlay -->
+    <transition name="fade">
+      <div v-if="show" class="nav-backdrop" @click="show = false"></div>
+    </transition>
+
     <!-- Mobile Slide-in Nav -->
     <transition name="slide-right" mode="out-in">
       <div v-if="show" class="side-nav text-dark bg-white p-3">
@@ -29,6 +34,7 @@
           <div class="mb-3" v-if="!getToken">
             <router-link
               to="/login"
+              @click="show = false"
               class="d-block text-decoration-none text-dark px-2 py-1"
             >
               Login
@@ -37,6 +43,7 @@
           <div class="mb-3" v-if="!getToken">
             <router-link
               to="/register"
+              @click="show = false"
               class="d-block text-decoration-none text-dark px-2 py-1"
             >
               Register
@@ -56,6 +63,7 @@
           <div class="mb-3">
             <router-link
               to="/dashboard"
+              @click="show = false"
               class="d-block text-decoration-none text-dark px-2 py-1"
             >
               <i class="bi bi-speedometer2"></i> Dashboard
@@ -64,6 +72,7 @@
           <div class="mb-3">
             <router-link
               to="/dashboard?activeTab=bank"
+              @click="show = false"
               class="d-block text-decoration-none text-dark px-2 py-1"
             >
               <i class="bi bi-bank"></i> Bank Info
@@ -72,6 +81,7 @@
           <div class="mb-3">
             <router-link
               to="/dashboard?activeTab=event"
+              @click="show = false"
               class="d-block text-decoration-none text-dark px-2 py-1"
             >
               <i class="bi bi-calendar-event"></i> My Events
@@ -80,6 +90,7 @@
           <div class="mb-3">
             <router-link
               to="/dashboard?activeTab=add-event"
+              @click="show = false"
               class="d-block text-decoration-none text-dark px-2 py-1"
             >
               <i class="bi bi-plus-circle"></i> Add Event
@@ -88,6 +99,7 @@
           <div class="mb-3">
             <router-link
               to="/dashboard?activeTab=user-management"
+              @click="show = false"
               class="d-block text-decoration-none text-dark px-2 py-1"
             >
               <i class="bi bi-people"></i> User Management
@@ -102,6 +114,7 @@
         <div class="mb-3" v-if="$store.getters.isAdmin && getToken">
           <router-link
             to="/admin"
+            @click="show = false"
             class="d-block text-decoration-none text-dark px-2 py-1"
           >
             Admin
@@ -112,6 +125,7 @@
         <div class="mb-3">
           <router-link
             to="/events"
+            @click="show = false"
             class="d-block text-decoration-none text-dark px-2 py-1"
           >
             Events
@@ -547,6 +561,25 @@ export default {
 .slide-right-enter-from,
 .slide-right-leave-to {
   transform: translateX(100%);
+  opacity: 0;
+}
+
+.nav-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
 }
 
