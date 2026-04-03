@@ -16,7 +16,7 @@
       />
       <button
         @click="exportToExcel"
-        class="btn btn-success d-flex align-items-center gap-1 flex-shrink-0"
+        class="btn btn-success d-flex align-items-center gap-1 flex-shrink-0 ms-auto"
         :disabled="exportLoading"
       >
         <span v-if="exportLoading">
