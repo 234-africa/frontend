@@ -77,7 +77,14 @@ export default {
     },
   },
   async mounted() {
-    this.reference = localStorage.getItem("paystack_reference");
+    // Check which gateway was used (from URL params or localStorage)
+    const urlParams = new URLSearchParams(window.location.search);
+    const gatewayFromUrl = urlParams.get("gateway");
+    const referenceFromUrl = urlParams.get("reference");
+    const gateway = gatewayFromUrl || localStorage.getItem("payment_gateway") || "paystack";
+
+    // Use reference from URL if available (AlatPay redirect includes it), else localStorage
+    this.reference = referenceFromUrl || localStorage.getItem("paystack_reference");
 
     if (!this.reference) {
       this.loading = false;
@@ -85,17 +92,27 @@ export default {
     }
 
     try {
-      const res = await axios.get(
-        `https://event-ticket-backend-yx81.onrender.com/api/verify/${this.reference}`
-      );
-      if (res.data.data.status === "success") {
+      if (gateway === "alatpay") {
+        // AlatPay: payment was confirmed by the SDK callback before redirect.
+        // The order data was already saved. Just mark as verified and send order info.
         this.verified = true;
-        await this.sendOrderInfo(); // Send order info after successful verification
+        await this.sendOrderInfo();
+      } else {
+        // Paystack: verify via backend
+        const res = await axios.get(
+          `https://event-ticket-backend-yx81.onrender.com/api/verify/${this.reference}`
+        );
+        if (res.data.data.status === "success") {
+          this.verified = true;
+          await this.sendOrderInfo(); // Send order info after successful verification
+        }
       }
     } catch (err) {
       console.error("Verification error:", err);
     } finally {
       this.loading = false;
+      // Clean up gateway flag
+      localStorage.removeItem("payment_gateway");
     }
   },
 };
