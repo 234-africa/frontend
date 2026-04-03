@@ -849,13 +849,16 @@ export default {
         return;
       }
       try {
-        const productId = this.getCart[0]?._id || this.getCart[0]?.id;
+        // Try all possible id fields from cart item
+        const cartItem = this.getCart[0];
+        const productId = cartItem?._id || cartItem?.id || cartItem?.productId || "";
+        console.log("Applying promo for productId:", productId, "Cart item:", cartItem);
         const response = await axios.post(
           `${process.env.VUE_APP_BASE_URL}/api/apply-promo`,
           {
             code: this.promoCode.trim(),
             orderTotal: this.rawSubtotal,
-            id: productId,
+            id: String(productId),
           }
         );
         this.discountResult = response.data;
@@ -1067,13 +1070,32 @@ export default {
             metadata: config.metadata || null,
             currency: config.currency,
             amount: config.amount,
-            onTransaction: function(response) {
+            onTransaction: async function(response) {
               console.log("🏦 AlatPay transaction response:", response);
-              self.spinner = false;
-              if (response && (response.status === 'successful' || response.status === 'success' || response.Status === 'completed')) {
+              if (response && (response.status === 'successful' || response.status === 'success' || response.Status === 'completed' || response.status === 'Completed')) {
+                self.spinner = true;
                 localStorage.setItem("payment_gateway", "alatpay");
+                localStorage.setItem("paystack_reference", config.reference);
+                // Place the order immediately before redirect
+                try {
+                  const affiliate = localStorage.getItem("affiliateCode");
+                  const orderPayload = {
+                    ...orderData,
+                    reference: config.reference,
+                    affiliate,
+                  };
+                  await fetch(`${process.env.VUE_APP_BASE_URL}/api/order`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(orderPayload),
+                  });
+                } catch (err) {
+                  console.error("AlatPay order save error:", err);
+                }
+                self.spinner = false;
                 window.location.href = `/payment-success?reference=${config.reference}&gateway=alatpay`;
               } else {
+                self.spinner = false;
                 alert("Payment was not successful. Please try again.");
               }
             },
