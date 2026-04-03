@@ -523,7 +523,7 @@ export default {
   background: #047143;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
   padding: 2rem 1rem;
-  z-index: 1000;
+  z-index: 9999;
 }
 
 .close-btn {
@@ -570,8 +570,8 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 999;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 9998;
 }
 
 .fade-enter-active,
