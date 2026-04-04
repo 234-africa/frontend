@@ -920,7 +920,7 @@ export default {
           startTime: this.getCart[0]?.event?.startTime,
           location: this.getCart[0]?.event?.location?.name,
           userId: this.getCart[0]?.user,
-          productId: this.getCart[0]?.id,
+          productId: this.getCart[0]?._id || this.getCart[0]?.id,
           title: this.getCart[0]?.title,
           contact: {
             name: `${this.contact.firstName} ${this.contact.lastName}`,
@@ -989,7 +989,7 @@ export default {
           startTime: this.getCart[0]?.event?.startTime,
           location: this.getCart[0]?.event?.location?.name,
           userId: this.getCart[0]?.user,
-          productId: this.getCart[0]?.id,
+          productId: this.getCart[0]?._id || this.getCart[0]?.id,
           title: this.getCart[0]?.title,
           contact: {
             name: `${this.contact.firstName} ${this.contact.lastName}`,
@@ -1072,7 +1072,9 @@ export default {
             amount: config.amount,
             onTransaction: async function(response) {
               console.log("🏦 AlatPay transaction response:", response);
-              if (response && (response.status === 'successful' || response.status === 'success' || response.Status === 'completed' || response.status === 'Completed')) {
+              const statusVal = (response?.status || response?.Status || response?.transactionStatus || '').toString().toLowerCase();
+              const isSuccess = statusVal === 'successful' || statusVal === 'success' || statusVal === 'completed' || statusVal === 'approved' || statusVal === '1' || statusVal === 'true';
+              if (response && isSuccess) {
                 self.spinner = true;
                 localStorage.setItem("payment_gateway", "alatpay");
                 localStorage.setItem("paystack_reference", config.reference);
@@ -1132,7 +1134,7 @@ export default {
           startTime: this.getCart[0]?.event?.startTime,
           location: this.getCart[0]?.event?.location?.name,
           userId: this.getCart[0]?.user,
-          productId: this.getCart[0]?.id,
+          productId: this.getCart[0]?._id || this.getCart[0]?.id,
           title: this.getCart[0]?.title,
           contact: {
             name: `${this.contact.firstName} ${this.contact.lastName}`,
@@ -1222,7 +1224,7 @@ export default {
           location: this.getCart[0]?.event?.location?.name,
           reference: this.reference,
           userId: this.getCart[0]?.user,
-          productId: this.getCart[0]?.id,
+          productId: this.getCart[0]?._id || this.getCart[0]?.id,
           title: this.getCart[0]?.title,
           contact: {
             name: `${this.contact.firstName} ${this.contact.lastName}`,
