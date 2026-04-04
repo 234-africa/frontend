@@ -62,12 +62,13 @@
                         class="quantity-select"
                         v-model.number="ticket.selectedQuantity"
                       >
+                        <option value="" disabled>Select quantity</option>
                         <option
-                          v-for="n in Math.min(ticket.purchaseLimit, ticket.quantity || Infinity) + 1"
+                          v-for="n in Math.min(ticket.purchaseLimit, ticket.quantity || Infinity)"
                           :key="n"
-                          :value="n - 1"
+                          :value="n"
                         >
-                          {{ n - 1 }}
+                          {{ n }}
                         </option>
                       </select>
                     </template>
@@ -1084,13 +1085,17 @@ export default {
                   const orderPayload = {
                     ...orderData,
                     reference: config.reference,
+                    currency: config.currency || "NGN",
                     affiliate,
                   };
-                  await fetch(`${process.env.VUE_APP_BASE_URL}/api/order`, {
+                  console.log("📦 Saving AlatPay order:", orderPayload);
+                  const orderRes = await fetch(`${process.env.VUE_APP_BASE_URL}/api/order`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(orderPayload),
                   });
+                  const orderJson = await orderRes.json();
+                  console.log("✅ AlatPay order saved:", orderJson);
                 } catch (err) {
                   console.error("AlatPay order save error:", err);
                 }
