@@ -6,7 +6,7 @@
     </div>
 
     <!-- 🔍 Search Input & Export Button -->
-    <div class="p-3 d-flex justify-content-between align-items-center gap-2 flex-wrap">
+    <div class="p-3 d-flex align-items-center gap-2 flex-wrap">
       <input
         v-model="searchQuery"
         type="text"
