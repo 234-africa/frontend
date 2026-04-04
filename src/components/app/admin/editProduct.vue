@@ -103,7 +103,7 @@
             <div class="mb-3">
               <label class="form-label">What's your event about:</label>
               <div>
-                <textarea class="w-100 description-field" v-model="product.description" style="min-height: 200px; white-space: pre-wrap;" />
+                <textarea class="w-100" v-model="product.description" rows="8" style="min-height: 200px; white-space: pre-wrap; resize: vertical; padding: 10px; font-size: 0.95rem; border: 1px solid #ced4da; border-radius: 4px;"></textarea>
               </div>
             </div>
           </div>
