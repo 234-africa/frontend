@@ -103,7 +103,10 @@
                 </tr>
                 <tr v-for="promo in promos" :key="promo._id">
                   <td>{{ promo.code }}</td>
-                  <td>{{ promo.discountValue }}%</td>
+                  <td>
+                    <span v-if="promo.discountType === 'percentage'">{{ promo.discountValue }}%</span>
+                    <span v-else>₦{{ promo.discountValue }}</span>
+                  </td>
                   <td>{{ promo.usageLimit }}</td>
                   <td>{{ promo.usedCount }}</td>
                   <td>{{ formatDate(promo.expiryDate) }}</td>
