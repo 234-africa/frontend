@@ -174,7 +174,7 @@ export default {
 }
 
 .table-responsive {
-  overflow-x: hidden;
+  overflow-x: auto;
 }
 
 .custom-table {
@@ -189,8 +189,10 @@ export default {
 
 .custom-table th,
 .custom-table td {
-  padding: 12px;
+  padding: 12px 16px;
   vertical-align: middle;
+  white-space: nowrap;
+  min-width: 120px;
 }
 
 .custom-table tr:nth-child(even) {
