@@ -281,106 +281,111 @@
             </div>
           </div>
 
-          <!-- STEP 4: Location -->
+          <!-- STEP 4: Tickets -->
           <div v-if="currentStep === 3">
             <div class="my-4 text-start">
-              <h5><strong>Create your ticket types</strong></h5>
+              <h5><strong>Create Your Ticket Types</strong></h5>
 
-              <!-- Ticket Rows -->
+              <!-- Ticket Cards -->
               <div
                 v-for="(ticket, index) in tickets"
                 :key="index"
-                class="row g-3 align-items-end mb-2"
+                class="ticket-card mb-3 p-3 border rounded bg-white shadow-sm"
               >
-                <div class="col-md-2">
-                  <label class="form-label">Ticket name</label>
-                  <input
-                    v-model="ticket.name"
-                    type="text"
-                    class="form-control"
-                    placeholder="e.g. General Admission"
-                    required
-                  />
-                </div>
-
-                <div class="col-md-2">
-                  <label class="form-label">Type</label>
-                  <select
-                    v-model="ticket.type"
-                    class="form-select p-2"
-                    style="color: #212529"
-                    required
-                  >
-                    <option disabled value="">Select Type</option>
-                    <option value="limited">Limited</option>
-                    <option value="unlimited">Unlimited</option>
-                  </select>
-                </div>
-
-                <div class="col-md-2">
-                  <label class="form-label">Quantity</label>
-                  <input
-                    v-model.number="ticket.quantity"
-                    type="number"
-                    class="form-control p-3"
-                    :disabled="ticket.type === 'unlimited'"
-                    :required="ticket.type === 'limited'"
-                    min="0"
-                    placeholder="e.g. 100"
-                  />
-                </div>
-
-                <div class="col-md-2">
-                  <label class="form-label">Price</label>
-                  <input
-                    v-model.number="ticket.price"
-                    type="number"
-                    class="form-control price-field"
-                    placeholder="0"
-                  />
-                </div>
-
-                <div class="col-md-1">
-                  <label class="form-label">Currency</label>
-                  <select v-model="ticket.currency" class="form-select" required>
-                    <option value="NGN">NGN (₦)</option>
-                    <option value="USD">USD ($)</option>
-                    <option value="GBP">GBP (£)</option>
-                    <option value="EUR">EUR (€)</option>
-                    <option value="GHS">GHS (GH₵)</option>
-                  </select>
-                </div>
-
-                <div class="col-md-2">
-                  <label class="form-label">Purchase Limit</label>
-                  <select v-model.number="ticket.purchaseLimit" class="form-select" required>
-                    <option value="" disabled selected>Select limit</option>
-                    <option :value="n" v-for="n in 5" :key="n">{{ n }}</option>
-                  </select>
-                </div>
-
-                <div class="col-md-1 d-flex align-items-end">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <span class="ticket-card-label fw-semibold text-muted">Ticket #{{ index + 1 }}</span>
                   <button
-                    class="btn btn-outline-danger"
-                    title="Delete"
+                    class="btn btn-sm btn-outline-danger"
+                    title="Remove ticket"
                     @click="removeTicket(index)"
                     type="button"
                   >
-                    <i class="bi bi-trash"></i>
+                    <i class="bi bi-trash"></i> Remove
                   </button>
+                </div>
+
+                <!-- Row 1: Name, Type, Quantity -->
+                <div class="row g-3 mb-3">
+                  <div class="col-md-4 col-sm-6 col-12">
+                    <label class="form-label fw-medium">Ticket Name</label>
+                    <input
+                      v-model="ticket.name"
+                      type="text"
+                      class="form-control"
+                      placeholder="e.g. General Admission"
+                      required
+                    />
+                  </div>
+
+                  <div class="col-md-4 col-sm-6 col-12">
+                    <label class="form-label fw-medium">Type</label>
+                    <select
+                      v-model="ticket.type"
+                      class="form-select"
+                      style="color: #212529"
+                      required
+                    >
+                      <option disabled value="">Select Type</option>
+                      <option value="limited">Limited</option>
+                      <option value="unlimited">Unlimited</option>
+                    </select>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6 col-12">
+                    <label class="form-label fw-medium">Quantity</label>
+                    <input
+                      v-model.number="ticket.quantity"
+                      type="number"
+                      class="form-control"
+                      :disabled="ticket.type === 'unlimited'"
+                      :required="ticket.type === 'limited'"
+                      min="0"
+                      placeholder="e.g. 100"
+                    />
+                  </div>
+                </div>
+
+                <!-- Row 2: Price, Currency, Purchase Limit -->
+                <div class="row g-3">
+                  <div class="col-md-4 col-sm-6 col-12">
+                    <label class="form-label fw-medium">Price</label>
+                    <input
+                      v-model.number="ticket.price"
+                      type="number"
+                      class="form-control"
+                      placeholder="0"
+                    />
+                  </div>
+
+                  <div class="col-md-4 col-sm-6 col-12">
+                    <label class="form-label fw-medium">Currency</label>
+                    <select v-model="ticket.currency" class="form-select" required>
+                      <option value="NGN">NGN (₦)</option>
+                      <option value="USD">USD ($)</option>
+                      <option value="GBP">GBP (£)</option>
+                      <option value="EUR">EUR (€)</option>
+                      <option value="GHS">GHS (GH₵)</option>
+                    </select>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6 col-12">
+                    <label class="form-label fw-medium">Purchase Limit</label>
+                    <select v-model.number="ticket.purchaseLimit" class="form-select" required>
+                      <option value="" disabled selected>Select limit</option>
+                      <option :value="n" v-for="n in 5" :key="n">{{ n }}</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
-              <!-- Timeslot Capacity -->
-
-              <!-- Add Ticket Buttons -->
-              <div class="d-flex gap-3">
+              <!-- Add Ticket Button -->
+              <div class="mt-3">
                 <button
-                  class="btn btn-primary btn-primary:hover"
+                  class="btn btn-primary"
                   type="button"
                   @click="addTicket('Paid')"
                 >
-                  + ticket
+                  <i class="bi bi-plus-circle me-1"></i> + ticket
                 </button>
               </div>
             </div>
@@ -758,5 +763,27 @@ export default {
   .price-field {
     min-width: 120px;
   }
+}
+
+.ticket-card {
+  background: #fafafa;
+  border-color: #dee2e6 !important;
+  border-radius: 10px !important;
+  transition: box-shadow 0.2s ease;
+}
+
+.ticket-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+}
+
+.ticket-card .form-label {
+  font-size: 0.85rem;
+  color: #555;
+  margin-bottom: 0.3rem;
+}
+
+.ticket-card .form-control,
+.ticket-card .form-select {
+  font-size: 0.95rem;
 }
 </style>
