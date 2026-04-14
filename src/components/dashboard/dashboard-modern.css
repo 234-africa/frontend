@@ -105,7 +105,7 @@
 }
 
 .modern-card .card-header .d-flex {
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 0.75rem;
   width: 100%;
@@ -113,6 +113,7 @@
 
 .modern-card .card-header .justify-content-between {
   justify-content: space-between !important;
+  width: 100%;
 }
 
 .modern-card .card-title {
@@ -454,9 +455,12 @@
   }
 
   .modern-card .card-header .d-flex {
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: nowrap;
     align-items: center;
+    justify-content: space-between;
     gap: 0.75rem;
+    width: 100%;
   }
 
   .btn-download, .modern-btn-download {
