@@ -105,8 +105,9 @@
 }
 
 .modern-card .card-header .d-flex {
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   align-items: center;
+  gap: 0.75rem;
 }
 
 .modern-card .card-title {
