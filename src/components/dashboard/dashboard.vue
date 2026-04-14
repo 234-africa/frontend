@@ -49,15 +49,13 @@
       <div class="orders-section">
         <div class="card modern-card">
           <div class="card-header">
-            <div class="d-flex justify-content-between align-items-center flex-wrap">
-              <h4 class="card-title mb-0">
+            <div style="display:flex; flex-direction:row; justify-content:space-between; align-items:center; width:100%; flex-wrap:nowrap;">
+              <h4 class="card-title mb-0" style="margin:0; flex-shrink:0;">
                 <i class="bi bi-list-ul"></i> My Orders
               </h4>
-              <div class="d-flex gap-2">
-                <button class="btn btn-primary btn-download" @click="downloadAndSendOrdersExcel">
-                  <i class="bi bi-file-excel"></i> Email Excel
-                </button>
-              </div>
+              <button class="btn btn-download" @click="downloadAndSendOrdersExcel" style="flex-shrink:0; margin-left:auto;">
+                <i class="bi bi-file-excel"></i> Email Excel
+              </button>
             </div>
           </div>
           <div class="card-body">
